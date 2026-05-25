@@ -4,7 +4,7 @@ import "./globals.css"
 import SiteChrome from "@/components/SiteChrome"
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://emvy.ai"),
+  metadataBase: new URL("https://emvyai.com"),
   title: {
     default: "EMVY — AI Consultancy for Australian SMBs",
     template: "%s | EMVY"
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "EMVY — AI Consultancy for Australian SMBs",
     description: "AI strategy, audits, and automation systems for businesses ready to work smarter.",
-    url: "https://emvy.ai",
+    url: "https://emvyai.com",
     siteName: "EMVY",
     type: "website",
     locale: "en_AU"
