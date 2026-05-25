@@ -1,0 +1,16 @@
+node_modules/
+.next/
+.vercel
+.env
+.env.*
+.env.local
+*.tsbuildinfo
+.vercel
+EMVY_*.md
+HERMES_*.md
+RESEARCH_*.md
+nurture-sequence.md
+data/*
+prototypes/*
+public/50-ai-agent-prompts.pdf
+public/*
