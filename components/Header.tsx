@@ -74,12 +74,6 @@ export default function Header() {
       <Link className="nav-link" href="/why-ai">
         Why AI
       </Link>
-      <Link className="nav-link" href="/blog">
-        Blog
-      </Link>
-      <Link className="nav-link" href="/research">
-        Research Hub
-      </Link>
       <Link className="nav-link" href="/process">
         Process
       </Link>
@@ -93,10 +87,7 @@ export default function Header() {
       <Link className="nav-link" href="/contact">
         Contact
       </Link>
-      <Link className="nav-link" href="/admin">
-        Board
-      </Link>
-    </>
+</>
   )
 
   return (
@@ -130,13 +121,10 @@ export default function Header() {
           <Link href="/services" onClick={() => setMobileOpen(false)}>Services</Link>
           <Link href="/case-studies" onClick={() => setMobileOpen(false)}>Case Studies</Link>
           <Link href="/why-ai" onClick={() => setMobileOpen(false)}>Why AI</Link>
-          <Link href="/blog" onClick={() => setMobileOpen(false)}>Blog</Link>
-          <Link href="/research" onClick={() => setMobileOpen(false)}>Research Hub</Link>
           <Link href="/process" onClick={() => setMobileOpen(false)}>Process</Link>
           <Link href="/quiz" onClick={() => setMobileOpen(false)}>Quiz</Link>
           <Link href="/about" onClick={() => setMobileOpen(false)}>About</Link>
           <Link href="/contact" onClick={() => setMobileOpen(false)}>Contact</Link>
-          <Link href="/admin" onClick={() => setMobileOpen(false)}>Board</Link>
           <Link href="/services/ai-audits" onClick={() => setMobileOpen(false)}>Book Free Discovery Call</Link>
         </div>
       ) : null}

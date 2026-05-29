@@ -196,11 +196,7 @@ export default function Home() {
         </div>
       </section>
 
-<<<<<<< Updated upstream
-      <section className="section" id="case-studies">
-=======
       <section className="section" id="solutions">
->>>>>>> Stashed changes
         <div className="section-header">
           <p className="section-kicker">Solutions</p>
           <h2 className="section-title">Examples of the kinds of outcomes the right system should create.</h2>
@@ -245,11 +241,7 @@ export default function Home() {
 
           <article className="final-cta-card">
             <p className="service-flow-number">02</p>
-<<<<<<< Updated upstream
-            <h3>Take the AI Readiness Quiz</h3>
-=======
             <h3>Start the Mini Ops Assessment</h3>
->>>>>>> Stashed changes
             <p>
               A simple lead magnet that gives you a better sense of where AI may help and sends the
               result straight to your email.

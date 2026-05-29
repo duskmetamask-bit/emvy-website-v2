@@ -4,10 +4,7 @@ const primaryLinks = [
   { label: 'Services', href: '/services' },
   { label: 'Case Studies', href: '/case-studies' },
   { label: 'Why AI', href: '/why-ai' },
-  { label: 'Blog', href: '/blog' },
-  { label: 'Research Hub', href: '/research' },
   { label: 'Process', href: '/process' },
-  { label: 'Board', href: '/admin' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ]
@@ -19,7 +16,6 @@ const conversionLinks = [
   { label: 'AI Builds', href: '/services/automations' },
   { label: 'Systems Maintenance', href: '/services/maintenance' },
   { label: 'Process', href: '/process' },
-  { label: 'EMVY Board', href: '/admin' },
 ]
 
 export default function Footer() {
