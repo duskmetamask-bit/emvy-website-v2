@@ -1583,6 +1583,7 @@ main {
   grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 0.8fr));
   gap: 1.5rem;
   padding: 1.4rem 0 1.8rem;
+  align-items: start;
 }
 
 .site-footer__intro h2,
@@ -1592,9 +1593,10 @@ main {
 }
 
 .site-footer__intro h2 {
-  max-width: 14ch;
+  max-width: none;
   font-size: clamp(1.7rem, 3vw, 2.5rem);
   line-height: 1;
+  letter-spacing: 0.05em;
 }
 
 .site-footer__intro p:last-child,
@@ -1606,12 +1608,29 @@ main {
 
 .site-footer__grid h3 {
   font-size: 1rem;
+  margin-top: 0.9rem;
 }
 
 .site-footer__links {
   display: grid;
   gap: 0.7rem;
   margin-top: 0.9rem;
+}
+
+.site-footer__links--right {
+  margin-left: 5rem;
+}
+
+.footer-start-here h3 {
+  margin-left: 12rem;
+}
+
+.footer-start-here .site-footer__links {
+  margin-left: 12rem;
+}
+
+.footer-explore h3 {
+  margin-left: 5rem;
 }
 
 .site-footer__links a,

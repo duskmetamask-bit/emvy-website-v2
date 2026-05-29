@@ -23,24 +23,10 @@ export default function Footer() {
         <div className="site-footer__intro">
           <p className="section-kicker">EMVY</p>
           <h2>Identify the right AI opportunity, then build the system around it.</h2>
-          <p>
-            EMVY helps businesses identify where AI can reduce admin, improve efficiency, and
-            support better workflows across operations, delivery, and internal systems.
-          </p>
+          <p>EMVY helps businesses audit, build, hand over, and maintain practical AI systems.</p>
         </div>
 
-        <div>
-          <h3>Explore</h3>
-          <div className="site-footer__links">
-            {primaryLinks.map((link) => (
-              <Link key={link.href} href={link.href}>
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div>
+        <div className="footer-start-here">
           <h3>Start Here</h3>
           <div className="site-footer__links">
             {conversionLinks.map((link) => (
@@ -50,10 +36,20 @@ export default function Footer() {
             ))}
           </div>
         </div>
+
+        <div className="footer-explore">
+          <h3>Explore</h3>
+          <div className="site-footer__links site-footer__links--right">
+            {primaryLinks.map((link) => (
+              <Link key={link.href} href={link.href}>
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="site-footer__meta">
-        <p>EMVY helps businesses audit, build, hand over, and maintain practical AI systems.</p>
         <p>ABN: 82 488 276 510</p>
         <div>
           <Link href="/terms">Terms</Link>
