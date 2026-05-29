@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Quiz',
-  description: 'Take the EMVY quiz to get a score, breakdown, and the right next step into discovery.',
+  title: 'Assessment',
+  description: 'Take the EMVY assessment to get a score, breakdown, and the right next step into discovery.',
 }
 
 export default function LPLayout({

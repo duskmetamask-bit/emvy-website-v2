@@ -4,18 +4,16 @@ const primaryLinks = [
   { label: 'Services', href: '/services' },
   { label: 'Case Studies', href: '/case-studies' },
   { label: 'Why AI', href: '/why-ai' },
-  { label: 'Process', href: '/process' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ]
 
 const conversionLinks = [
-  { label: 'AI Readiness Quiz', href: '/quiz' },
+  { label: 'AI Assessment', href: '/quiz' },
   { label: 'Free Discovery Call', href: '/services/ai-audits' },
   { label: 'AI Audit', href: '/services/ai-agents' },
   { label: 'AI Builds', href: '/services/automations' },
   { label: 'Systems Maintenance', href: '/services/maintenance' },
-  { label: 'Process', href: '/process' },
 ]
 
 export default function Footer() {
