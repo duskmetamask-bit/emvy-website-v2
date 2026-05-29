@@ -60,6 +60,7 @@ export default function Footer() {
 
       <div className="site-footer__meta">
         <p>EMVY helps businesses audit, build, hand over, and maintain practical AI systems.</p>
+        <p>ABN: 82 488 276 510</p>
         <div>
           <Link href="/terms">Terms</Link>
           <Link href="/contact">Contact</Link>

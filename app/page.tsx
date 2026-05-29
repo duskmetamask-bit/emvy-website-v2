@@ -1,8 +1,6 @@
 import { ArrowRight } from 'lucide-react'
 import TrackedLink from '../components/TrackedLink'
 import CalBookingGate from '../components/CalBookingGate'
-import ResearchCard from '@/components/ResearchCard'
-import { getLatestResearch } from '@/lib/research'
 import { engagementFlow } from '@/lib/emvy-process'
 
 const services = [
@@ -104,7 +102,6 @@ const caseStudies = [
 ]
 
 export default function Home() {
-  const latestResearch = getLatestResearch(3)
 
   return (
     <>
@@ -141,15 +138,7 @@ export default function Home() {
                 eventName="quiz_start"
                 eventLabel="homepage hero"
               >
-                Take the AI Readiness Quiz
-              </TrackedLink>
-              <TrackedLink
-                href="/research"
-                className="button light"
-                eventName="research_hub_click"
-                eventLabel="homepage hero"
-              >
-                Explore Research Hub
+                Start the Mini Ops Assessment
               </TrackedLink>
             </div>
           </div>
@@ -184,45 +173,9 @@ export default function Home() {
       </section>
 
       <section className="section">
-        <div className="section-header dual">
-          <div>
-            <p className="section-kicker">After the call</p>
-            <h2 className="section-title">The next step depends on whether the client needs an audit or a build.</h2>
-          </div>
-          <p className="section-text">
-            The current standard is: discovery call, decision email, payment link or invoice, then
-            the relevant audit or build call, followed by a presentable report, a review call, and
-            implementation support.
-          </p>
-        </div>
-
-        <div className="process-grid process-grid-strong">
-          {engagementFlow.slice(0, 5).map((step) => (
-            <article key={step.title} className="process-card process-card-strong">
-              <span>Phase {step.phase}</span>
-              <h3>{step.title}</h3>
-              <p>{step.summary}</p>
-            </article>
-          ))}
-        </div>
-
-        <div className="hero-actions" style={{ marginTop: '1rem' }}>
-          <TrackedLink href="/process" className="button secondary" eventName="process_click" eventLabel="homepage">
-            See the full process
-          </TrackedLink>
-          <TrackedLink href="/services" className="button light" eventName="services_click" eventLabel="homepage">
-            Review services again
-          </TrackedLink>
-        </div>
-      </section>
-
-      <section className="section">
         <div className="section-header">
           <p className="section-kicker">Expertise Areas</p>
           <h2 className="section-title">The work is scoped around the workflow, tools, and controls that actually matter.</h2>
-          <p className="section-text">
-            Each area below shows the practical expertise that goes into a useful AI system.
-          </p>
         </div>
 
         <div className="expertise-grid expertise-grid-wide">
@@ -243,14 +196,14 @@ export default function Home() {
         </div>
       </section>
 
+<<<<<<< Updated upstream
       <section className="section" id="case-studies">
+=======
+      <section className="section" id="solutions">
+>>>>>>> Stashed changes
         <div className="section-header">
-          <p className="section-kicker">Case Studies</p>
+          <p className="section-kicker">Solutions</p>
           <h2 className="section-title">Examples of the kinds of outcomes the right system should create.</h2>
-          <p className="section-text">
-            Faster response times, less manual work, and more delivery capacity are the outcomes
-            that matter most.
-          </p>
         </div>
 
         <div className="case-grid">
@@ -266,39 +219,6 @@ export default function Home() {
               </div>
             </article>
           ))}
-        </div>
-      </section>
-
-      <section className="section research-preview-section">
-        <div className="section-header">
-          <p className="section-kicker">Research</p>
-          <h2 className="section-title">Practical AI research that supports better decisions.</h2>
-          <p className="section-text">
-            Short briefings on tools, models, and changes worth paying attention to.
-          </p>
-        </div>
-        <div className="research-card-grid">
-          {latestResearch.map((post) => (
-            <ResearchCard key={post.slug} post={post} />
-          ))}
-        </div>
-        <div className="research-preview-actions">
-          <TrackedLink
-            href="/research"
-            className="button secondary"
-            eventName="research_hub_click"
-            eventLabel="homepage"
-          >
-            Open research hub
-          </TrackedLink>
-          <TrackedLink
-            href="/research/digest"
-            className="button primary"
-            eventName="research_digest_click"
-            eventLabel="homepage"
-          >
-            Read the weekly digest
-          </TrackedLink>
         </div>
       </section>
 
@@ -325,7 +245,11 @@ export default function Home() {
 
           <article className="final-cta-card">
             <p className="service-flow-number">02</p>
+<<<<<<< Updated upstream
             <h3>Take the AI Readiness Quiz</h3>
+=======
+            <h3>Start the Mini Ops Assessment</h3>
+>>>>>>> Stashed changes
             <p>
               A simple lead magnet that gives you a better sense of where AI may help and sends the
               result straight to your email.
