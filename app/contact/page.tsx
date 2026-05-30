@@ -57,10 +57,10 @@ export default function ContactPage() {
         description="Use this form if you want to discuss a workflow, an AI opportunity, or an existing operations bottleneck. If you prefer a structured first step, start with the quiz."
         image="https://images.unsplash.com/photo-1516321165247-4aa89a48be28?w=1800&q=90&auto=format&fit=crop"
       >
-        <Link href="/quiz" className="button light">
+        <Link href="/assessment" className="button light">
           Start the quiz
         </Link>
-        <Link href="/services/ai-audits" className="button secondary">
+        <Link href="/services/discovery-call" className="button secondary">
           Book Free Discovery Call
         </Link>
       </PageHero>
@@ -75,8 +75,8 @@ export default function ContactPage() {
               outcome you want to create. EMVY can then point you toward the right next step.
             </p>
             <div className="contact-list">
-              <Link href="/services/ai-audits">Free Discovery Call</Link>
-              <Link href="/quiz">AI Readiness Quiz</Link>
+              <Link href="/services/discovery-call">Free Discovery Call</Link>
+              <Link href="/assessment">AI Readiness Quiz</Link>
               <Link href="/why-ai">Why AI</Link>
             </div>
           </div>

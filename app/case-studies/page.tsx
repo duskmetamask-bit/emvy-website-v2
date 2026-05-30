@@ -26,6 +26,24 @@ const studies = [
     body: 'A practical assist layer that helps a service team move faster without losing visibility or control.',
     image: 'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=1200&q=90&auto=format&fit=crop',
   },
+  {
+    title: 'Lead generation & outreach',
+    metric: 'Automated engagement',
+    body: 'Streamlined lead generation and outreach processes to connect with more prospects efficiently.',
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=90&auto=format&fit=crop',
+  },
+  {
+    title: 'Repetitive process automation',
+    metric: 'Reduced friction',
+    body: 'Identify and automate repetitive tasks that create bottlenecks and drain team productivity.',
+    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=90&auto=format&fit=crop',
+  },
+  {
+    title: 'Custom workflow replacement',
+    metric: 'Cost efficiency',
+    body: 'Replace expensive off-the-shelf software with tailored workflows built around your actual needs.',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=90&auto=format&fit=crop',
+  },
 ]
 
 export default function CaseStudiesPage() {
@@ -40,7 +58,7 @@ export default function CaseStudiesPage() {
         <Link href="/services" className="button light">
           View services
         </Link>
-        <Link href="/quiz" className="button secondary">
+        <Link href="/assessment" className="button secondary">
           Start the quiz
         </Link>
       </PageHero>
@@ -68,6 +86,19 @@ export default function CaseStudiesPage() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="section cta-band">
+        <div>
+          <p className="section-kicker">Get Started</p>
+          <h2 className="section-title">Ready to explore how AI can help your business?</h2>
+          <p className="section-text">
+            Get in touch to discuss your workflow and see how we can help.
+          </p>
+        </div>
+        <Link href="/contact" className="button primary">
+          Contact Us
+        </Link>
       </section>
     </>
   )

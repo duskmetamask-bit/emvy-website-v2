@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
 
 export default function AdditionalBuildsPage() {
-  redirect('/services/automations')
+  redirect('/services/ai-builds')
 }

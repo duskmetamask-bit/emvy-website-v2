@@ -41,7 +41,7 @@ export default function PricingPage() {
         <Link href="/services" className="button light">
           Review services
         </Link>
-        <Link href="/services/ai-audits" className="button secondary">
+        <Link href="/services/discovery-call" className="button secondary">
           Book Free Discovery Call
         </Link>
       </PageHero>
@@ -106,7 +106,7 @@ export default function PricingPage() {
           <Link href="/process" className="button secondary">
             See the full flow
           </Link>
-          <Link href="/services/ai-audits" className="button light">
+          <Link href="/services/discovery-call" className="button light">
             Book discovery call
           </Link>
         </div>

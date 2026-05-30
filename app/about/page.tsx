@@ -31,7 +31,7 @@ export default function AboutPage() {
         description="EMVY helps growing businesses turn AI into structured systems that support delivery, sales, and operations without creating extra complexity."
         image="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1800&q=90&auto=format&fit=crop"
       >
-        <Link href="/quiz" className="button light">
+        <Link href="/assessment" className="button light">
           Start the quiz
         </Link>
         <Link href="/contact" className="button secondary">

@@ -10,7 +10,7 @@ const services = [
     subtitle: 'Free 15-minute introduction call',
     description:
       'A quick conversation to understand your business, the workflow you want to improve, and the best next step.',
-    href: '/services/ai-audits',
+    href: '/services/discovery-call',
     image:
       'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=90&auto=format&fit=crop',
   },
@@ -20,7 +20,7 @@ const services = [
     subtitle: 'Find the strongest AI opportunities',
     description:
       'We assess the workflow, systems, and operational constraints so you know where AI will genuinely help.',
-    href: '/services/ai-agents',
+    href: '/services/ai-assessment',
     image:
       'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=90&auto=format&fit=crop',
   },
@@ -30,7 +30,7 @@ const services = [
     subtitle: 'Design and implement the right system',
     description:
       'We build AI systems, automations, and workflow improvements that reduce admin and improve efficiency.',
-    href: '/services/automations',
+    href: '/services/ai-builds',
     image:
       'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=90&auto=format&fit=crop',
   },
@@ -40,7 +40,7 @@ const services = [
     subtitle: 'Support after launch when needed',
     description:
       'If you want ongoing support, we maintain, refine, and improve the system as your business grows.',
-    href: '/services/maintenance',
+    href: '/services/systems-maintenance',
     image:
       'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=1200&q=90&auto=format&fit=crop',
   },
@@ -133,7 +133,7 @@ export default function Home() {
             <div className="hero-actions">
               <CalBookingGate triggerLabel="Book Free Discovery Call" className="button primary" />
               <TrackedLink
-                href="/quiz"
+                href="/assessment"
                 className="button secondary"
                 eventName="quiz_start"
                 eventLabel="homepage hero"
@@ -247,7 +247,7 @@ export default function Home() {
               result straight to your email.
             </p>
             <TrackedLink
-              href="/quiz"
+              href="/assessment"
               className="button secondary"
               eventName="quiz_start"
               eventLabel="homepage final cta"

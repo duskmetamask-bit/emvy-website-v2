@@ -10,9 +10,18 @@ export const metadata: Metadata = {
 }
 
 const outcomes = [
-  'A brief introduction to your business and what EMVY can help with',
-  'A clearer view of the workflow, admin pressure, or efficiency gap you want to improve',
-  'A sensible next step, whether that is an audit, a build, or a different recommendation',
+  {
+    title: 'Introduction',
+    points: ['General introduction', 'Who we are', 'What we do'],
+  },
+  {
+    title: 'Background Overview',
+    points: ['Overview of your business', 'Mapping our processes (where we can help)', 'Highlighting any big pain points'],
+  },
+  {
+    title: 'Next step',
+    points: ['We will highlight the direction we think is best', 'No pressure, decision is yours if you want to progress', 'Email sent through around next steps & pricing'],
+  },
 ]
 
 export default function DiscoveryCallPage() {
@@ -35,17 +44,23 @@ export default function DiscoveryCallPage() {
           <p className="section-kicker">What To Expect</p>
           <h2 className="section-title">Short, focused, and easy to act on.</h2>
           <p className="section-text">
-            The call is designed to quickly understand your business and whether EMVY is the right
+            The call is designed to quickly understand your business and whether we are the right
             fit for the opportunity you are exploring.
           </p>
         </div>
 
-        <div className="lead-grid">
+        <div className="lead-grid discovery-outcomes">
           {outcomes.map((item) => (
-            <article key={item} className="proof-card">
-              <CheckCircle2 size={18} />
-              <h3>{item}</h3>
-              <p>Clear, practical direction without unnecessary complexity.</p>
+            <article key={item.title} className="proof-card discovery-card">
+              <div className="discovery-icon">
+                <CheckCircle2 size={24} />
+              </div>
+              <h3>{item.title}</h3>
+              <ul className="discovery-list">
+                {item.points.map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ul>
             </article>
           ))}
         </div>

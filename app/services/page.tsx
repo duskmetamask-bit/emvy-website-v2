@@ -11,28 +11,28 @@ export const metadata: Metadata = {
 const services = [
   {
     number: '01',
-    href: '/services/ai-audits',
+    href: '/services/discovery-call',
     title: 'Discovery',
     summary:
       'A free 15-minute call to understand your business, the workflow you want to improve, and the right next step.',
   },
   {
     number: '02',
-    href: '/services/ai-agents',
+    href: '/services/ai-assessment',
     title: 'Audit',
     summary:
       'A structured review of where AI can help, what needs to be mapped in more detail, and which opportunities are worth pursuing.',
   },
   {
     number: '03',
-    href: '/services/automations',
+    href: '/services/ai-builds',
     title: 'Build',
     summary:
       'Implementation of AI systems, products, and automations that reduce admin and improve operational efficiency.',
   },
   {
     number: '04',
-    href: '/services/maintenance',
+    href: '/services/systems-maintenance',
     title: 'Maintenance',
     summary:
       'Ongoing support, optimisation, and monitoring for businesses that want EMVY involved after launch.',
@@ -48,7 +48,7 @@ export default function ServicesPage() {
         description="EMVY identifies where your business can leverage AI, then audits, builds, and supports the systems around that opportunity."
         image="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1800&q=90&auto=format&fit=crop"
       >
-        <Link href="/services/ai-audits" className="button light">
+        <Link href="/services/discovery-call" className="button light">
           Book Free Discovery Call
         </Link>
         <Link href="/contact" className="button secondary">
@@ -97,7 +97,7 @@ export default function ServicesPage() {
           <Link href="/process" className="button secondary">
             View full process
           </Link>
-          <Link href="/services/ai-audits" className="button light">
+          <Link href="/services/discovery-call" className="button light">
             Book discovery call
           </Link>
         </div>

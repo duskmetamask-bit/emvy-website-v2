@@ -39,11 +39,8 @@ export default function AIAssessmentPage() {
         description="This assessment looks at the workflow, systems, and operating reality behind the opportunity so the next step is clear and commercially useful."
         image="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1800&q=90&auto=format&fit=crop"
       >
-        <Link href="/services/ai-audits" className="button light">
-          Book Free Discovery Call
-        </Link>
-        <Link href="/services/automations" className="button secondary">
-          See build service
+        <Link href="/contact" className="button light">
+          Contact Us
         </Link>
       </PageHero>
 
@@ -89,6 +86,19 @@ export default function AIAssessmentPage() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="section cta-band">
+        <div>
+          <p className="section-kicker">Ready To Get Started</p>
+          <h2 className="section-title">Speak to us about your assessment.</h2>
+          <p className="section-text">
+            Share a few details about your business and what you are looking to improve.
+          </p>
+        </div>
+        <Link href="/contact" className="button primary">
+          Contact us
+        </Link>
       </section>
     </>
   )

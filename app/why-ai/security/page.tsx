@@ -16,7 +16,7 @@ export default function WhyAISecurityPage() {
         description="Trust is part of the service. This page can grow into the supporting detail for data handling, access, review, and rollout controls."
         image="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1800&q=90&auto=format&fit=crop"
       >
-        <Link href="/services/ai-audits" className="button light">
+        <Link href="/services/discovery-call" className="button light">
           Book Free Discovery Call
         </Link>
         <Link href="/why-ai" className="button secondary">

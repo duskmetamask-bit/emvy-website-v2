@@ -36,10 +36,10 @@ export default function SystemsMaintenancePage() {
       <PageHero
         eyebrow="Maintenance"
         title="Keep the system useful, stable, and aligned after launch."
-        description="For businesses that want ongoing support, EMVY can stay involved to maintain, refine, and improve the system over time."
+        description="An add on service to custom builds. Keeping the system stable and improving features over time"
         image="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=1800&q=90&auto=format&fit=crop"
       >
-        <Link href="/services/ai-audits" className="button light">
+        <Link href="/services/discovery-call" className="button light">
           Book Free Discovery Call
         </Link>
         <Link href="/services" className="button secondary">
@@ -89,6 +89,19 @@ export default function SystemsMaintenancePage() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="section cta-band">
+        <div>
+          <p className="section-kicker">Existing System Review</p>
+          <h2 className="section-title">Have an existing system that needs reviewing or maintaining?</h2>
+          <p className="section-text">
+            Share a few details about your current setup and what needs attention.
+          </p>
+        </div>
+        <Link href="/contact" className="button primary">
+          Contact Us
+        </Link>
       </section>
     </>
   )

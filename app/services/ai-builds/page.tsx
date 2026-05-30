@@ -34,16 +34,13 @@ export default function AIBuildsPage() {
   return (
     <>
       <PageHero
-        eyebrow="Build"
-        title="Build the systems, workflows, and automations that support the opportunity."
-        description="This is where the assessment turns into delivery. EMVY builds practical AI systems that help your business run more efficiently."
+        eyebrow="Build with AI"
+        title="Build the AI systems that support the opportunity."
+        description="Fully leverage the latest technology of automation and implement into your business operating system"
         image="https://images.unsplash.com/photo-1484417894907-623942c8ee29?w=1800&q=90&auto=format&fit=crop"
       >
-        <Link href="/services/ai-audits" className="button light">
-          Book Free Discovery Call
-        </Link>
-        <Link href="/services/maintenance" className="button secondary">
-          See maintenance
+        <Link href="/contact" className="button light">
+          Contact Us
         </Link>
       </PageHero>
 
@@ -90,6 +87,19 @@ export default function AIBuildsPage() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="section cta-band">
+        <div>
+          <p className="section-kicker">Ready To Get Started</p>
+          <h2 className="section-title">Speak to us about your build.</h2>
+          <p className="section-text">
+            Share a few details about your business and what you are looking to build.
+          </p>
+        </div>
+        <Link href="/contact" className="button primary">
+          Contact Us
+        </Link>
       </section>
     </>
   )

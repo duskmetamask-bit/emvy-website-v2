@@ -34,7 +34,7 @@ export default function ProcessPage() {
             findings review, build kickoff, implementation, and maintenance.
           </p>
           <div className="page-hero-actions">
-            <Link href="/services/ai-audits" className="button light">
+            <Link href="/services/discovery-call" className="button light">
               Book discovery call
             </Link>
             <Link href="/services" className="button secondary">

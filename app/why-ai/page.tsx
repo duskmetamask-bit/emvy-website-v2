@@ -9,16 +9,16 @@ export const metadata: Metadata = {
 
 const whyCards = [
   {
-    title: 'Where AI usually helps first',
-    body: 'Repetitive admin, lead handling, reporting, process handoffs, and structured workflows where speed and consistency matter.',
+    title: 'Handle the repetitive work',
+    body: 'AI takes care of the admin tasks that eat up your time so you can focus on the work that actually matters.',
   },
   {
-    title: 'Where more care is needed',
-    body: 'Sensitive decisions, weak data quality, unclear process ownership, and areas where human review should stay central.',
+    title: 'Work faster without cutting corners',
+    body: 'AI can process, organise, and respond at scale while maintaining quality and consistency across your operations.',
   },
   {
-    title: 'What makes implementation work',
-    body: 'A clear workflow, a defined outcome, sensible oversight, and a system built around the way the business actually operates.',
+    title: 'Free up your team',
+    body: 'When AI handles the routine, your team has more capacity for strategy, creativity, and the work that drives the business forward.',
   },
 ]
 
@@ -27,11 +27,11 @@ export default function WhyAIPage() {
     <>
       <PageHero
         eyebrow="Why AI"
-        title="Use AI where it improves the workflow, not where it only adds noise."
-        description="The strongest AI projects usually start in the parts of the business that are repetitive, time-heavy, and ready for a better operating system."
+        title="AI is here to help your business run better."
+        description="Used well, AI handles the repetitive work, frees up your team, and helps your business operate more efficiently."
         image="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1800&q=90&auto=format&fit=crop"
       >
-        <Link href="/services/ai-audits" className="button light">
+        <Link href="/services/discovery-call" className="button light">
           Book Free Discovery Call
         </Link>
         <Link href="/services" className="button secondary">
@@ -42,12 +42,12 @@ export default function WhyAIPage() {
       <section className="section">
         <div className="section-header dual">
           <div>
-            <p className="section-kicker">The Basics</p>
-            <h2 className="section-title">A useful AI project starts with a real business problem.</h2>
+            <p className="section-kicker">What AI Does Well</p>
+            <h2 className="section-title">AI works best when it handles the tasks that slow you down.</h2>
           </div>
           <p className="section-text">
-            The goal is not to add AI everywhere. The goal is to identify the area where it can
-            create the most value, then build the right system around it.
+            The best AI implementations focus on freeing up time and capacity, not on replacing the
+            human judgment that keeps your business running well.
           </p>
         </div>
 
@@ -64,15 +64,15 @@ export default function WhyAIPage() {
       <section className="section">
         <div className="about-split">
           <div className="about-story">
-            <p className="section-kicker">How To Think About It</p>
-            <h2 className="section-title">Start with the workflow, then decide how much system is needed.</h2>
+            <p className="section-kicker">Getting Started</p>
+            <h2 className="section-title">The right AI solution starts with understanding your workflow.</h2>
             <p className="section-text">
-              Some businesses are ready for a full build. Some need an audit first. Others just
-              need a clearer view of where AI could help reduce admin or improve efficiency.
+              Before recommending anything, we look at how your business actually works. The goal is
+              to find where AI can genuinely help, not to force it where it does not fit.
             </p>
             <p className="section-text">
-              The important part is choosing the right opportunity first, then implementing it in a
-              way that is practical for the business to use.
+              Whether you need a full build or just a clearer view of where to start, we help you
+              move forward in a way that makes sense for your business.
             </p>
           </div>
 
@@ -83,6 +83,19 @@ export default function WhyAIPage() {
             />
           </div>
         </div>
+      </section>
+
+      <section className="section cta-band">
+        <div>
+          <p className="section-kicker">Ready To Explore</p>
+          <h2 className="section-title">See how AI could work for your business.</h2>
+          <p className="section-text">
+            Book a free discovery call to discuss your workflow and see where AI could help.
+          </p>
+        </div>
+        <Link href="/services/discovery-call" className="button primary">
+          Book Free Discovery Call
+        </Link>
       </section>
     </>
   )

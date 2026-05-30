@@ -11,10 +11,10 @@ type NavItem = {
 }
 
 const services: NavItem[] = [
-  { label: 'Discovery Call', href: '/services/ai-audits' },
-  { label: 'AI Assessment', href: '/services/ai-agents' },
-  { label: 'AI Builds', href: '/services/automations' },
-  { label: 'Systems Maintenance', href: '/services/maintenance' },
+  { label: 'Discovery Call', href: '/services/discovery-call' },
+  { label: 'AI Assessment', href: '/services/ai-assessment' },
+  { label: 'AI Builds', href: '/services/ai-builds' },
+  { label: 'Systems Maintenance', href: '/services/systems-maintenance' },
 ]
 
 export default function Header() {
@@ -74,7 +74,7 @@ export default function Header() {
       <Link className="nav-link" href="/why-ai">
         Why AI
       </Link>
-      <Link className="nav-link" href="/quiz">
+      <Link className="nav-link" href="/assessment">
         Assessment
       </Link>
 
@@ -101,7 +101,7 @@ export default function Header() {
 
       <div className="header-actions">
         <TrackedLink
-          href="/services/ai-audits"
+          href="/services/discovery-call"
           className="button primary small"
           eventName="discovery_call_click"
           eventLabel="header"
@@ -118,10 +118,10 @@ export default function Header() {
           <Link href="/services" onClick={() => setMobileOpen(false)}>Services</Link>
           <Link href="/case-studies" onClick={() => setMobileOpen(false)}>Case Studies</Link>
           <Link href="/why-ai" onClick={() => setMobileOpen(false)}>Why AI</Link>
-          <Link href="/quiz" onClick={() => setMobileOpen(false)}>Assessment</Link>
+          <Link href="/assessment" onClick={() => setMobileOpen(false)}>Assessment</Link>
           <Link href="/about" onClick={() => setMobileOpen(false)}>About</Link>
           <Link href="/contact" onClick={() => setMobileOpen(false)}>Contact</Link>
-          <Link href="/services/ai-audits" onClick={() => setMobileOpen(false)}>Book Free Discovery Call</Link>
+          <Link href="/services/discovery-call" onClick={() => setMobileOpen(false)}>Book Free Discovery Call</Link>
         </div>
       ) : null}
     </header>

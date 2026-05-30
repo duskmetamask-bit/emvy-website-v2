@@ -9,11 +9,11 @@ const primaryLinks = [
 ]
 
 const conversionLinks = [
-  { label: 'AI Assessment', href: '/quiz' },
-  { label: 'Free Discovery Call', href: '/services/ai-audits' },
-  { label: 'AI Audit', href: '/services/ai-agents' },
-  { label: 'AI Builds', href: '/services/automations' },
-  { label: 'Systems Maintenance', href: '/services/maintenance' },
+  { label: 'AI Assessment', href: '/assessment' },
+  { label: 'Free Discovery Call', href: '/services/discovery-call' },
+  { label: 'AI Audit', href: '/services/ai-assessment' },
+  { label: 'AI Builds', href: '/services/ai-builds' },
+  { label: 'Systems Maintenance', href: '/services/systems-maintenance' },
 ]
 
 export default function Footer() {
