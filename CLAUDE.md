@@ -28,3 +28,18 @@ Convex agent skills for common tasks can be installed by running
 `npx convex ai-files install`.
 
 <!-- convex-ai-end -->
+
+## Session Memory & Vault
+
+This project uses a Claude Vault at `~/Documents/Claude Vault/` to capture
+session notes, decisions, and project updates. The vault skill runs via `/side`
+and syncs notes to:
+- `Projects/EMVY AI Website/` — project-specific notes
+- `Topics/` — categorized ideas
+- `Inbox.md` — quick captures
+
+Use `/vault sync` to sync current session notes, or `/vault note "text"` for
+quick captures. Vault status shows last sync time with `/vault status`.
+
+Running notes and key decisions should be captured to the vault throughout
+every session — don't wait until the end.
