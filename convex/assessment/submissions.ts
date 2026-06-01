@@ -33,7 +33,39 @@ export const saveSubmission = mutation({
       answers: args.answers,
       createdAt: Date.now(),
     })
-    return submissionId
+
+    // Auto-create lead from assessment
+    const existingLeads = await ctx.db.query('leads').withIndex('by_email', (q) => q.eq('email', args.email)).collect()
+
+    let leadId = null
+    if (existingLeads.length === 0) {
+      leadId = await ctx.db.insert('leads', {
+        email: args.email,
+        contact: args.name,
+        source: 'assessment',
+        score: args.score,
+        stage: 'discover',
+        discoveredAt: Date.now(),
+      })
+    } else {
+      leadId = existingLeads[0]._id
+      // Update score if higher
+      if (args.score > (existingLeads[0].score || 0)) {
+        await ctx.db.patch(leadId, { score: args.score })
+      }
+    }
+
+    // Log activity
+    if (leadId) {
+      await ctx.db.insert('activity_log', {
+        leadId,
+        action: 'assessment_completed',
+        details: `Score: ${args.score}, Priority: ${args.priorityLevel}`,
+        timestamp: Date.now(),
+      })
+    }
+
+    return { submissionId, leadId }
   },
 })
 

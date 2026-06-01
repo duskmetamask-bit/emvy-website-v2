@@ -24,28 +24,96 @@ export default defineSchema({
     createdAt: v.number(),
   }).index('by_email', ['email']).index('by_createdAt', ['createdAt']),
 
-  projects: defineTable({
-    name: v.string(),
-    description: v.string(),
-    status: v.union(
-      v.literal('planning'),
-      v.literal('in_progress'),
-      v.literal('review'),
-      v.literal('done')
-    ),
-    createdAt: v.number(),
-  }).index('by_status', ['status']),
+  leads: defineTable({
+    company: v.optional(v.string()),
+    contact: v.optional(v.string()),
+    email: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    source: v.optional(v.string()),
+    sector: v.optional(v.string()),
+    score: v.optional(v.number()),
+    painSignals: v.optional(v.array(v.string())),
+    icpMatch: v.optional(v.boolean()),
+    solutionMatched: v.optional(v.string()),
+    emailSequence: v.optional(v.number()),
+    notes: v.optional(v.string()),
+    outcome: v.optional(v.string()),
+    stage: v.optional(v.string()),
+    discoveredAt: v.optional(v.number()),
+  })
+    .index('by_stage', ['stage'])
+    .index('by_score', ['score'])
+    .index('by_sector', ['sector'])
+    .index('by_discoveredAt', ['discoveredAt'])
+    .index('by_email', ['email']),
 
-  tasks: defineTable({
-    projectId: v.id('projects'),
+  email_drafts: defineTable({
+    leadId: v.optional(v.id('leads')),
+    subject: v.optional(v.string()),
+    body: v.optional(v.string()),
+    status: v.optional(v.string()), // draft, approved, sent
+    createdAt: v.optional(v.number()),
+  }).index('by_status', ['status']).index('by_lead', ['leadId']),
+
+  email_sends: defineTable({
+    leadId: v.id('leads'),
+    subject: v.string(),
+    status: v.string(), // sent, delivered, opened, replied, bounced
+    sentAt: v.number(),
+  }).index('by_lead', ['leadId']).index('by_status', ['status']),
+
+  pdf_lead_magnets: defineTable({
+    leadId: v.optional(v.id('leads')),
     title: v.string(),
-    description: v.string(),
-    status: v.union(
-      v.literal('todo'),
-      v.literal('in_progress'),
-      v.literal('done')
-    ),
-    deliverable: v.optional(v.string()),
+    vertical: v.optional(v.string()),
+    solution: v.optional(v.string()),
+    path: v.optional(v.string()),
+    url: v.optional(v.string()),
     createdAt: v.number(),
-  }).index('by_project', ['projectId']),
+  }).index('by_lead', ['leadId']).index('by_vertical', ['vertical']),
+
+  cal_bookings: defineTable({
+    leadId: v.optional(v.id('leads')),
+    eventId: v.string(),
+    bookingTime: v.number(),
+    status: v.string(), // scheduled, confirmed, completed, cancelled
+    name: v.optional(v.string()),
+    email: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index('by_status', ['status']).index('by_lead', ['leadId']),
+
+  contact_submissions: defineTable({
+    name: v.optional(v.string()),
+    email: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    company: v.optional(v.string()),
+    message: v.optional(v.string()),
+    source: v.optional(v.string()), // contact-form, footer, etc.
+    createdAt: v.number(),
+  }).index('by_email', ['email']).index('by_createdAt', ['createdAt']),
+
+  email_events: defineTable({
+    emailId: v.optional(v.string()), // Resend email ID
+    leadId: v.optional(v.id('leads')),
+    eventType: v.string(), // delivered, opened, clicked, bounced, complained
+    timestamp: v.number(),
+    metadata: v.optional(v.string()), // JSON string for extra data
+  }).index('by_emailId', ['emailId']).index('by_lead', ['leadId']).index('by_eventType', ['eventType']),
+
+  activity_log: defineTable({
+    leadId: v.id('leads'),
+    action: v.string(), // stage_change, email_sent, email_opened, booking_created, note_added
+    details: v.optional(v.string()),
+    timestamp: v.number(),
+  }).index('by_lead', ['leadId']).index('by_timestamp', ['timestamp']),
+
+  payments: defineTable({
+    leadId: v.optional(v.id('leads')),
+    stripePaymentIntentId: v.optional(v.string()),
+    amount: v.number(), // in cents
+    currency: v.optional(v.string()), // usd, aud, etc.
+    status: v.string(), // pending, succeeded, failed, refunded, cancelled
+    description: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index('by_lead', ['leadId']).index('by_status', ['status']).index('by_stripeId', ['stripePaymentIntentId']),
 })

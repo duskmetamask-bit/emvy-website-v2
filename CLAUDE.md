@@ -43,3 +43,30 @@ quick captures. Vault status shows last sync time with `/vault status`.
 
 Running notes and key decisions should be captured to the vault throughout
 every session — don't wait until the end.
+
+## Convex Backend (glad-camel-940)
+
+**Deployment:** https://glad-camel-940.convex.cloud/
+
+**Tables:**
+- `leads` — CRM (company, contact, email, score, stage, pipeline)
+- `email_drafts` / `email_sends` / `email_events` — Outreach tracking
+- `cal_bookings` — Cal.com bookings
+- `contact_submissions` — Contact form
+- `assessment_submissions` — Quiz results
+- `payments` — Stripe payments
+- `activity_log` — Lead activity history
+
+**Webhooks:**
+- `webhooks/cal:handleBooking` — Cal.com
+- `webhooks/resend:handleEmailEvent` — Resend (opens, clicks, bounces)
+- `webhooks/contact:submit` — Contact form
+- `webhooks/stripe:handlePaymentEvent` — Stripe
+
+**Hermes Agent Token:**
+```
+CONVEX_DEPLOYMENT=dev:glad-camel-940
+CONVEX_ACCESS_TOKEN=dev:glad-camel-940|eyJ2MiI6IjQ2OGZlOGI2ZWM4ODRiOTU5MzNhYTgwMTgyYmVmZTc4In0=
+```
+
+**Emvy-board Integration:** This Convex instance feeds emvy-board (separate repo). Both projects share this backend.

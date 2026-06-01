@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { Resend } from 'resend'
+import { ConvexHttpClient } from 'convex/browser'
 import AssessmentReport from '@/lib/pdf/AssessmentReport'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
 
 const questions = [
   { key: 'call_handling', prompt: 'When clients call and you are busy, what actually happens?' },
@@ -116,6 +118,22 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Resend error:', error)
       return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
+    }
+
+    // Save to Convex
+    try {
+      await convex.mutation('assessment/submissions:saveSubmission', {
+        name,
+        email,
+        score,
+        priorityLevel: result.title,
+        priorityDescription: result.body,
+        recommendation: result.recommendation,
+        answers,
+      })
+    } catch (convexError) {
+      console.error('Convex save error:', convexError)
+      // Don't fail the request if Convex save fails - email was sent
     }
 
     return NextResponse.json({ success: true, data })
