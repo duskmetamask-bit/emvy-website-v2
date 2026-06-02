@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '=== EMVY AI Website — Vault Project Index ==='; cat '/Users/DuskWunz/Documents/Claude Vault/Projects/EMVY AI Website/INDEX.md' 2>/dev/null; echo ''; echo '=== EMVY AI Website — Glossary (locked decisions) ==='; cat '/Users/DuskWunz/Documents/Claude Vault/Projects/EMVY AI Website/Glossary 2026-06-01.md' 2>/dev/null; echo ''; echo '=== EMVY Business Process (Topic) ==='; cat '/Users/DuskWunz/Documents/Claude Vault/Topics/EMVY Business Process.md' 2>/dev/null",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
