@@ -1,0 +1,36 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { ConvexHttpClient } from 'convex/browser'
+import { api } from '@/convex/_generated/api'
+
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json()
+
+    // Cal.com sends: { event, payload: { ... } }
+    const { event, payload } = body
+
+    if (!event) {
+      return NextResponse.json({ error: 'Missing event type' }, { status: 400 })
+    }
+
+    const result = await convex.mutation(api.webhooks.cal.handleBooking, {
+      event,
+      payload: {
+        eventTypeName: payload.eventTypeName,
+        startTime: payload.startTime,
+        endTime: payload.endTime,
+        title: payload.title,
+        name: payload.name,
+        email: payload.email,
+        location: payload.location,
+      },
+    })
+
+    return NextResponse.json(result)
+  } catch (err) {
+    console.error('Cal.com webhook error:', err)
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+  }
+}

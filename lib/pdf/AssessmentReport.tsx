@@ -1,5 +1,5 @@
 import React from 'react'
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer'
+import { Document, Page, Text, View, StyleSheet, Link } from '@react-pdf/renderer'
 
 const styles = StyleSheet.create({
   page: {
@@ -147,6 +147,7 @@ interface AssessmentReportProps {
     prompt: string
     options?: Array<{ value: string; label: string }>
   }>
+  calUrl?: string
 }
 
 const AssessmentReport: React.FC<AssessmentReportProps> = ({
@@ -155,6 +156,7 @@ const AssessmentReport: React.FC<AssessmentReportProps> = ({
   priorityLevel,
   priorityDescription,
   recommendation,
+  calUrl,
 }) => {
   return (
     <Document>
@@ -194,6 +196,14 @@ const AssessmentReport: React.FC<AssessmentReportProps> = ({
             <Text style={styles.recommendationTitle}>What We Recommend</Text>
             <Text style={styles.recommendationText}>{recommendation}</Text>
           </View>
+          {calUrl && (
+            <View style={[styles.recommendation, { marginTop: 12 }]}>
+              <Text style={styles.recommendationTitle}>Book Your Discovery Call</Text>
+              <Link src={calUrl} style={styles.recommendationText}>
+                Click here to book a 15-minute call
+              </Link>
+            </View>
+          )}
         </View>
 
         <View style={styles.divider} />

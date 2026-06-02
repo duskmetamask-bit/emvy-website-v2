@@ -30,6 +30,7 @@ export default defineSchema({
     email: v.optional(v.string()),
     phone: v.optional(v.string()),
     source: v.optional(v.string()),
+    lastTouchpoint: v.optional(v.string()),
     sector: v.optional(v.string()),
     score: v.optional(v.number()),
     painSignals: v.optional(v.array(v.string())),
@@ -116,4 +117,15 @@ export default defineSchema({
     description: v.optional(v.string()),
     createdAt: v.number(),
   }).index('by_lead', ['leadId']).index('by_status', ['status']).index('by_stripeId', ['stripePaymentIntentId']),
+
+  case_studies: defineTable({
+    title: v.string(),
+    client: v.optional(v.string()),
+    sector: v.optional(v.string()),
+    problem: v.optional(v.string()),
+    solution: v.optional(v.string()),
+    outcome: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    createdAt: v.number(),
+  }).index('by_sector', ['sector']).index('by_createdAt', ['createdAt']),
 })

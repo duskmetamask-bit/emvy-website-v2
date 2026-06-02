@@ -9,6 +9,7 @@
  */
 
 import type * as assessment_submissions from "../assessment/submissions.js";
+import type * as case_studies from "../case_studies.js";
 import type * as leads_leads from "../leads/leads.js";
 import type * as outreach_outreach from "../outreach/outreach.js";
 import type * as stats_stats from "../stats/stats.js";
@@ -25,6 +26,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   "assessment/submissions": typeof assessment_submissions;
+  case_studies: typeof case_studies;
   "leads/leads": typeof leads_leads;
   "outreach/outreach": typeof outreach_outreach;
   "stats/stats": typeof stats_stats;

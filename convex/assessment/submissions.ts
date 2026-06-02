@@ -38,21 +38,38 @@ export const saveSubmission = mutation({
     const existingLeads = await ctx.db.query('leads').withIndex('by_email', (q) => q.eq('email', args.email)).collect()
 
     let leadId = null
+    let prevStage: string | undefined = undefined
+    let stageChanged = false
+
     if (existingLeads.length === 0) {
       leadId = await ctx.db.insert('leads', {
         email: args.email,
         contact: args.name,
-        source: 'assessment',
+        source: 'direct-website',
         score: args.score,
-        stage: 'discover',
+        stage: 'assessed',
+        lastTouchpoint: 'assessment_completed',
         discoveredAt: Date.now(),
       })
+      stageChanged = true
     } else {
       leadId = existingLeads[0]._id
-      // Update score if higher
-      if (args.score > (existingLeads[0].score || 0)) {
-        await ctx.db.patch(leadId, { score: args.score })
+      const existing = existingLeads[0]
+      const scoreIsHigher = args.score > (existing.score || 0)
+      const canAdvance =
+        !existing.stage ||
+        ['discover', 'contacted', 'engaged'].includes(existing.stage)
+
+      const updates: { score?: number; stage?: string; lastTouchpoint: string } = {
+        lastTouchpoint: 'assessment_completed',
       }
+      if (scoreIsHigher) updates.score = args.score
+      if (canAdvance) {
+        updates.stage = 'assessed'
+        prevStage = existing.stage
+        stageChanged = true
+      }
+      await ctx.db.patch(leadId, updates)
     }
 
     // Log activity
@@ -63,6 +80,14 @@ export const saveSubmission = mutation({
         details: `Score: ${args.score}, Priority: ${args.priorityLevel}`,
         timestamp: Date.now(),
       })
+      if (stageChanged) {
+        await ctx.db.insert('activity_log', {
+          leadId,
+          action: 'stage_change',
+          details: `${prevStage || 'new'} → assessed (score: ${args.score})`,
+          timestamp: Date.now(),
+        })
+      }
     }
 
     return { submissionId, leadId }

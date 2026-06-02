@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { Resend } from 'resend'
 import { ConvexHttpClient } from 'convex/browser'
+import { api } from '@/convex/_generated/api'
 import AssessmentReport from '@/lib/pdf/AssessmentReport'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -60,17 +61,46 @@ export async function POST(request: NextRequest) {
 
     const result = getResult(score)
 
-    // Generate PDF
-    const pdfBuffer = await renderToBuffer(
-      AssessmentReport({
+    // Save to Convex first (capture leadId for CTA attribution)
+    let leadId: string | null = null
+    try {
+      const saved = await convex.mutation(api.assessment.submissions.saveSubmission, {
         name,
+        email,
         score,
         priorityLevel: result.title,
         priorityDescription: result.body,
         recommendation: result.recommendation,
         answers,
-        questions,
       })
+      leadId = saved?.leadId ?? null
+    } catch (convexError) {
+      console.error('Convex save error:', convexError)
+    }
+
+    // Build Cal.com CTA URL with leadId + UTM
+    const ctaUrl = (() => {
+      const base = process.env.CALCOM_BOOKING_URL || 'https://cal.com/emvy/discovery-call'
+      const url = new URL(base)
+      url.searchParams.set('utm_source', 'pdf')
+      url.searchParams.set('utm_medium', 'email')
+      url.searchParams.set('utm_campaign', 'assessment')
+      if (leadId) url.searchParams.set('leadId', leadId)
+      return url.toString()
+    })()
+
+    // Generate PDF
+    const pdfBuffer = await renderToBuffer(
+      <AssessmentReport
+        name={name}
+        score={score}
+        priorityLevel={result.title}
+        priorityDescription={result.body}
+        recommendation={result.recommendation}
+        answers={answers}
+        questions={questions}
+        calUrl={ctaUrl}
+      />
     )
 
     // Send email with PDF
@@ -99,7 +129,7 @@ export async function POST(request: NextRequest) {
             Your full report is attached as a PDF.
           </p>
           <p style="color: #333; font-size: 16px; line-height: 1.6;">
-            Ready to take the next step?<a href="https://emvyai.com/services/discovery-call" style="color: #56d9ff;">Book a free discovery call</a>
+            Ready to take the next step?<a href="${ctaUrl}" style="color: #56d9ff;">Book a free discovery call</a>
           </p>
           <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
           <p style="color: #666; font-size: 12px;">
@@ -118,22 +148,6 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Resend error:', error)
       return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
-    }
-
-    // Save to Convex
-    try {
-      await convex.mutation('assessment/submissions:saveSubmission', {
-        name,
-        email,
-        score,
-        priorityLevel: result.title,
-        priorityDescription: result.body,
-        recommendation: result.recommendation,
-        answers,
-      })
-    } catch (convexError) {
-      console.error('Convex save error:', convexError)
-      // Don't fail the request if Convex save fails - email was sent
     }
 
     return NextResponse.json({ success: true, data })

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { ConvexHttpClient } from 'convex/browser'
+import { api } from '@/convex/_generated/api'
 
 export const runtime = 'nodejs'
 
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({}))
 
     // Save to Convex
-    const contactResult = await convex.mutation('webhooks/contact:submit', {
+    const contactResult = await convex.mutation(api.webhooks.contact.submit, {
       name: body.name,
       email: body.email,
       phone: body.phone || body.role,

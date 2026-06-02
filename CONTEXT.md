@@ -179,17 +179,115 @@ This is the canonical sequence. A lead moves through pipeline stages in step wit
 
 ---
 
+## System Topology
+
+The system is two independently deployed apps sharing one backend. Each app has its own repo, its own auth boundary, and its own deploy pipeline. They communicate only through Convex.
+
+| App | Purpose | Domain | Codebase | Direction vs Convex |
+|---|---|---|---|---|
+| **emvy-website-v2** | Public site — marketing, assessment, lead capture, payment | `emvyai.com` | `emvy-website-v2` (this repo) | Writes events, reads its own writes |
+| **emvy-board** | Internal operating board — pipeline view, lead timeline, manual actions | `board.emvyai.com` | `emvy-board` (separate repo) | Reads everything; writes the exceptions webhooks don't cover (manual stage moves, internal notes) |
+| **Convex (`glad-camel-940`)** | Shared source of truth | n/a | n/a | Owns the data; both apps consume the schema |
+
+### Why two apps, not one
+
+The public site and the board are different products. The public site is marketing + lead capture. The board is dense internal data + deliberate manual actions. Sharing a repo, a deploy, or an auth boundary couples their lifecycles (version upgrades, deploy freezes, contractor access). The Convex schema is the only contract between them — change the schema, both apps update; change the UI, neither knows.
+
+### Auth boundaries
+
+- **Public site** — visitor-facing. No auth on the assessment or contact forms. Auth only on Stripe checkout success / webhook verification.
+- **Board** — solo-operator in Phase 1, locked behind Vercel Password Protection (env-var-gated, no code). Phase 2+ swaps to SSO (Clerk / WorkOS / NextAuth) when access expands to a VA or co-operator. The board's auth is **independent** of the public site's — a public-site session never grants board access.
+
+### Customisation rule
+
+Either app can change framework, UI library, or Next.js version without coordinating with the other. The only shared artifact is the Convex schema, which is documented in this glossary and treated as the canonical contract.
+
+---
+
+## Build Principles
+
+These are day-one habits, not big refactors. Following them costs nothing during the build and unlocks the open-source path for free when the time comes.
+
+### Config-over-hardcode
+
+Anything that is **EMVY-the-agency specific** lives in a `config/` folder, not in the code. The infrastructure is the framework; the config is the brand.
+
+| What | Lives in | Why it's config, not code |
+|---|---|---|
+| Brand strings (name, domain, tagline, copy) | `config/brand.ts` | Swap for "Acme AI" without touching logic |
+| ICP scoring weights + signals | `config/icp.ts` | The structure is reusable; the weights are opinionated |
+| Assessment questions + scoring | `config/assessment.ts` | Same flow, different quiz per deployment |
+| Email templates + tone guide | `config/email.ts` | "Mate-style Australian" is a config value, not a code path |
+| Audit report template | `config/audit-template.ts` | 7-section structure is reusable; the words per section are yours |
+| Stage taxonomy constants | `config/stages.ts` | Mirrors the locked stages in this glossary; single source for both apps |
+
+The discipline: when writing new code, if a string or value is "EMVY the agency" rather than "lead pipeline infrastructure," it goes in `config/`. You won't notice the cost during the build. When the time comes to open-source, the heavy lifting is already done — rename the placeholder, write a README, push to GitHub.
+
+### Schema is the contract, code is the consumer
+
+The Convex schema is the canonical contract between `emvy-website-v2` and `emvy-board`. When the schema changes, both apps update. When an app's UI changes, neither knows. This is the only coupling between the two codebases.
+
+---
+
+## CRM Strategy
+
+The lead pipeline is owned by **Convex** in Phase 1 and Phase 2 — Convex plays the role of CRM, app storage, and event sink. This is the standard "BaaS-as-CRM" pattern for solo operators and indie agencies at low-to-moderate volume. The system is not coupled to a third-party CRM tool (HubSpot, Attio, Pipedrive, etc.).
+
+### Why this is the right call for Phase 1 + 2
+
+- The schema, webhooks, and tables are already wired and in use
+- Convex subscriptions give the board real-time updates with no extra plumbing
+- Solo-operator economics: zero per-seat CRM fees, zero integration maintenance
+- Full schema control — no fighting a tool's data model
+
+### Phase 3 upgrade signal — migrate to a dedicated CRM
+
+Migrate to a dedicated CRM (HubSpot, Attio, Pipedrive, Folk, etc.) when **any** of these trip first:
+
+1. **Volume** — leads cross ~100/week and outreach is hand-managed
+2. **Headcount** — a non-technical VA or co-operator needs a UI the CRM provides for free
+3. **Automation** — drip campaigns, lead scoring, or deliverability tooling the CRM does natively
+4. **Time cost** — Convex schema work exceeds ~1 hr/week that a CRM eliminates
+
+Migration path is documented because the schema and the System Map make it possible: Convex → CSV export or CRM API sync → import. The board's reads migrate to the CRM's API; the public site's writes can either continue to Convex (with a sync to the CRM) or move directly to the CRM's API.
+
+### What this means for the build
+
+- The Convex schema is the system of record, not a "shadow" of an external CRM
+- The board reads from Convex, not from a CRM API
+- Webhooks (Cal, Resend, Stripe) write to Convex directly
+- No CRM SDK in the dependency tree (Stripe and Resend are not CRM SDKs; they're payment and email providers)
+
+### E-sign decision — deferred
+
+No e-sign integration in Phase 1. The standard solo-operator pattern is "PDF proposal + Stripe Payment Link = acceptance." Stripe records the timestamp, amount, `description` (the scope they paid for), and email. Combined with the proposal they received and the email chain, this is a defensible agreement record for B2B services in AU/US/UK.
+
+E-sign is added when a Phase 2/3 trigger trips:
+1. Retainer clients start (recurring, formal MSA is conventional)
+2. Implementation tickets consistently cross ~$5K
+3. A client asks for a formal signed agreement
+4. You want to delegate contract reviews to a VA / co-operator
+
+When added, the standard pick is **Dropbox Sign** (cheap, simple API, no enterprise bloat). DocuSign is overkill for solo. PandaDoc is more sales-proposal focused. The integration lands in `config/esign.ts` per the Build Principles. Stripe's payment-as-acceptance pattern remains for low-stakes one-offs.
+
+---
+
 ## Open Questions
 
 These are still unresolved and need decisions before they're locked into the glossary:
 
-- [ ] Keep `discover` as the stage value (no migration) or rename to `lead-new`? — *default: keep, no migration*
-- [ ] Storage shape for attribution: simple `source` + `lastTouchpoint` strings, or structured fields?
-- [ ] PDF CTA link destination (`/book-call` with UTM, or back to assessment re-engagement)?
-- [ ] Referrer tracking for direct visits (worth the cost)?
-- [ ] Where do past audits / builds get stored so they're referenceable on future calls? (Portfolio, Notion, Convex table, or just memory for now?)
+- [x] Keep `discover` as the stage value (no migration) or rename to `lead-new`? — *default: keep, no migration* (resolved by omission, glossary uses `discover`)
 - [ ] Lite vs Full audit pricing (numbers TBD pending market research).
 - [ ] Small/Medium implementation pricing (numbers TBD pending market research).
 - [ ] Retainer pricing per tier (numbers TBD).
 - [ ] Personal income floor and monthly automation budget (the dial-in inputs for retainer pricing).
 - [ ] Audit price for new leads vs already-quoted leads — operational rule: don't change quoted numbers for leads in `audited` or later.
+
+## Decisions Log
+
+**2026-06-02 — Grill session (round 2):**
+
+- **Attribution storage shape:** flat strings on the lead row (`source`, `lastTouchpoint`); detail lives in `activity_log`. Schema update needed: add `lastTouchpoint` to `leads`.
+- **PDF CTA destination:** direct to Cal.com with `leadId` + UTM params. No intermediate `/process` page in the path.
+- **Referrer tracking for direct visits:** deferred. Phase 1 ships with `source: "direct-website"` as a single bucket. If the data later demands it, add a one-row activity-log entry on form submit that captures `Referer` header + any UTM params in the URL.
+- **Portfolio storage for past audits/builds:** Convex `case_studies` table, fronted by a `/admin/portfolio` view with a sector filter. Schema fields: `title, client, sector, problem, solution, outcome, tags[], createdAt`.
