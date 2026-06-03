@@ -128,4 +128,23 @@ export default defineSchema({
     tags: v.optional(v.array(v.string())),
     createdAt: v.number(),
   }).index('by_sector', ['sector']).index('by_createdAt', ['createdAt']),
+
+  email_inbox: defineTable({
+    messageId: v.string(),
+    from: v.string(), // full RFC822 From header, e.g. "Jane Doe <jane@example.com>"
+    fromAddress: v.string(), // parsed "jane@example.com" for indexing
+    to: v.string(), // receiving address, e.g. "hello@emvyai.com"
+    subject: v.optional(v.string()),
+    body: v.optional(v.string()),
+    htmlBody: v.optional(v.string()),
+    inReplyTo: v.optional(v.string()),
+    references: v.optional(v.string()),
+    receivedAt: v.number(),
+    leadId: v.optional(v.id('leads')),
+    status: v.string(), // unread, read, archived
+  })
+    .index('by_lead', ['leadId'])
+    .index('by_from', ['fromAddress'])
+    .index('by_receivedAt', ['receivedAt'])
+    .index('by_status', ['status']),
 })
