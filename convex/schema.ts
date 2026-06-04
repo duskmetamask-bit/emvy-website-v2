@@ -29,6 +29,8 @@ export default defineSchema({
     contact: v.optional(v.string()),
     email: v.optional(v.string()),
     phone: v.optional(v.string()),
+    website: v.optional(v.string()),
+    location: v.optional(v.string()),
     source: v.optional(v.string()),
     lastTouchpoint: v.optional(v.string()),
     sector: v.optional(v.string()),
@@ -42,6 +44,7 @@ export default defineSchema({
     outcome: v.optional(v.string()),
     stage: v.optional(v.string()),
     discoveredAt: v.optional(v.number()),
+    enrichedAt: v.optional(v.number()),
   })
     .index('by_stage', ['stage'])
     .index('by_score', ['score'])
@@ -186,6 +189,7 @@ export default defineSchema({
     .index('by_status', ['status'])
     .index('by_track', ['track'])
     .index('by_assignee', ['assignee'])
+    .index('by_actor', ['actor'])
     .index('by_priority', ['priority'])
     .index('by_dueAt', ['dueAt']),
 })
