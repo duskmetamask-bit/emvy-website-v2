@@ -138,6 +138,61 @@ export default function ProcessPage() {
 
       <section className="section">
         <div className="section-header">
+          <p className="section-kicker">Trades-specific overlay</p>
+          <h2 className="section-title">Same flow, but framed for tradies.</h2>
+          <p className="section-text">
+            The engagement flow works the same for a plumber or a SaaS founder — but the framing
+            is different. Here is what the trades version looks like end to end.
+          </p>
+        </div>
+        <div className="lead-grid">
+          <article className="proof-card">
+            <h3>Discovery: 15 min, on site or phone</h3>
+            <p>
+              We talk about your trade, your admin load, where the hours are going, and what
+              you'd automate first. No pitch, no follow-up spam.
+            </p>
+          </article>
+          <article className="proof-card">
+            <h3>Audit: $1,500, paid up front</h3>
+            <p>
+              We map your quoting, follow-up, inbox, booking, and bookkeeping workflows. You
+              get a written report with a 90-day plan and a clear investment range.
+            </p>
+          </article>
+          <article className="proof-card">
+            <h3>Build: phased, milestone-paid</h3>
+            <p>
+              We start with the highest-ROI automation (usually quoting or lead follow-up) and
+              prove it works in week 1. Then we layer on the rest.
+            </p>
+          </article>
+          <article className="proof-card">
+            <h3>Maintenance: monthly retainer</h3>
+            <p>
+              We keep the system running, fix what breaks, and adjust as your business shifts.
+              $1,500-$3,000/mo depending on scope.
+            </p>
+          </article>
+        </div>
+        <div className="section" style={{ paddingTop: '2rem' }}>
+          <div className="hero-ribbon">
+            <strong>Where to start.</strong>
+            <span>
+              <Link href="/lp/trades" className="inline-link">
+                See the trades landing page <ArrowRight size={14} />
+              </Link>
+              {' · '}
+              <Link href="/assessment" className="inline-link">
+                Take the 2-min ops quiz <ArrowRight size={14} />
+              </Link>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="section-header">
           <p className="section-kicker">End state</p>
           <h2 className="section-title">Discovery becomes audit, audit becomes build, build becomes support.</h2>
           <p className="section-text">

@@ -192,4 +192,53 @@ export default defineSchema({
     .index('by_actor', ['actor'])
     .index('by_priority', ['priority'])
     .index('by_dueAt', ['dueAt']),
+
+  outreach_queue: defineTable({
+    leadId: v.optional(v.id('leads')),
+    company: v.string(),
+    contact: v.optional(v.string()),
+    email: v.string(),
+    phone: v.optional(v.string()),
+    website: v.optional(v.string()),
+    location: v.optional(v.string()),
+    sector: v.optional(v.string()),
+    source: v.optional(v.string()), // csv_seed | yp_scrape | manual | followup
+    status: v.string(), // queued | sending | sent | failed | suppressed | replied
+    scheduledFor: v.optional(v.number()),
+    attempts: v.optional(v.number()),
+    lastError: v.optional(v.string()),
+    lastAttemptAt: v.optional(v.number()),
+    sentAt: v.optional(v.number()),
+    draftId: v.optional(v.id('email_drafts')),
+    sendId: v.optional(v.id('email_sends')),
+    touch: v.optional(v.number()), // 1 = first outreach, 2 = follow-up #1, 3 = follow-up #2
+    createdAt: v.number(),
+  })
+    .index('by_status', ['status'])
+    .index('by_status_scheduledFor', ['status', 'scheduledFor'])
+    .index('by_lead', ['leadId'])
+    .index('by_email', ['email']),
+
+  outreach_followups: defineTable({
+    queueId: v.id('outreach_queue'),
+    leadId: v.id('leads'),
+    touch: v.number(), // 2 or 3
+    sendAt: v.number(),
+    status: v.string(), // scheduled | sent | cancelled | failed
+    cancelledReason: v.optional(v.string()), // replied | bounced | unsubscribed | manual
+    sentAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index('by_status_sendAt', ['status', 'sendAt'])
+    .index('by_lead', ['leadId']),
+
+  hermes_daily_digest: defineTable({
+    date: v.string(), // YYYY-MM-DD
+    planned: v.number(),
+    sent: v.number(),
+    failed: v.number(),
+    suppressed: v.number(),
+    details: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index('by_date', ['date']),
 })
