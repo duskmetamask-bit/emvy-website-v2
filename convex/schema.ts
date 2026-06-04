@@ -38,6 +38,7 @@ export default defineSchema({
     solutionMatched: v.optional(v.string()),
     emailSequence: v.optional(v.number()),
     notes: v.optional(v.string()),
+    internalNotes: v.optional(v.string()),
     outcome: v.optional(v.string()),
     stage: v.optional(v.string()),
     discoveredAt: v.optional(v.number()),
@@ -45,6 +46,8 @@ export default defineSchema({
     .index('by_stage', ['stage'])
     .index('by_score', ['score'])
     .index('by_sector', ['sector'])
+    .index('by_source', ['source'])
+    .index('by_outcome', ['outcome'])
     .index('by_discoveredAt', ['discoveredAt'])
     .index('by_email', ['email']),
 
@@ -61,7 +64,10 @@ export default defineSchema({
     subject: v.string(),
     status: v.string(), // sent, delivered, opened, replied, bounced
     sentAt: v.number(),
-  }).index('by_lead', ['leadId']).index('by_status', ['status']),
+  })
+    .index('by_lead', ['leadId'])
+    .index('by_status', ['status'])
+    .index('by_sentAt', ['sentAt']),
 
   pdf_lead_magnets: defineTable({
     leadId: v.optional(v.id('leads')),
@@ -76,12 +82,17 @@ export default defineSchema({
   cal_bookings: defineTable({
     leadId: v.optional(v.id('leads')),
     eventId: v.string(),
+    type: v.optional(v.string()), // 'discovery' | 'audit' | 'strategy' | 'implementation' | 'review'
     bookingTime: v.number(),
     status: v.string(), // scheduled, confirmed, completed, cancelled
     name: v.optional(v.string()),
     email: v.optional(v.string()),
     createdAt: v.number(),
-  }).index('by_status', ['status']).index('by_lead', ['leadId']),
+  })
+    .index('by_status', ['status'])
+    .index('by_lead', ['leadId'])
+    .index('by_bookingTime', ['bookingTime'])
+    .index('by_type', ['type']),
 
   contact_submissions: defineTable({
     name: v.optional(v.string()),
@@ -104,9 +115,13 @@ export default defineSchema({
   activity_log: defineTable({
     leadId: v.id('leads'),
     action: v.string(), // stage_change, email_sent, email_opened, booking_created, note_added
+    actor: v.optional(v.string()), // 'operator' | 'hermes' — write provenance
     details: v.optional(v.string()),
     timestamp: v.number(),
-  }).index('by_lead', ['leadId']).index('by_timestamp', ['timestamp']),
+  })
+    .index('by_lead', ['leadId'])
+    .index('by_timestamp', ['timestamp'])
+    .index('by_action', ['action']),
 
   payments: defineTable({
     leadId: v.optional(v.id('leads')),
@@ -116,7 +131,11 @@ export default defineSchema({
     status: v.string(), // pending, succeeded, failed, refunded, cancelled
     description: v.optional(v.string()),
     createdAt: v.number(),
-  }).index('by_lead', ['leadId']).index('by_status', ['status']).index('by_stripeId', ['stripePaymentIntentId']),
+  })
+    .index('by_lead', ['leadId'])
+    .index('by_status', ['status'])
+    .index('by_stripeId', ['stripePaymentIntentId'])
+    .index('by_createdAt', ['createdAt']),
 
   case_studies: defineTable({
     title: v.string(),
@@ -147,4 +166,26 @@ export default defineSchema({
     .index('by_from', ['fromAddress'])
     .index('by_receivedAt', ['receivedAt'])
     .index('by_status', ['status']),
+
+  actions: defineTable({
+    title: v.string(),
+    description: v.optional(v.string()),
+    track: v.string(), // workspace | growth | clients | harden | polish
+    priority: v.string(), // P0 | P1 | P2 | P3
+    status: v.string(), // open | in_progress | done | blocked | dropped
+    assignee: v.string(), // operator | hermes
+    actor: v.string(), // operator | hermes (write provenance)
+    source: v.optional(v.string()), // manual | hermes | import
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    completedAt: v.optional(v.number()),
+    dueAt: v.optional(v.number()),
+    blockedBy: v.optional(v.array(v.id('actions'))),
+    evidence: v.optional(v.string()),
+  })
+    .index('by_status', ['status'])
+    .index('by_track', ['track'])
+    .index('by_assignee', ['assignee'])
+    .index('by_priority', ['priority'])
+    .index('by_dueAt', ['dueAt']),
 })

@@ -8,9 +8,13 @@
  * @module
  */
 
+import type * as actions from "../actions.js";
 import type * as assessment_submissions from "../assessment/submissions.js";
+import type * as bootstrapActions from "../bootstrapActions.js";
 import type * as case_studies from "../case_studies.js";
 import type * as email_inbox from "../email_inbox.js";
+import type * as hermes_actions from "../hermes/actions.js";
+import type * as hermesAuth from "../hermesAuth.js";
 import type * as leads_leads from "../leads/leads.js";
 import type * as outreach_outreach from "../outreach/outreach.js";
 import type * as stats_stats from "../stats/stats.js";
@@ -26,9 +30,13 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  actions: typeof actions;
   "assessment/submissions": typeof assessment_submissions;
+  bootstrapActions: typeof bootstrapActions;
   case_studies: typeof case_studies;
   email_inbox: typeof email_inbox;
+  "hermes/actions": typeof hermes_actions;
+  hermesAuth: typeof hermesAuth;
   "leads/leads": typeof leads_leads;
   "outreach/outreach": typeof outreach_outreach;
   "stats/stats": typeof stats_stats;
