@@ -32,15 +32,11 @@ export const metadata: Metadata = {
     siteName: "EMVY",
     type: "website",
     locale: "en_AU",
-    images: [
-      { url: "/og.png", width: 1200, height: 630, alt: "EMVY — AI Consultancy" }
-    ]
   },
   twitter: {
     card: "summary_large_image",
     title: "EMVY — AI Consultancy for Australian SMBs",
     description: "AI strategy, audits, and automation systems for businesses ready to work smarter.",
-    images: ["/og.png"]
   },
   robots: {
     index: true,
