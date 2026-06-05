@@ -3,15 +3,19 @@ name: Convex redeploy (website)
 # Shared Convex deployment glad-camel-940 is last-push-wins. The board
 # repo's cron redeploys board/* every 15 min at :00/:15/:30/:45, which
 # wipes the website's hermes/* functions. This workflow redeploys the
-# website at :07/:22/:37/:52 so the website is the last pusher in each
-# 15-min cycle. See project_outreach-machine memory + ISSUE-6.4.
+# website every 5 min at :05/:20/:35/:50, so the website is the last
+# pusher in each 15-min cycle (and re-pushes 2 extra times between board
+# runs to keep hermes/* stable). Net: hermes is the steady-state
+# ~40 min/hr, board is the steady-state ~5 min/window after each push.
+# Drafts feature (uses hermes.outreach.sendEditedFromBoard) needs the
+# website to be the last pusher. See project_outreach-machine memory.
 #
 # Required GitHub secret: CONVEX_DEPLOY_KEY (production deploy key from
 # the Convex dashboard → Settings → Deploy Keys).
 
 on:
   schedule:
-    - cron: '7-59/15 * * * *'
+    - cron: '5,20,35,50 * * * *'
   workflow_dispatch:
 
 jobs:
