@@ -1,6 +1,8 @@
 import { ArrowRight } from 'lucide-react'
 import TrackedLink from '../components/TrackedLink'
 import CalBookingGate from '../components/CalBookingGate'
+import JsonLd from '@/components/JsonLd'
+import { localBusiness, webSite } from '@/lib/schema/jsonld'
 import { engagementFlow } from '@/lib/emvy-process'
 
 const services = [
@@ -105,6 +107,7 @@ export default function Home() {
 
   return (
     <>
+      <JsonLd data={[webSite(), localBusiness()]} />
       <section className="hero-shell">
         <div className="hero-banner">
           <div className="hero-media" aria-hidden="true">

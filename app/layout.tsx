@@ -2,6 +2,8 @@ import type { Metadata } from "next"
 import type { ReactNode } from 'react'
 import "./globals.css"
 import SiteChrome from "@/components/SiteChrome"
+import JsonLd from "@/components/JsonLd"
+import { organization, webSite, localBusiness } from "@/lib/schema/jsonld"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://emvyai.com"),
@@ -62,6 +64,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <JsonLd data={[organization(), webSite(), localBusiness()]} />
         <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
