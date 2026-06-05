@@ -30,43 +30,43 @@ type Template = {
 
 const TEMPLATES_T1: Template[] = [
   {
-    subject: 'Lost job while you were on the tools?',
-    body: `Hey {contact},
-
-Quick one — saw {company} is doing {sector} work in {location}. I'm running a free AI audit for one tradie this month to see if it can take 5+ hours a week of admin off their plate (quoting, follow-ups, inbox, bookkeeping).
-
-15-min call, no pitch, honest answer either way. Worth a look?
-
-— Dusk
-EMVY AI`,
-  },
-  {
-    subject: 'Sunday bookkeeping again?',
-    body: `Hey {contact},
-
-Most tradies I talk to lose 6-8 hours a week to admin — quoting, follow-ups, chasing replies, Sunday bookkeeping. I'm doing a free 15-min discovery call this month to scope it for one trade business.
-
-Worth a quick chat? No pitch either way.
-
-— Dusk
-EMVY AI`,
-  },
-  {
-    subject: 'Quoting eating your evenings?',
-    body: `Hey {contact},
-
-Noticed {company} does {sector} in {location}. AI can cut quote turnaround from days to hours and follow up every lead automatically — no more jobs going to whoever bothered to ring back.
-
-I'm running a free discovery call this month for one tradie. Worth 15 min?
-
-— Dusk
-EMVY AI`,
-  },
-  {
     subject: 'Quick one for {company}',
     body: `Hey {contact},
 
-Running a free AI ops audit for one tradie in {location} this month. 15 min, no pitch. If it saves you 5+ hours a week, we talk next steps. If not, you keep the insight.
+Saw {company} is doing {sector} work in {location}. I run a free 15-min AI audit for one business each week — looks at where 5+ hours a week of admin is hiding (quoting, follow-ups, inbox, booking, reports).
+
+No pitch either way. Worth a look?
+
+— Dusk
+EMVY AI`,
+  },
+  {
+    subject: '6-8 hours a week on admin?',
+    body: `Hey {contact},
+
+Most {sector} businesses I talk to lose half a day every week to admin — quoting, chasing replies, follow-ups, paperwork. AI is taking that back.
+
+I'm doing a free 15-min call this month to scope it for one business. Worth a quick chat?
+
+— Dusk
+EMVY AI`,
+  },
+  {
+    subject: 'Where the time is going at {company}',
+    body: `Hey {contact},
+
+Noticed {company} is in {sector} over in {location}. I just help businesses find the 5+ hours a week hiding in their admin and automate it. Free 15-min call this month.
+
+Worth 15 min?
+
+— Dusk
+EMVY AI`,
+  },
+  {
+    subject: 'Replies going to whoever rings back?',
+    body: `Hey {contact},
+
+Quick one for {company}. AI can reply to enquiries in under a minute and book the job before your competitors wake up. 15-min call to scope if it fits — no pitch.
 
 Up for it?
 
@@ -91,7 +91,7 @@ EMVY AI`,
     subject: 'Re: quick one',
     body: `Hey {contact},
 
-Bumping in case the last one slipped through. If AI for tradie admin isn't on your radar right now, no worries at all — just say "not now" and I'll stop.
+Bumping in case the last one slipped through. If cutting admin at {company} isn't on your radar right now, no worries at all — just say "not now" and I'll stop.
 
 — Dusk
 EMVY AI`,
@@ -103,7 +103,7 @@ const TEMPLATES_T3: Template[] = [
     subject: 'Last note from me',
     body: `Hey {contact},
 
-Won't keep pinging. If AI for tradie admin is something you want to look at down the track, the call is there: https://emvyai.com/lp/trades
+Won't keep pinging. If cutting admin at {company} is something you want to look at down the track, the call is still there: https://emvyai.com/contact
 
 Either way, all the best with the work.
 

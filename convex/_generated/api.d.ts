@@ -17,6 +17,7 @@ import type * as email_inbox from "../email_inbox.js";
 import type * as hermes_actions from "../hermes/actions.js";
 import type * as hermes_cronEntry from "../hermes/cronEntry.js";
 import type * as hermes_leads from "../hermes/leads.js";
+import type * as hermes_ops from "../hermes/ops.js";
 import type * as hermes_outreach from "../hermes/outreach.js";
 import type * as hermes_runner from "../hermes/runner.js";
 import type * as hermesAuth from "../hermesAuth.js";
@@ -44,6 +45,7 @@ declare const fullApi: ApiFromModules<{
   "hermes/actions": typeof hermes_actions;
   "hermes/cronEntry": typeof hermes_cronEntry;
   "hermes/leads": typeof hermes_leads;
+  "hermes/ops": typeof hermes_ops;
   "hermes/outreach": typeof hermes_outreach;
   "hermes/runner": typeof hermes_runner;
   hermesAuth: typeof hermesAuth;

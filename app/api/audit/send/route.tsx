@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
     const resend = getResend()
     if (!resend) {
       // No Resend — return the PDF directly for download
-      return new NextResponse(pdfBuffer, {
+      return new NextResponse(new Uint8Array(pdfBuffer), {
         status: 200,
         headers: {
           'Content-Type': 'application/pdf',
@@ -169,18 +169,6 @@ export async function POST(req: NextRequest) {
     if (error) {
       console.error('Resend error:', error)
       return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
-    }
-
-    if (body.leadId && process.env.NEXT_PUBLIC_CONVEX_URL) {
-      try {
-        const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL)
-        await convex.mutation(api.board.leads.addNote, {
-          id: body.leadId as never,
-          text: `Audit deliverable emailed to ${body.to} (${data?.id ?? 'no-resend-id'})`,
-        }).catch(() => null)
-      } catch {
-        // Non-fatal
-      }
     }
 
     return NextResponse.json({ ok: true, resendId: data?.id })

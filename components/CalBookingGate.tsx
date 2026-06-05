@@ -6,6 +6,7 @@ import { CalendarDays, ShieldCheck, X } from 'lucide-react'
 type CalBookingGateProps = {
   triggerLabel: string
   className?: string
+  eventLabel?: string
 }
 
 const CAL_URL = 'https://cal.com/jake-emvy/15-min-ai-chat'

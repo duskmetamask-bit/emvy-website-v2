@@ -11,13 +11,34 @@ export const metadata: Metadata = {
   },
   description: "AI consultancy for Australian SMBs. AI strategy, process automation, custom AI solutions and data analytics for businesses ready to work smarter.",
   keywords: ["AI consultancy", "AI agents", "workflow automation", "Australian business AI", "AI strategy", "AI operations", "EMVY"],
+  themeColor: "#05070b",
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/emvy-mark.svg", type: "image/svg+xml" }
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }
+    ]
+  },
+  manifest: "/manifest.webmanifest",
   openGraph: {
     title: "EMVY — AI Consultancy for Australian SMBs",
     description: "AI strategy, audits, and automation systems for businesses ready to work smarter.",
     url: "https://emvyai.com",
     siteName: "EMVY",
     type: "website",
-    locale: "en_AU"
+    locale: "en_AU",
+    images: [
+      { url: "/og.png", width: 1200, height: 630, alt: "EMVY — AI Consultancy" }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "EMVY — AI Consultancy for Australian SMBs",
+    description: "AI strategy, audits, and automation systems for businesses ready to work smarter.",
+    images: ["/og.png"]
   },
   robots: {
     index: true,

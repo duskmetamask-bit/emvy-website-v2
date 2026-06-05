@@ -241,4 +241,52 @@ export default defineSchema({
     details: v.optional(v.string()),
     createdAt: v.number(),
   }).index('by_date', ['date']),
+
+  learnings: defineTable({
+    leadId: v.optional(v.id('leads')),
+    draftId: v.optional(v.id('email_drafts')),
+    sendId: v.optional(v.id('email_sends')),
+    source: v.string(), // 'operator_edit' | 'operator_save' | 'auto_send' | 'discarded'
+    fromAddress: v.optional(v.string()),
+    subject: v.optional(v.string()),
+    originalBody: v.optional(v.string()),
+    editedBody: v.optional(v.string()),
+    context: v.optional(v.string()), // JSON: lead snapshot at capture time
+    weight: v.optional(v.number()), // operator_edit = 2.0, default 1.0
+    capturedAt: v.number(),
+  })
+    .index('by_lead', ['leadId'])
+    .index('by_source', ['source'])
+    .index('by_capturedAt', ['capturedAt']),
+
+  contacts: defineTable({
+    name: v.string(),
+    relationship: v.optional(v.string()),
+    email: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    notes: v.optional(v.string()),
+    lastEngagementAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_name', ['name'])
+    .index('by_lastEngagementAt', ['lastEngagementAt']),
+
+  contact_engagement: defineTable({
+    contactId: v.id('contacts'),
+    type: v.union(
+      v.literal('note'),
+      v.literal('call'),
+      v.literal('message'),
+      v.literal('meetup'),
+      v.literal('gift'),
+      v.literal('other')
+    ),
+    summary: v.string(),
+    details: v.optional(v.string()),
+    occurredAt: v.number(),
+    createdAt: v.number(),
+  })
+    .index('by_contact', ['contactId'])
+    .index('by_occurredAt', ['occurredAt']),
 })

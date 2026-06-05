@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { CheckCircle2, FileText, Receipt, Sparkles } from 'lucide-react'
+import { ArrowRight, CheckCircle2, FileText, Receipt, Sparkles } from 'lucide-react'
 import { auditQuestions, buildQuestions, engagementFlow, noteTakingFlow, paymentStandard } from '@/lib/emvy-process'
 
 export const metadata: Metadata = {

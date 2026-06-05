@@ -1,0 +1,36 @@
+name: Convex redeploy (website)
+
+# Shared Convex deployment glad-camel-940 is last-push-wins. The board
+# repo's cron redeploys board/* every 15 min at :00/:15/:30/:45, which
+# wipes the website's hermes/* functions. This workflow redeploys the
+# website at :07/:22/:37/:52 so the website is the last pusher in each
+# 15-min cycle. See project_outreach-machine memory + ISSUE-6.4.
+#
+# Required GitHub secret: CONVEX_DEPLOY_KEY (production deploy key from
+# the Convex dashboard → Settings → Deploy Keys).
+
+on:
+  schedule:
+    - cron: '7-59/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  redeploy-website:
+    name: Redeploy website Convex functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Deploy website functions
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+        run: npx convex deploy --yes

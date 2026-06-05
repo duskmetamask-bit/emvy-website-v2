@@ -9,9 +9,12 @@ node_modules/
 EMVY_*.md
 HERMES_*.md
 RESEARCH_*.md
+CLIENT-FACING-*.md
 nurture-sequence.md
 data/*
 prototypes/*
 public/50-ai-agent-prompts.pdf
 public/*
 .claude/settings.local.json
+.codex/
+emvy-audit-agent/
