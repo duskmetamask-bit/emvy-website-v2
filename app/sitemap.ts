@@ -1,32 +1,45 @@
 import type { MetadataRoute } from 'next'
 
-const siteUrl = 'https://emvyai.com'
+const SITE_URL = 'https://emvyai.com' as const
 
-const routes = [
-  '/',
-  '/services',
-  '/services/discovery-call',
-  '/services/ai-assessment',
-  '/services/ai-builds',
-  '/services/systems-maintenance',
-  '/case-studies',
-  '/assessment',
-  '/about',
-  '/contact',
-  '/pricing',
-  '/why-ai',
-  '/why-ai/security',
-  '/privacy',
-  '/terms',
+type RouteEntry = {
+  path: string
+  priority: number
+  changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency']
+}
+
+const ROUTES: ReadonlyArray<RouteEntry> = [
+  { path: '/', priority: 1.0, changeFrequency: 'weekly' },
+
+  { path: '/about', priority: 0.8, changeFrequency: 'monthly' },
+  { path: '/case-studies', priority: 0.8, changeFrequency: 'monthly' },
+  { path: '/industries', priority: 0.7, changeFrequency: 'monthly' },
+  { path: '/pricing', priority: 0.8, changeFrequency: 'monthly' },
+  { path: '/process', priority: 0.8, changeFrequency: 'monthly' },
+  { path: '/why-ai', priority: 0.8, changeFrequency: 'monthly' },
+  { path: '/why-ai/security', priority: 0.7, changeFrequency: 'monthly' },
+
+  { path: '/services', priority: 0.8, changeFrequency: 'monthly' },
+  { path: '/services/ai-assessment', priority: 0.7, changeFrequency: 'monthly' },
+  { path: '/services/ai-builds', priority: 0.7, changeFrequency: 'monthly' },
+  { path: '/services/discovery-call', priority: 0.7, changeFrequency: 'monthly' },
+  { path: '/services/systems-maintenance', priority: 0.7, changeFrequency: 'monthly' },
+
+  { path: '/assessment', priority: 0.9, changeFrequency: 'monthly' },
+  { path: '/contact', priority: 0.9, changeFrequency: 'monthly' },
+  { path: '/lp/trades', priority: 0.9, changeFrequency: 'monthly' },
+
+  { path: '/success', priority: 0.5, changeFrequency: 'yearly' },
+  { path: '/privacy', priority: 0.3, changeFrequency: 'yearly' },
+  { path: '/terms', priority: 0.3, changeFrequency: 'yearly' },
 ]
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date()
-
-  return routes.map((route) => ({
-    url: `${siteUrl}${route}`,
+  return ROUTES.map(({ path, priority, changeFrequency }) => ({
+    url: `${SITE_URL}${path}`,
     lastModified: now,
-    changeFrequency: route === '/' ? 'weekly' : 'monthly',
-    priority: route === '/' ? 1 : 0.7,
+    changeFrequency,
+    priority,
   }))
 }
