@@ -1,0 +1,28 @@
+name: Lighthouse CI
+
+# Runs Lighthouse against the live production site on a weekly cadence
+# and on demand. Catches perf / a11y / SEO / best-practices regressions
+# before they pile up. Budgets are starter numbers — tighten as the
+# site stabilises. See P1 SEO PR 4 (internal linking + redirects +
+# Lighthouse CI).
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Mondays 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    name: Lighthouse audit (emvyai.com)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          configPath: .lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}

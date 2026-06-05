@@ -7,6 +7,34 @@ export const metadata: Metadata = {
   description: 'Security, governance, and sensible controls for AI delivery.',
 }
 
+const relatedServices = [
+  {
+    href: '/services/ops-systems',
+    title: 'Ops Systems',
+    body: 'Operational AI for handover, reporting, approvals, and visibility — built with sensible access and review controls.',
+  },
+  {
+    href: '/services/audit-questionnaire',
+    title: 'Audit Questionnaire',
+    body: 'A structured questionnaire that produces a written AI-readiness assessment, not a sales pitch.',
+  },
+  {
+    href: '/services/integrations',
+    title: 'Integrations',
+    body: 'Connect AI workflows to the systems that already hold the data, with clear access boundaries.',
+  },
+  {
+    href: '/services/ai-assessment',
+    title: 'AI Assessment',
+    body: 'Workflow analysis, technical readiness review, and a practical implementation plan with governance baked in.',
+  },
+  {
+    href: '/services/systems-maintenance',
+    title: 'Systems Maintenance',
+    body: 'Ongoing support, model review, and access audits after the system is live.',
+  },
+]
+
 export default function WhyAISecurityPage() {
   return (
     <>
@@ -23,6 +51,27 @@ export default function WhyAISecurityPage() {
           Back to Why AI
         </Link>
       </PageHero>
+
+      <section className="section">
+        <div className="section-header">
+          <p className="section-kicker">Related Services</p>
+          <h2 className="section-title">Where security shows up in the delivery.</h2>
+          <p className="section-text">
+            These services are the places where the controls above get designed, applied, and reviewed.
+          </p>
+        </div>
+
+        <div className="about-values">
+          {relatedServices.map((svc) => (
+            <article key={svc.href} className="proof-card">
+              <h3>
+                <Link href={svc.href}>{svc.title}</Link>
+              </h3>
+              <p>{svc.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
     </>
   )
 }
