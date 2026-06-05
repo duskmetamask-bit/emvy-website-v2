@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckCircle2 } from 'lucide-react'
 import PageHero from '../../../components/PageHero'
+import JsonLd from '@/components/JsonLd'
+import { service } from '@/lib/schema/jsonld'
+import { SERVICES } from '@/lib/schema/service-data'
 
 export const metadata: Metadata = {
   title: 'AI Builds',
@@ -33,6 +36,7 @@ const buildStages = [
 export default function AIBuildsPage() {
   return (
     <>
+      <JsonLd data={service(SERVICES['ai-builds'])} />
       <PageHero
         eyebrow="Build with AI"
         title="Build the AI systems that support the opportunity."

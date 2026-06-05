@@ -63,7 +63,13 @@ jobs:
           exit 1
 
       - name: Lint JSON-LD on key routes
-        run: node scripts/lint-jsonld.mjs http://localhost:3000/
+        run: |
+          node scripts/lint-jsonld.mjs \
+            http://localhost:3000/ \
+            http://localhost:3000/services/discovery-call \
+            http://localhost:3000/services/ai-assessment \
+            http://localhost:3000/services/ai-builds \
+            http://localhost:3000/services/systems-maintenance
 
       - name: Stop server
         if: always()

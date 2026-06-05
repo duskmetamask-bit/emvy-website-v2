@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckCircle2 } from 'lucide-react'
 import PageHero from '../../../components/PageHero'
+import JsonLd from '@/components/JsonLd'
+import { service } from '@/lib/schema/jsonld'
+import { SERVICES } from '@/lib/schema/service-data'
 
 export const metadata: Metadata = {
   title: 'Systems Maintenance',
@@ -33,6 +36,7 @@ const maintenanceReasons = [
 export default function SystemsMaintenancePage() {
   return (
     <>
+      <JsonLd data={service(SERVICES['systems-maintenance'])} />
       <PageHero
         eyebrow="Maintenance"
         title="Keep the system useful, stable, and aligned after launch."

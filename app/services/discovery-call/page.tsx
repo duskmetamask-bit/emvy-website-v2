@@ -3,6 +3,9 @@ import Link from 'next/link'
 import { CheckCircle2 } from 'lucide-react'
 import PageHero from '../../../components/PageHero'
 import CalBookingGate from '../../../components/CalBookingGate'
+import JsonLd from '@/components/JsonLd'
+import { service } from '@/lib/schema/jsonld'
+import { SERVICES } from '@/lib/schema/service-data'
 
 export const metadata: Metadata = {
   title: 'Free Discovery Call',
@@ -27,6 +30,7 @@ const outcomes = [
 export default function DiscoveryCallPage() {
   return (
     <>
+      <JsonLd data={service(SERVICES['discovery-call'])} />
       <PageHero
         eyebrow="Free Discovery Call"
         title="A free 15-minute call to explore where AI could help your business."
