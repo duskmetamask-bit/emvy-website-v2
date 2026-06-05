@@ -1,0 +1,38 @@
+name: Convex redeploy (board)
+
+# Shared Convex deployment glad-camel-940 is last-push-wins, so every
+# website push wipes the board's convex/board/* function registrations.
+# This workflow re-registers them from the board repo. See ISSUE-6.4.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  redeploy-board:
+    name: Redeploy board Convex functions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout board
+        uses: actions/checkout@v4
+        with:
+          repository: duskmetamask-bit/emvy-board
+          path: board
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: board/package-lock.json
+
+      - name: Install
+        working-directory: board
+        run: npm ci --no-audit --no-fund
+
+      - name: Deploy board functions
+        working-directory: board
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+        run: npx convex deploy --yes
