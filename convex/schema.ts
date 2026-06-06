@@ -289,4 +289,52 @@ export default defineSchema({
   })
     .index('by_contact', ['contactId'])
     .index('by_occurredAt', ['occurredAt']),
+
+  // === Personal Board tables (Dusk personal management) ===
+  // Single-user data; auth-gated by the board's HMAC middleware.
+  // The board repo is the only client; the website schema mirrors so
+  // shared-deployment pushes from either side keep the tables alive.
+
+  personal_tasks: defineTable({
+    title: v.string(),
+    done: v.boolean(),
+    priority: v.optional(
+      v.union(v.literal('P0'), v.literal('P1'), v.literal('P2'), v.literal('P3'))
+    ),
+    dueAt: v.optional(v.number()),
+    notes: v.optional(v.string()),
+    createdAt: v.number(),
+    completedAt: v.optional(v.number()),
+  })
+    .index('by_createdAt', ['createdAt'])
+    .index('by_done', ['done']),
+
+  personal_habits: defineTable({
+    name: v.string(),
+    cadence: v.union(v.literal('daily'), v.literal('weekly')),
+    streak: v.number(),
+    lastCheckIn: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index('by_createdAt', ['createdAt']),
+
+  personal_journal: defineTable({
+    date: v.string(),
+    body: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_date', ['date'])
+    .index('by_updatedAt', ['updatedAt']),
+
+  personal_goals: defineTable({
+    title: v.string(),
+    description: v.optional(v.string()),
+    status: v.union(v.literal('active'), v.literal('done'), v.literal('dropped')),
+    targetDate: v.optional(v.number()),
+    createdAt: v.number(),
+    completedAt: v.optional(v.number()),
+  })
+    .index('by_status', ['status'])
+    .index('by_createdAt', ['createdAt']),
 })
