@@ -1,19 +1,25 @@
 name: Convex redeploy (website)
 
-# Shared Convex deployment glad-camel-940 is last-push-wins. The board
-# repo's cron redeploys board/* every 15 min at :00/:15/:30/:45, which
-# wipes the website's hermes/* functions. This workflow redeploys the
-# website every 5 min at :05/:20/:35/:50, so the website is the last
-# pusher in each 15-min cycle (and re-pushes 2 extra times between board
-# runs to keep hermes/* stable). Net: hermes is the steady-state
-# ~40 min/hr, board is the steady-state ~5 min/window after each push.
-# Drafts feature (uses hermes.outreach.sendEditedFromBoard) needs the
-# website to be the last pusher. See project_outreach-machine memory.
+# Single Convex deployer for the consolidated glad-camel-940 deployment
+# (see ADR-007 in vault). The board's convex/board/* functions live in
+# this repo as a mirror; the board repo's sync workflow keeps it fresh.
 #
-# Required GitHub secret: CONVEX_DEPLOY_KEY (production deploy key from
-# the Convex dashboard → Settings → Deploy Keys).
+# Triggers:
+#   push to main                   — website code change → immediate deploy
+#   repository_dispatch (sync-board) — board sync workflow pinged us
+#   schedule (5,20,35,50 * * * *)  — drift safety net
+#   workflow_dispatch              — manual recovery
+#
+# After every deploy, the smoke test (scripts/check-convex-deploy.mjs)
+# asserts that representative functions from BOTH sides are present.
+# Catches the "whole other side got wiped" case in <30s instead of
+# leaving the board or website broken until someone notices.
 
 on:
+  push:
+    branches: [main]
+  repository_dispatch:
+    types: [sync-board]
   schedule:
     - cron: '5,20,35,50 * * * *'
   workflow_dispatch:
@@ -38,3 +44,8 @@ jobs:
         env:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
         run: npx convex deploy --yes
+
+      - name: Smoke test — both sides present
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+        run: node scripts/check-convex-deploy.mjs
