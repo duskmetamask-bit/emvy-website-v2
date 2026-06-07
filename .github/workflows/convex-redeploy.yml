@@ -1,40 +1,26 @@
-name: Convex redeploy (website + board)
+name: Convex redeploy (website)
 
-# Shared Convex deployment glad-camel-940 is last-push-wins. The website
-# and board repos both deploy to it; whichever deploys last wins. This
-# workflow deploys BOTH sequentially on every run, with the BOARD as the
-# final push, so the board is always the steady state at the end of each
-# run.
+# Shared Convex deployment glad-camel-940 is last-push-wins. The board
+# repo's cron redeploys board/* every 15 min at :00/:15/:30/:45, which
+# wipes the website's hermes/* functions. This workflow redeploys the
+# website every 5 min at :05/:20/:35/:50, so the website is the last
+# pusher in each 15-min cycle (and re-pushes 2 extra times between board
+# runs to keep hermes/* stable). Net: hermes is the steady-state
+# ~40 min/hr, board is the steady-state ~5 min/window after each push.
+# Drafts feature (uses hermes.outreach.sendEditedFromBoard) needs the
+# website to be the last pusher. See project_outreach-machine memory.
 #
-# TRADE-OFF: hermes (website's outreach/agent functions) gets wiped on
-# every deploy and stays gone until the next deploy. The drafts feature
-# (board/convex/board/drafts.ts calls hermes.outreach.sendEditedFromBoard)
-# will be broken in the steady state. If you need hermes stable, flip the
-# order in the two "Deploy ... functions" steps (board first, website
-# last) — board becomes the casualty instead. Or do consolidation
-# (copy convex/board/* into this repo) and the conflict disappears.
-#
-# Triggers:
-#   push to main:                   both deploy on every code push
-#   schedule (5,20,35,50 * * * *):  both deploy every 15 min (catches drift)
-#   workflow_dispatch:              manual recovery
-#
-# Required GitHub secrets:
-#   CONVEX_DEPLOY_KEY — production deploy key from Convex dashboard
-#   CROSS_REPO_PAT    — fine-grained PAT, read-only Contents on emvy-board
-#                       (needed because emvy-board is private; GITHUB_TOKEN
-#                        can't read cross-org private repos)
+# Required GitHub secret: CONVEX_DEPLOY_KEY (production deploy key from
+# the Convex dashboard → Settings → Deploy Keys).
 
 on:
   schedule:
     - cron: '5,20,35,50 * * * *'
-  push:
-    branches: [main]
   workflow_dispatch:
 
 jobs:
-  redeploy-both:
-    name: Redeploy website + board Convex functions
+  redeploy-website:
+    name: Redeploy website Convex functions
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,27 +31,10 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      - name: Install website deps
+      - name: Install
         run: npm ci --no-audit --no-fund
 
       - name: Deploy website functions
-        env:
-          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
-        run: npx convex deploy --yes
-
-      - name: Checkout board
-        uses: actions/checkout@v4
-        with:
-          repository: duskmetamask-bit/emvy-board
-          path: board
-          token: ${{ secrets.CROSS_REPO_PAT }}
-
-      - name: Install board deps
-        working-directory: board
-        run: npm ci --no-audit --no-fund
-
-      - name: Deploy board functions
-        working-directory: board
         env:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
         run: npx convex deploy --yes
