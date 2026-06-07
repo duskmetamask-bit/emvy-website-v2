@@ -59,6 +59,8 @@ jobs:
           repository: duskmetamask-bit/emvy-board
           path: board
           token: ${{ secrets.CROSS_REPO_PAT }}
+          ref: main
+          fetch-depth: 1
 
       - name: Install board deps
         working-directory: board
