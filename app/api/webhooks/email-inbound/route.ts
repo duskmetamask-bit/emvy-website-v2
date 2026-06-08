@@ -3,7 +3,11 @@ import { createHmac, timingSafeEqual } from 'crypto'
 import { ConvexHttpClient } from 'convex/browser'
 import { api } from '@/convex/_generated/api'
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+function getConvex() {
+  const url = process.env.NEXT_PUBLIC_CONVEX_URL
+  if (!url) throw new Error('NEXT_PUBLIC_CONVEX_URL is not set')
+  return new ConvexHttpClient(url)
+}
 
 function getSecret(): string {
   const secret = process.env.EMAIL_INBOUND_SECRET
@@ -38,7 +42,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    const result = await convex.mutation(api.email_inbox.recordInboundEmail, {
+    const result = await getConvex().mutation(api.email_inbox.recordInboundEmail, {
       messageId: payload.messageId,
       from: payload.from,
       to: payload.to,

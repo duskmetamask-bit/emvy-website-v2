@@ -5,7 +5,11 @@ import { api } from '@/convex/_generated/api'
 
 export const runtime = 'nodejs'
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+function getConvex() {
+  const url = process.env.NEXT_PUBLIC_CONVEX_URL
+  if (!url) throw new Error('NEXT_PUBLIC_CONVEX_URL is not set')
+  return new ConvexHttpClient(url)
+}
 
 function getResend() {
   const key = process.env.RESEND_API_KEY
@@ -18,7 +22,7 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({}))
 
     // Save to Convex
-    const contactResult = await convex.mutation(api.webhooks.contact.submit, {
+    const contactResult = await getConvex().mutation(api.webhooks.contact.submit, {
       name: body.name,
       email: body.email,
       phone: body.phone || body.role,
