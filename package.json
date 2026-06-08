@@ -19,6 +19,7 @@
     "react": "^18",
     "react-dom": "^18",
     "resend": "^6.12.3",
+    "schema-dts": "^2.0.0",
     "stripe": "^22.1.1"
   },
   "devDependencies": {
