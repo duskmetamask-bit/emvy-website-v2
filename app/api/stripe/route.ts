@@ -3,9 +3,22 @@ import { ConvexHttpClient } from 'convex/browser'
 import { api } from '@/convex/_generated/api'
 import Stripe from 'stripe'
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+// Lazy-init the SDKs inside the handler. Module-load init breaks
+// `next build` because Next loads every API route module to collect page
+// data — the Stripe SDK throws `Neither apiKey nor config.authenticator
+// provided` if STRIPE_SECRET_KEY is not in the build env. The same pattern
+// is already used in `app/api/hermes/*/route.ts`.
+function getConvex(): ConvexHttpClient {
+  const url = process.env.NEXT_PUBLIC_CONVEX_URL
+  if (!url) throw new Error('NEXT_PUBLIC_CONVEX_URL is not set')
+  return new ConvexHttpClient(url)
+}
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+function getStripe(): Stripe {
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key) throw new Error('STRIPE_SECRET_KEY is not set')
+  return new Stripe(key)
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.text()
@@ -18,7 +31,7 @@ export async function POST(req: NextRequest) {
   let event: Stripe.Event
 
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
@@ -39,7 +52,7 @@ export async function POST(req: NextRequest) {
   const mappedType = typeMap[event.type] || event.type
 
   try {
-    const result = await convex.mutation(api.webhooks.stripe.handlePaymentEvent, {
+    const result = await getConvex().mutation(api.webhooks.stripe.handlePaymentEvent, {
       type: mappedType,
       data: {
         object: {
