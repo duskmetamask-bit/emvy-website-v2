@@ -103,6 +103,22 @@ const caseStudies = [
   },
 ]
 
+function HeroCtas() {
+  return (
+    <>
+      <CalBookingGate triggerLabel="Book Free Discovery Call" className="button primary" />
+      <TrackedLink
+        href="/assessment"
+        className="button secondary"
+        eventName="quiz_start"
+        eventLabel="homepage hero"
+      >
+        Start the Mini Ops Assessment
+      </TrackedLink>
+    </>
+  )
+}
+
 export default function Home() {
 
   return (
@@ -114,6 +130,11 @@ export default function Home() {
             <img
               src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1800&q=90&auto=format&fit=crop"
               alt=""
+              width={1800}
+              height={1012}
+              sizes="100vw"
+              fetchPriority="high"
+              decoding="async"
             />
           </div>
 
@@ -134,15 +155,7 @@ export default function Home() {
             </div>
 
             <div className="hero-actions">
-              <CalBookingGate triggerLabel="Book Free Discovery Call" className="button primary" />
-              <TrackedLink
-                href="/assessment"
-                className="button secondary"
-                eventName="quiz_start"
-                eventLabel="homepage hero"
-              >
-                Start the Mini Ops Assessment
-              </TrackedLink>
+              <HeroCtas />
             </div>
           </div>
         </div>
@@ -160,16 +173,26 @@ export default function Home() {
         <div className="service-flow-grid">
           {services.map((service) => (
             <a key={service.title} href={service.href} className="service-flow-card">
-              <div className="content-card-image">
-                <img src={service.image} alt={service.title} />
-              </div>
-              <p className="service-flow-number">{service.number}</p>
-              <h3>{service.title}</h3>
-              <strong>{service.subtitle}</strong>
-              <p>{service.description}</p>
-              <span>
-                See more <ArrowRight size={14} />
-              </span>
+              <article className="service-flow-card__inner">
+                <div className="content-card-image">
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    width={1200}
+                    height={675}
+                    sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <p className="service-flow-number">{service.number}</p>
+                <h3>{service.title}</h3>
+                <strong>{service.subtitle}</strong>
+                <p>{service.description}</p>
+                <span>
+                  See more <ArrowRight size={14} />
+                </span>
+              </article>
             </a>
           ))}
         </div>
@@ -185,7 +208,15 @@ export default function Home() {
           {expertiseAreas.map((item) => (
             <article key={item.title} className="expertise-card detail-card">
               <div className="content-card-image content-card-image--short">
-                <img src={item.image} alt={item.title} />
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  width={1200}
+                  height={675}
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
               <h3>{item.title}</h3>
               <p>{item.body}</p>
@@ -209,7 +240,15 @@ export default function Home() {
           {caseStudies.map((study) => (
             <article key={study.title} className="case-card">
               <div className="case-image">
-                <img src={study.image} alt={study.title} />
+                <img
+                  src={study.image}
+                  alt={study.title}
+                  width={1200}
+                  height={675}
+                  sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
               <div className="case-body">
                 <p>{study.metric}</p>
