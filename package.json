@@ -20,12 +20,15 @@
     "react-dom": "^18",
     "resend": "^6.12.3",
     "schema-dts": "^2.0.0",
+    "standardwebhooks": "^1.0.0",
     "stripe": "^22.1.1"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@testing-library/react": "^16.3.2",
+    "@vitejs/plugin-react": "^6.0.2",
     "@vitest/coverage-v8": "^4.1.8",
     "autoprefixer": "^10.0.1",
     "playwright": "^1.59.1",
