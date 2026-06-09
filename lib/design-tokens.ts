@@ -144,6 +144,83 @@ export const chartPalette = [
 export const chartEmpty = 'oklch(0.55 0.01 250)' as const
 
 // -----------------------------------------------------------------------------
+// 4b. Brand — canonical colors + voice tokens
+// -----------------------------------------------------------------------------
+// These are the *brand* uses of the design tokens. The values mirror the
+// system tokens above; this object is the brand reference and the place
+// where the canonical hex values (for hand-off to designers / brand guides)
+// live. Use the system tokens (`colorDark.*`) in code; use the hex values
+// in `brand.*` for the brand book, social profiles, and external assets.
+
+export const brand = {
+  /** Primary mark color — the MV monogram and the primary call-to-action. */
+  accent: '#56d9ff',
+  /** Primary dark surface — page background, header, footer. */
+  background: '#0a1118',
+  /** High-elevation surface — cards, modals, raised panels. */
+  surface: '#161b22',
+  /** Primary text color on dark. */
+  foreground: '#f4f7fb',
+  /** Muted text on dark — secondary copy, captions. */
+  muted: '#a9b3bf',
+  /** Hairline border / divider. */
+  border: 'rgba(244, 247, 251, 0.08)',
+  /** Stronger border for emphasis. */
+  borderStrong: 'rgba(244, 247, 251, 0.14)',
+
+  /** Secondary accent — used sparingly, for charts and variety. */
+  accentViolet: '#7c8cff',
+  /** Secondary accent — emerald, used for success / positive signals. */
+  accentEmerald: '#4ade80',
+  /** Secondary accent — amber, used for warnings. */
+  accentAmber: '#fbbf24',
+
+  /** Brand mark path data (MV monogram). Single path, even-odd fill. */
+  markPath: 'M 16 30 H 184 V 170 H 16 Z M 52 30 L 148 30 L 100 150 Z',
+  /** MV monogram viewBox. */
+  markViewBox: '0 0 200 200',
+  /** Minimum mark height in pixels. Below this, readability suffers. */
+  markMinSize: 16,
+  /** Clear space around the mark, as a fraction of the mark's height. */
+  markClearSpace: 0.25,
+} as const
+
+/**
+ * Brand voice — the rules that govern EMVY copy. Read these as
+ * "if your sentence violates one of these, rewrite it." Used in
+ * `config/brand.ts` for templates and in the brand guidelines doc.
+ */
+export const voice = {
+  /** Single-line position. The sentence a stranger reads first. */
+  position: 'We identify where your business can leverage AI, then build the systems to make it work.',
+  /** Brand promise in one phrase. */
+  promise: 'Calm expertise. Plain-spoken. Built to work.',
+  /** Voice rules — do these, avoid their opposites. */
+  rules: [
+    {
+      do: 'Direct, capable, human. Short sentences, no jargon.',
+      dont: 'Corporate, breathless, hedge-y. Buzzwords. "Leverage." "Empower."',
+    },
+    {
+      do: 'Help first, pitch second. Diagnose before recommending.',
+      dont: 'Lead with the sale. Open with credentials, awards, or jargon.',
+    },
+    {
+      do: 'Plain language for AI concepts. Name the tool, the workflow, the change.',
+      dont: 'Gatekeep with "AI" as a black box. Hide the how behind buzzwords.',
+    },
+    {
+      do: 'Active verbs over adjectives. "Build" not "powerful". "Find" not "innovative".',
+      dont: 'Stack adjectives. "Cutting-edge, transformative, world-class AI."',
+    },
+    {
+      do: 'Specific over abstract. "Send me the next 30 days of invoices" not "optimise your finance workflow".',
+      dont: 'Vague aspiration. "Unlock the future of work."',
+    },
+  ] as const,
+} as const
+
+// -----------------------------------------------------------------------------
 // 5. Radius
 // -----------------------------------------------------------------------------
 

@@ -15,8 +15,8 @@ const SITE_URL = 'https://emvyai.com' as const
 const SITE_NAME = 'EMVY' as const
 const SITE_DESCRIPTION =
   'AI consultancy for Australian SMBs. AI strategy, process automation, custom AI solutions and data analytics for businesses ready to work smarter.' as const
-const SITE_LOGO = `${SITE_URL}/emvy-mark.svg` as const
-const SITE_IMAGE = `${SITE_URL}/og.png` as const
+const SITE_LOGO = `${SITE_URL}/brand/mv-mark.svg` as const
+const SITE_IMAGE = `${SITE_URL}/brand/exports/og-image.png` as const
 const SITE_EMAIL = 'hello@emvyai.com' as const
 const SITE_ABN = '82 488 276 510' as const
 const SITE_LANGUAGE = 'en-AU' as const

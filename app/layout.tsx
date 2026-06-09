@@ -40,15 +40,15 @@ export const metadata: Metadata = {
   keywords: ["AI consultancy", "AI agents", "workflow automation", "Australian business AI", "AI strategy", "AI operations", "EMVY"],
   icons: {
     icon: [
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/emvy-mark.svg", type: "image/svg+xml" }
+      { url: "/brand/exports/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/brand/exports/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/exports/favicon-64.png", sizes: "64x64", type: "image/png" },
+      { url: "/brand/favicon.svg", type: "image/svg+xml" }
     ],
     apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }
+      { url: "/brand/exports/apple-touch-icon.png", sizes: "180x180", type: "image/png" }
     ]
   },
-  manifest: "/manifest.webmanifest",
   openGraph: {
     title: "EMVY — AI Consultancy for Australian SMBs",
     description: "AI strategy, audits, and automation systems for businesses ready to work smarter.",
@@ -56,12 +56,17 @@ export const metadata: Metadata = {
     siteName: "EMVY",
     type: "website",
     locale: "en_AU",
+    images: [
+      { url: "/brand/exports/og-image.png", width: 1200, height: 630, alt: "EMVY — AI systems for growing businesses" }
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "EMVY — AI Consultancy for Australian SMBs",
     description: "AI strategy, audits, and automation systems for businesses ready to work smarter.",
+    images: ["/brand/exports/og-image.png"],
   },
+  manifest: "/manifest.webmanifest",
   robots: {
     index: true,
     follow: true

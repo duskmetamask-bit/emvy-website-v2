@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import EmvyLogo from './EmvyLogo'
 
 const primaryLinks = [
   { label: 'Services', href: '/services' },
@@ -21,7 +22,10 @@ export default function Footer() {
     <footer className="site-footer">
       <div className="site-footer__grid">
         <div className="site-footer__intro">
-          <p className="section-kicker">EMVY</p>
+          <Link href="/" className="footer-brand" aria-label="EMVY — home">
+            <EmvyLogo className="footer-brand__mark" aria-hidden="true" />
+            <span className="footer-brand__wordmark">emvy</span>
+          </Link>
           <h2>Identify the right AI opportunity, then build the system around it.</h2>
           <p>EMVY helps businesses audit, build, hand over, and maintain practical AI systems.</p>
         </div>
