@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { ChevronDown, Menu, X } from 'lucide-react'
 import TrackedLink from './TrackedLink'
-import EmvyLogo from './EmvyLogo'
 
 type NavItem = {
   label: string
@@ -90,9 +89,8 @@ export default function Header() {
 
   return (
     <header className="site-header">
-      <Link className="brand" href="/" onClick={() => setOpenMenu(null)} aria-label="EMVY — home">
-        <EmvyLogo className="brand-mark" aria-hidden="true" />
-        <span className="brand-wordmark">emvy</span>
+      <Link className="brand" href="/" onClick={() => setOpenMenu(null)} aria-label="EMVY — AI Consultancy home">
+        <img src="/brand/logo.png" alt="EMVY — AI Consultancy" className="brand-img" />
       </Link>
 
       <nav className="nav" onMouseLeave={scheduleClose}>
