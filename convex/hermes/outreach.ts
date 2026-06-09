@@ -21,6 +21,7 @@ import { action, internalMutation, internalQuery, mutation, query } from '../_ge
 import { v } from 'convex/values'
 import { api, internal } from '../_generated/api'
 import { requireHermes } from '../hermesAuth'
+import { wrapEmailBody } from './emailTemplate'
 
 const RESEND_API = 'https://api.resend.com/emails'
 const FROM_ADDRESS =
@@ -156,7 +157,7 @@ export const autoSend = action({
       throw new Error('RESEND_API_KEY not configured on server')
     }
 
-    const html = args.body.replace(/\n/g, '<br/>')
+    const { html, text } = wrapEmailBody(args.body)
     const res = await fetch(RESEND_API, {
       method: 'POST',
       headers: {
@@ -168,7 +169,7 @@ export const autoSend = action({
         to: queue.email,
         reply_to: REPLY_TO,
         subject: args.subject,
-        text: args.body,
+        text,
         html,
         headers: {
           'X-Outreach-Touch': String(args.touch ?? 1),
@@ -435,7 +436,7 @@ export const sendEditedFromBoard = action({
       throw new Error('RESEND_API_KEY not configured on server')
     }
 
-    const html = args.body.replace(/\n/g, '<br/>')
+    const { html, text } = wrapEmailBody(args.body)
     const res = await fetch(RESEND_API, {
       method: 'POST',
       headers: {
@@ -447,7 +448,7 @@ export const sendEditedFromBoard = action({
         to: args.to,
         reply_to: REPLY_TO,
         subject: args.subject,
-        text: args.body,
+        text,
         html,
         headers: {
           'X-Outreach-Touch': '1',
