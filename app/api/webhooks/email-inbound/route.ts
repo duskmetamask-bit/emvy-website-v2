@@ -42,21 +42,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    // Convex's v.optional(v.string()) accepts undefined but rejects null.
+    // The worker sends null for missing optional fields, so we strip them.
     const result = await getConvex().mutation(api.email_inbox.recordInboundEmail, {
       messageId: payload.messageId,
       from: payload.from,
       to: payload.to,
-      subject: payload.subject,
-      body: payload.body,
-      htmlBody: payload.htmlBody,
-      inReplyTo: payload.inReplyTo,
-      references: payload.references,
+      subject: payload.subject ?? undefined,
+      body: payload.body ?? undefined,
+      htmlBody: payload.htmlBody ?? undefined,
+      inReplyTo: payload.inReplyTo ?? undefined,
+      references: payload.references ?? undefined,
       receivedAt: payload.receivedAt,
     })
 
     return NextResponse.json(result)
   } catch (err) {
     console.error('Email inbound webhook error:', err)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    const msg = err instanceof Error ? err.message : String(err)
+    const stack = err instanceof Error ? err.stack : undefined
+    return NextResponse.json({ error: 'Internal error', detail: msg, stack }, { status: 500 })
   }
 }
