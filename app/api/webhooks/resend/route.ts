@@ -3,7 +3,11 @@ import { Webhook } from 'standardwebhooks'
 import { ConvexHttpClient } from 'convex/browser'
 import { api } from '@/convex/_generated/api'
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+function getConvex() {
+  const url = process.env.NEXT_PUBLIC_CONVEX_URL
+  if (!url) throw new Error('NEXT_PUBLIC_CONVEX_URL is not set')
+  return new ConvexHttpClient(url)
+}
 
 function getWebhookSecret(): string {
   const secret = process.env.RESEND_WEBHOOK_SECRET
@@ -45,7 +49,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing event type' }, { status: 400 })
     }
 
-    const result = await convex.mutation(api.webhooks.resend.handleEmailEvent, {
+    const result = await getConvex().mutation(api.webhooks.resend.handleEmailEvent, {
       type,
       created_at: created_at || Date.now(),
       recipient,

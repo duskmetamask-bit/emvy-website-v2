@@ -5,8 +5,17 @@ import { ConvexHttpClient } from 'convex/browser'
 import { api } from '@/convex/_generated/api'
 import AssessmentReport from '@/lib/pdf/AssessmentReport'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+function getConvex() {
+  const url = process.env.NEXT_PUBLIC_CONVEX_URL
+  if (!url) throw new Error('NEXT_PUBLIC_CONVEX_URL is not set')
+  return new ConvexHttpClient(url)
+}
+
+function getResend() {
+  const key = process.env.RESEND_API_KEY
+  if (!key) return null
+  return new Resend(key)
+}
 
 const questions = [
   { key: 'call_handling', prompt: 'When clients call and you are busy, what actually happens?' },
@@ -64,7 +73,7 @@ export async function POST(request: NextRequest) {
     // Save to Convex first (capture leadId for CTA attribution)
     let leadId: string | null = null
     try {
-      const saved = await convex.mutation(api.assessment.submissions.saveSubmission, {
+      const saved = await getConvex().mutation(api.assessment.submissions.saveSubmission, {
         name,
         email,
         score,
@@ -104,6 +113,10 @@ export async function POST(request: NextRequest) {
     )
 
     // Send email with PDF
+    const resend = getResend()
+    if (!resend) {
+      return NextResponse.json({ error: 'Email service not configured' }, { status: 500 })
+    }
     const { data, error } = await resend.emails.send({
       from: 'EMVY <noreply@emvyai.com>',
       to: email,
