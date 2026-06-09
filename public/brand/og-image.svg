@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <radialGradient id="glow" cx="20%" cy="0%" r="60%">
+      <stop offset="0%" stop-color="#56d9ff" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#56d9ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0a1118"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- MV monogram on the left -->
+  <g transform="translate(120 175)">
+    <path
+      d="M 0 0 H 240 V 280 H 0 Z M 60 0 L 180 0 L 120 240 Z"
+      fill="#56d9ff"
+      fill-rule="evenodd"
+    />
+  </g>
+
+  <!-- Wordmark + tagline on the right -->
+  <g transform="translate(440 0)" fill="#f4f7fb">
+    <text
+      x="0"
+      y="240"
+      font-family="var(--font-display, 'Space Grotesk', 'Manrope', system-ui, sans-serif)"
+      font-size="120"
+      font-weight="600"
+      letter-spacing="-4"
+    >emvy</text>
+    <line x1="0" y1="290" x2="600" y2="290" stroke="#56d9ff" stroke-width="2" stroke-opacity="0.5"/>
+    <text
+      x="0"
+      y="360"
+      font-family="var(--font-body, 'Manrope', system-ui, sans-serif)"
+      font-size="34"
+      font-weight="500"
+      letter-spacing="3"
+      fill-opacity="0.75"
+    >FIND IT.  LEVERAGE IT.  BUILD IT.</text>
+    <text
+      x="0"
+      y="430"
+      font-family="var(--font-body, 'Manrope', system-ui, sans-serif)"
+      font-size="26"
+      font-weight="400"
+      letter-spacing="0.5"
+      fill-opacity="0.55"
+    >AI systems for growing businesses.</text>
+  </g>
+</svg>

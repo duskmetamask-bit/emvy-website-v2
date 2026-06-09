@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 100" fill="none" role="img" aria-label="emvy">
+  <g transform="translate(0 0)">
+    <path
+      d="M 8 15 H 92 V 85 H 8 Z M 26 15 L 74 15 L 50 75 Z"
+      fill="currentColor"
+      fill-rule="evenodd"
+    />
+  </g>
+  <g transform="translate(120 0)" fill="currentColor">
+    <text
+      x="0"
+      y="68"
+      font-family="var(--font-display, 'Space Grotesk', 'Manrope', system-ui, sans-serif)"
+      font-size="64"
+      font-weight="600"
+      letter-spacing="-2.5"
+    >emvy</text>
+  </g>
+</svg>

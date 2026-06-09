@@ -15,6 +15,7 @@ data/*
 prototypes/*
 public/50-ai-agent-prompts.pdf
 public/*
+!public/brand/
 .claude/settings.local.json
 .codex/
 emvy-audit-agent/

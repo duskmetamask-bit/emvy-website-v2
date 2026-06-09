@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" role="img" aria-label="EMVY">
+  <rect width="200" height="200" rx="32" fill="#0a1118"/>
+  <path
+    d="M 36 50 H 164 V 150 H 36 Z M 64 50 L 136 50 L 100 134 Z"
+    fill="#56d9ff"
+    fill-rule="evenodd"
+  />
+</svg>

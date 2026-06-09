@@ -1,0 +1,1056 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EMVY — Brand Guidelines</title>
+  <style>
+    /* -----------------------------------------------------------------------
+       Tokens — mirror lib/design-tokens.ts (brand.*) so this doc is the
+       design-system source as much as the brand-system source.
+       ----------------------------------------------------------------------- */
+    :root {
+      --bg:        #0a1118;
+      --bg-soft:   #11171f;
+      --surface:   #161b22;
+      --surface-2: #1d242d;
+      --surface-3: #252d37;
+      --line:      rgba(244, 247, 251, 0.08);
+      --line-strong: rgba(244, 247, 251, 0.14);
+      --text:      #f4f7fb;
+      --muted:     #a9b3bf;
+      --muted-2:   #6e7886;
+      --accent:    #56d9ff;
+      --accent-2:  #7c8cff;
+      --accent-3:  #4ade80;
+      --amber:     #fbbf24;
+      --rose:      #fb7185;
+      --ease:      cubic-bezier(0.2, 0.8, 0.2, 1);
+
+      --font-sans:    -apple-system, BlinkMacSystemFont, "Inter", "Manrope", system-ui, sans-serif;
+      --font-display: "Space Grotesk", "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 11pt;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    .page {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 64px 56px 96px;
+      page-break-after: always;
+      position: relative;
+    }
+    .page:last-child { page-break-after: auto; }
+
+    .cover {
+      min-height: 1100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 88px 56px 96px;
+    }
+
+    /* Type scale */
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 9.5pt;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    h1 {
+      font-family: var(--font-display);
+      font-size: 56pt;
+      line-height: 1.02;
+      letter-spacing: -0.025em;
+      font-weight: 600;
+      margin: 0 0 16px;
+    }
+    h2 {
+      font-family: var(--font-display);
+      font-size: 28pt;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      font-weight: 600;
+      margin: 0 0 12px;
+    }
+    h3 {
+      font-family: var(--font-display);
+      font-size: 16pt;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      font-weight: 600;
+      margin: 0 0 8px;
+    }
+    h4 {
+      font-family: var(--font-display);
+      font-size: 11pt;
+      line-height: 1.3;
+      font-weight: 600;
+      margin: 0 0 6px;
+      letter-spacing: 0;
+    }
+    p {
+      margin: 0 0 14px;
+      color: var(--text);
+    }
+    p.lede {
+      font-size: 14pt;
+      line-height: 1.5;
+      color: var(--muted);
+      max-width: 60ch;
+    }
+    .muted { color: var(--muted); }
+    .dim   { color: var(--muted-2); }
+    .mono  { font-family: var(--font-mono); font-size: 9.5pt; letter-spacing: 0.02em; }
+    code, .code {
+      font-family: var(--font-mono);
+      font-size: 9.5pt;
+      color: var(--accent);
+      background: var(--surface);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .accent { color: var(--accent); }
+    .small  { font-size: 9.5pt; }
+
+    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+    a:hover { border-bottom-color: var(--accent); }
+
+    /* Logo mark — inline SVG */
+    .mark { display: inline-block; vertical-align: middle; }
+    .mark svg { display: block; }
+
+    /* Section header pattern */
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 32px;
+    }
+    .section-head .label {
+      font-family: var(--font-mono);
+      font-size: 9.5pt;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .section-head .num {
+      font-family: var(--font-mono);
+      font-size: 9.5pt;
+      color: var(--muted-2);
+    }
+
+    /* Grids */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .stack-2 > * + * { margin-top: 16px; }
+    .stack-3 > * + * { margin-top: 24px; }
+    .stack-4 > * + * { margin-top: 36px; }
+
+    /* Swatches */
+    .swatch {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--bg-soft);
+    }
+    .swatch .chip {
+      aspect-ratio: 16 / 9;
+      width: 100%;
+      display: block;
+    }
+    .swatch .meta {
+      padding: 12px 14px 14px;
+    }
+    .swatch .name {
+      font-family: var(--font-display);
+      font-size: 11pt;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .swatch .val {
+      font-family: var(--font-mono);
+      font-size: 8.5pt;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+    .swatch .role {
+      font-size: 9pt;
+      color: var(--muted-2);
+      margin-top: 4px;
+    }
+
+    /* Mark card */
+    .mark-card {
+      background: var(--bg-soft);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+      position: relative;
+    }
+    .mark-card.light { background: #f4f7fb; }
+    .mark-card .label {
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      font-family: var(--font-mono);
+      font-size: 8.5pt;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted-2);
+    }
+    .mark-card.light .label { color: var(--muted-2); }
+    .mark-card svg { width: 140px; height: 140px; }
+
+    /* Specs table */
+    .specs {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0;
+    }
+    .specs th, .specs td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      font-size: 10.5pt;
+      vertical-align: top;
+    }
+    .specs th {
+      font-family: var(--font-mono);
+      font-size: 9pt;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      width: 32%;
+    }
+    .specs tr:last-child th, .specs tr:last-child td { border-bottom: 0; }
+
+    /* Voice rules */
+    .rule {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 20px 20px;
+      background: var(--bg-soft);
+    }
+    .rule .num {
+      font-family: var(--font-mono);
+      font-size: 8.5pt;
+      color: var(--muted-2);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .rule .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 10px;
+    }
+    .rule .col h5 {
+      margin: 0 0 4px;
+      font-family: var(--font-mono);
+      font-size: 8.5pt;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .rule .col.do   h5 { color: var(--accent-3); }
+    .rule .col.dont h5 { color: var(--rose); }
+    .rule .col p { margin: 0; font-size: 10.5pt; }
+
+    /* Application example cards */
+    .example {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--bg-soft);
+    }
+    .example .frame {
+      padding: 0;
+    }
+    .example .frame > * { display: block; }
+    .example .meta {
+      padding: 14px 18px 18px;
+      border-top: 1px solid var(--line);
+    }
+    .example .meta .label {
+      font-family: var(--font-mono);
+      font-size: 9pt;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .example .meta h4 { margin: 6px 0 4px; }
+    .example .meta p  { margin: 0; font-size: 10pt; color: var(--muted); }
+
+    /* Hero example */
+    .hero-example {
+      background: var(--bg);
+      padding: 56px 48px 64px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-example::before {
+      content: "";
+      position: absolute;
+      top: -120px; left: -80px;
+      width: 480px; height: 480px;
+      background: radial-gradient(closest-side, rgba(86, 217, 255, 0.12), transparent 70%);
+      pointer-events: none;
+    }
+    .hero-example .eyebrow { margin-bottom: 14px; }
+    .hero-example h2 {
+      font-size: 38pt;
+      line-height: 1.04;
+      letter-spacing: -0.025em;
+      max-width: 16ch;
+      margin-bottom: 14px;
+    }
+    .hero-example p.lede { max-width: 48ch; }
+
+    /* Social card example */
+    .social-example {
+      background: var(--bg);
+      padding: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .social-example .og {
+      width: 100%;
+      max-width: 540px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+    }
+    .social-example .og svg { display: block; width: 100%; height: auto; }
+
+    /* Email signature */
+    .sig-example {
+      background: var(--bg);
+      padding: 28px;
+      font-family: var(--font-sans);
+    }
+    .sig {
+      max-width: 480px;
+      border-left: 2px solid var(--accent);
+      padding-left: 18px;
+    }
+    .sig .name {
+      font-family: var(--font-display);
+      font-size: 14pt;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .sig .role { font-size: 10pt; color: var(--muted); margin-bottom: 10px; }
+    .sig .line {
+      display: block;
+      font-size: 10pt;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .sig .line .k { color: var(--muted); display: inline-block; width: 64px; }
+    .sig .line .v { color: var(--text); }
+    .sig a { color: var(--accent); }
+
+    /* Page footer */
+    .page-footer {
+      position: absolute;
+      left: 56px;
+      right: 56px;
+      bottom: 36px;
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 8.5pt;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted-2);
+    }
+    .cover .page-footer { left: 56px; right: 56px; }
+
+    /* Print niceties */
+    @media print {
+      body { background: var(--bg); }
+      .page { padding: 0; max-width: none; }
+      .cover { min-height: 0; padding: 0; }
+      a { color: var(--accent); border-bottom: 0; }
+    }
+
+    @media (max-width: 720px) {
+      .page { padding: 32px 24px 80px; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .rule .row { grid-template-columns: 1fr; }
+      h1 { font-size: 40pt; }
+      .hero-example h2 { font-size: 28pt; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============== 01 · COVER ============== -->
+  <section class="page cover">
+    <div>
+      <div class="eyebrow">Brand guidelines · v1.0</div>
+      <div style="margin-top: 36px;">
+        <span class="mark" aria-label="EMVY">
+          <svg width="120" height="120" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 16 30 H 184 V 170 H 16 Z M 52 30 L 148 30 L 100 150 Z" fill="#56d9ff" fill-rule="evenodd" />
+          </svg>
+        </span>
+      </div>
+      <h1 style="margin-top: 56px; max-width: 9ch;">EMVY</h1>
+      <p class="lede" style="max-width: 36ch; margin-top: 8px;">
+        Brand guidelines — the marks, the colors, the type, the voice. For designers, contractors, and anyone putting the brand in the world.
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <span>EMVY · Brand Guidelines</span>
+      <span>2026-06-09</span>
+    </div>
+  </section>
+
+  <!-- ============== 02 · THE BRAND ============== -->
+  <section class="page">
+    <div class="section-head">
+      <span class="label">01 · The brand</span>
+      <span class="num">p. 2</span>
+    </div>
+
+    <div class="stack-4">
+      <div>
+        <h2>Calm expertise. Plain-spoken. Built to work.</h2>
+        <p class="lede">
+          EMVY is a B2B AI consultancy for growing businesses. We identify where AI fits in your operations, then build the systems to make it work. The brand should feel like a senior practitioner who&rsquo;s done this a hundred times — quiet, considered, deeply competent. Not a salesperson. Not a hype cycle.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <h4>Positioning</h4>
+          <p class="muted">The sentence a stranger reads first.</p>
+          <p>&ldquo;We identify where your business can leverage AI, then build the systems to make it work.&rdquo;</p>
+        </div>
+        <div>
+          <h4>Audience</h4>
+          <p class="muted">Who we&rsquo;re talking to.</p>
+          <p>Owner-operators and small leadership teams at growing SMBs. Multi-vertical. They&rsquo;re AI-curious, not AI-fluent. They need a guide, not a pitch.</p>
+        </div>
+      </div>
+
+      <div>
+        <h4>What this brand is not</h4>
+        <div class="grid-2">
+          <p class="muted">Not corporate, not breathless, not buzzwordy. Not &ldquo;leveraging synergistic AI solutions.&rdquo; Not &ldquo;empowering the future of work.&rdquo;</p>
+          <p class="muted">Not a tech-bro tone. Not aggressive. Not cute. We don&rsquo;t try to be clever — we try to be useful.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>EMVY · Brand Guidelines</span>
+      <span>02 · The brand</span>
+    </div>
+  </section>
+
+  <!-- ============== 03 · THE MARK ============== -->
+  <section class="page">
+    <div class="section-head">
+      <span class="label">02 · The mark</span>
+      <span class="num">p. 3</span>
+    </div>
+
+    <div class="stack-4">
+      <div>
+        <h2>The MV monogram</h2>
+        <p class="lede">
+          A geometric <strong>M</strong> with a <strong>V</strong> cut from its centre. Single colour, no gradients, no strokes. Reads as both letters at once. Designed to work at 16&nbsp;pixels and at 16&nbsp;metres.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="mark-card">
+          <span class="label">Primary · on dark</span>
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="EMVY">
+            <path d="M 16 30 H 184 V 170 H 16 Z M 52 30 L 148 30 L 100 150 Z" fill="#56d9ff" fill-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="mark-card light">
+          <span class="label">Reversed · on light</span>
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="EMVY">
+            <path d="M 16 30 H 184 V 170 H 16 Z M 52 30 L 148 30 L 100 150 Z" fill="#0a1118" fill-rule="evenodd" />
+          </svg>
+        </div>
+      </div>
+
+      <div>
+        <h3>Lockups</h3>
+        <p class="muted small">Use the horizontal lockup by default. Use the stacked lockup when the canvas is roughly square. Use the mark alone in tight spaces (favicons, app icons, social avatars).</p>
+        <div class="grid-3" style="margin-top: 16px;">
+          <div class="mark-card" style="min-height: 160px;">
+            <span class="label">Mark</span>
+            <svg width="80" height="80" viewBox="0 0 200 200" fill="none">
+              <path d="M 16 30 H 184 V 170 H 16 Z M 52 30 L 148 30 L 100 150 Z" fill="#56d9ff" fill-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="mark-card" style="min-height: 160px;">
+            <span class="label">Horizontal</span>
+            <svg width="220" height="60" viewBox="0 0 560 100" fill="none">
+              <g>
+                <path d="M 8 15 H 92 V 85 H 8 Z M 26 15 L 74 15 L 50 75 Z" fill="#56d9ff" fill-rule="evenodd" />
+              </g>
+              <g transform="translate(120 0)" fill="#f4f7fb">
+                <text x="0" y="68" font-family="Space Grotesk, system-ui, sans-serif" font-size="64" font-weight="600" letter-spacing="-2.5">emvy</text>
+              </g>
+            </svg>
+          </div>
+          <div class="mark-card" style="min-height: 160px;">
+            <span class="label">Stacked</span>
+            <svg width="120" height="120" viewBox="0 0 280 220" fill="none">
+              <g transform="translate(40 0)">
+                <path d="M 8 8 H 192 V 168 H 8 Z M 52 8 L 148 8 L 100 148 Z" fill="#56d9ff" fill-rule="evenodd" />
+              </g>
+              <g transform="translate(140 0)" fill="#f4f7fb">
+                <text x="0" y="208" text-anchor="middle" font-family="Space Grotesk, system-ui, sans-serif" font-size="40" font-weight="600" letter-spacing="-1.5">emvy</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>EMVY · Brand Guidelines</span>
+      <span>02 · The mark</span>
+    </div>
+  </section>
+
+  <!-- ============== 04 · MARK RULES ============== -->
+  <section class="page">
+    <div class="section-head">
+      <span class="label">02 · The mark · rules</span>
+      <span class="num">p. 4</span>
+    </div>
+
+    <div class="stack-4">
+      <div>
+        <h2>Clear space &amp; minimum size</h2>
+        <p class="lede">
+          The mark needs breathing room. Maintain clear space equal to <strong>¼ of the mark&rsquo;s height</strong> on all sides. Below <strong>16&nbsp;pixels</strong> the V cutout becomes hard to read — use the wordmark instead.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <h4>Clear space</h4>
+          <p class="muted small">Keep this much empty space around the mark on every side.</p>
+          <div class="mark-card" style="min-height: 220px; padding: 60px;">
+            <svg viewBox="0 0 200 200" fill="none" style="width: 100px; height: 100px;">
+              <path d="M 16 30 H 184 V 170 H 16 Z M 52 30 L 148 30 L 100 150 Z" fill="#56d9ff" fill-rule="evenodd" />
+            </svg>
+            <svg style="position: absolute; top: 60px; left: 60px; right: 60px; bottom: 60px; width: calc(100% - 120px); height: calc(100% - 120px); pointer-events: none;" viewBox="0 0 200 200" fill="none">
+              <rect x="0.5" y="0.5" width="199" height="199" stroke="#56d9ff" stroke-opacity="0.25" stroke-dasharray="4 4" />
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h4>Minimum size</h4>
+          <p class="muted small">Use the SVG at any size. For PNG raster use, 64&nbsp;px is the safe minimum; 32&nbsp;px and 16&nbsp;px renders are provided in the asset pack.</p>
+          <div class="mark-card" style="min-height: 220px; padding: 30px;">
+            <div style="display: flex; align-items: flex-end; gap: 28px;">
+              <div style="text-align: center;">
+                <svg width="120" height="120" viewBox="0 0 200 200" fill="none"><path d="M 16 30 H 184 V 170 H 16 Z M 52 30 L 148 30 L 100 150 Z" fill="#56d9ff" fill-rule="evenodd" /></svg>
+                <div class="dim small" style="margin-top: 6px;">120 px</div>
+              </div>
+              <div style="text-align: center;">
+                <svg width="64" height="64" viewBox="0 0 200 200" fill="none"><path d="M 16 30 H 184 V 170 H 16 Z M 52 30 L 148 30 L 100 150 Z" fill="#56d9ff" fill-rule="evenodd" /></svg>
+                <div class="dim small" style="margin-top: 6px;">64 px</div>
+              </div>
+              <div style="text-align: center;">
+                <svg width="32" height="32" viewBox="0 0 200 200" fill="none"><path d="M 16 30 H 184 V 170 H 16 Z M 52 30 L 148 30 L 100 150 Z" fill="#56d9ff" fill-rule="evenodd" /></svg>
+                <div class="dim small" style="margin-top: 6px;">32 px</div>
+              </div>
+              <div style="text-align: center;">
+                <svg width="16" height="16" viewBox="0 0 200 200" fill="none"><path d="M 16 30 H 184 V 170 H 16 Z M 52 30 L 148 30 L 100 150 Z" fill="#56d9ff" fill-rule="evenodd" /></svg>
+                <div class="dim small" style="margin-top: 6px;">16 px</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Do &amp; don&rsquo;t</h3>
+        <div class="grid-2">
+          <div class="rule">
+            <div class="num">Do</div>
+            <div class="row">
+              <div class="col do">
+                <h5>Use the mark on the brand cyan or on a flat dark surface.</h5>
+                <p>Either on the page background or on a card with enough contrast.</p>
+              </div>
+              <div class="col do">
+                <h5>Maintain the clear space — never crowd it.</h5>
+                <p>No text, no imagery, no other marks inside the ¼-height buffer.</p>
+              </div>
+            </div>
+          </div>
+          <div class="rule" style="border-color: rgba(251, 113, 133, 0.25);">
+            <div class="num" style="color: var(--rose);">Don&rsquo;t</div>
+            <div class="row">
+              <div class="col dont">
+                <h5>Don&rsquo;t recolour, gradient, or add effects.</h5>
+                <p>No drop shadows, no glow, no bevel. The mark is a flat single colour.</p>
+              </div>
+              <div class="col dont">
+                <h5>Don&rsquo;t stretch, rotate, or skew it.</h5>
+                <p>Always render at the aspect ratio of the source viewBox.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>EMVY · Brand Guidelines</span>
+      <span>02 · The mark</span>
+    </div>
+  </section>
+
+  <!-- ============== 05 · COLOR ============== -->
+  <section class="page">
+    <div class="section-head">
+      <span class="label">03 · Color</span>
+      <span class="num">p. 5</span>
+    </div>
+
+    <div class="stack-4">
+      <div>
+        <h2>One accent. A range of dark surfaces.</h2>
+        <p class="lede">
+          The brand is deliberately quiet. The page is the dark slate. The mark and the primary call-to-action are the one accent — sky cyan. Everything else is the neutral ramp from <code>background</code> to <code>surface-3</code>. Use the secondary accents (violet, emerald, amber) sparingly, for charts and feedback states.
+        </p>
+      </div>
+
+      <div>
+        <h3>Primary</h3>
+        <div class="grid-2">
+          <div class="swatch">
+            <div class="chip" style="background: #56d9ff;"></div>
+            <div class="meta">
+              <div class="name">Sky</div>
+              <div class="val">#56d9ff · oklch(0.78 0.15 220)</div>
+              <div class="role">Primary accent. Mark, primary CTAs, links, focus states.</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #0a1118;"></div>
+            <div class="meta">
+              <div class="name">Slate</div>
+              <div class="val">#0a1118 · oklch(0.13 0.005 250)</div>
+              <div class="role">Primary surface. Page background, header, footer.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Neutrals</h3>
+        <div class="grid-4">
+          <div class="swatch">
+            <div class="chip" style="background: #11171f;"></div>
+            <div class="meta">
+              <div class="name">bg-soft</div>
+              <div class="val">#11171f</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #161b22;"></div>
+            <div class="meta">
+              <div class="name">surface</div>
+              <div class="val">#161b22</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #1d242d;"></div>
+            <div class="meta">
+              <div class="name">surface-2</div>
+              <div class="val">#1d242d</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #252d37;"></div>
+            <div class="meta">
+              <div class="name">surface-3</div>
+              <div class="val">#252d37</div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-4" style="margin-top: 16px;">
+          <div class="swatch">
+            <div class="chip" style="background: #f4f7fb;"></div>
+            <div class="meta">
+              <div class="name">text</div>
+              <div class="val">#f4f7fb</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #a9b3bf;"></div>
+            <div class="meta">
+              <div class="name">muted</div>
+              <div class="val">#a9b3bf</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #6e7886;"></div>
+            <div class="meta">
+              <div class="name">muted-2</div>
+              <div class="val">#6e7886</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: linear-gradient(135deg, rgba(244,247,251,0.08), rgba(244,247,251,0.14));"></div>
+            <div class="meta">
+              <div class="name">line / line-strong</div>
+              <div class="val">rgba(244,247,251, .08 / .14)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Secondary accents</h3>
+        <p class="muted small">Reserved for charts, feedback, and the rare moment that needs variety. Never use these for the primary CTA or the mark.</p>
+        <div class="grid-3">
+          <div class="swatch">
+            <div class="chip" style="background: #7c8cff;"></div>
+            <div class="meta">
+              <div class="name">Violet</div>
+              <div class="val">#7c8cff</div>
+              <div class="role">Charts · 2nd series</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #4ade80;"></div>
+            <div class="meta">
+              <div class="name">Emerald</div>
+              <div class="val">#4ade80</div>
+              <div class="role">Success · charts · 3rd series</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #fbbf24;"></div>
+            <div class="meta">
+              <div class="name">Amber</div>
+              <div class="val">#fbbf24</div>
+              <div class="role">Warning · charts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>EMVY · Brand Guidelines</span>
+      <span>03 · Color</span>
+    </div>
+  </section>
+
+  <!-- ============== 06 · TYPOGRAPHY ============== -->
+  <section class="page">
+    <div class="section-head">
+      <span class="label">04 · Typography</span>
+      <span class="num">p. 6</span>
+    </div>
+
+    <div class="stack-4">
+      <div>
+        <h2>Two sans, one mono. The same family across surfaces.</h2>
+        <p class="lede">
+          <strong>Space Grotesk</strong> for display and headings — a refined geometric sans with character. <strong>Manrope</strong> for body and UI — a humanist sans that&rsquo;s quiet at small sizes. <strong>JetBrains Mono</strong> for code, data, and the rare typographic accent.
+        </p>
+      </div>
+
+      <div>
+        <h3>Type scale</h3>
+        <table class="specs">
+          <tr><th>Display</th><td><span style="font-family: var(--font-display); font-size: 56px; line-height: 1.05; letter-spacing: -0.025em; font-weight: 600;">Find it. Leverage it. Build it.</span></td></tr>
+          <tr><th>H1</th><td><span style="font-family: var(--font-display); font-size: 40px; line-height: 1.12; letter-spacing: -0.02em; font-weight: 600;">We identify where your business can leverage AI.</span></td></tr>
+          <tr><th>H2</th><td><span style="font-family: var(--font-display); font-size: 30px; line-height: 1.2; letter-spacing: -0.015em; font-weight: 600;">A clear path from first call to live system.</span></td></tr>
+          <tr><th>H3</th><td><span style="font-family: var(--font-display); font-size: 22px; line-height: 1.3; letter-spacing: -0.01em; font-weight: 600;">Audit &amp; Implementation</span></td></tr>
+          <tr><th>Body</th><td><span style="font-family: var(--font-sans); font-size: 16px; line-height: 1.6;">Most teams don&rsquo;t need a chatbot. They need one workflow that actually saves time. We find that workflow, then we build it.</span></td></tr>
+          <tr><th>Mono</th><td><span style="font-family: var(--font-mono); font-size: 14px; letter-spacing: 0;">const outcome = await emvy.audit(workflow);</span></td></tr>
+        </table>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <h4>Display &mdash; Space Grotesk</h4>
+          <p class="muted small">Marketing surfaces, hero, headings, the wordmark, brand collateral. Weights 500 / 600 / 700.</p>
+        </div>
+        <div>
+          <h4>Body &mdash; Manrope</h4>
+          <p class="muted small">UI, long-form copy, paragraphs. Weights 400 / 500 / 600 / 700 / 800.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>EMVY · Brand Guidelines</span>
+      <span>04 · Typography</span>
+    </div>
+  </section>
+
+  <!-- ============== 07 · VOICE ============== -->
+  <section class="page">
+    <div class="section-head">
+      <span class="label">05 · Voice</span>
+      <span class="num">p. 7</span>
+    </div>
+
+    <div class="stack-4">
+      <div>
+        <h2>Five rules. Read them as &ldquo;if your sentence violates one, rewrite it.&rdquo;</h2>
+        <p class="lede">
+          EMVY is a <strong>plain-spoken expert</strong>. We don&rsquo;t do breathless, we don&rsquo;t do jargon. We sound like a senior practitioner who&rsquo;s done this a hundred times and is tired of hype.
+        </p>
+      </div>
+
+      <div class="stack-3">
+        <div class="rule">
+          <div class="num">Rule 01</div>
+          <div class="row">
+            <div class="col do">
+              <h5>Do</h5>
+              <p>Direct, capable, human. Short sentences, no jargon.</p>
+            </div>
+            <div class="col dont">
+              <h5>Don&rsquo;t</h5>
+              <p>Corporate, breathless, hedge-y. Buzzwords. &ldquo;Leverage.&rdquo; &ldquo;Empower.&rdquo;</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rule">
+          <div class="num">Rule 02</div>
+          <div class="row">
+            <div class="col do">
+              <h5>Do</h5>
+              <p>Help first, pitch second. Diagnose before recommending.</p>
+            </div>
+            <div class="col dont">
+              <h5>Don&rsquo;t</h5>
+              <p>Lead with the sale. Open with credentials, awards, or jargon.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rule">
+          <div class="num">Rule 03</div>
+          <div class="row">
+            <div class="col do">
+              <h5>Do</h5>
+              <p>Plain language for AI concepts. Name the tool, the workflow, the change.</p>
+            </div>
+            <div class="col dont">
+              <h5>Don&rsquo;t</h5>
+              <p>Gatekeep with &ldquo;AI&rdquo; as a black box. Hide the how behind buzzwords.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rule">
+          <div class="num">Rule 04</div>
+          <div class="row">
+            <div class="col do">
+              <h5>Do</h5>
+              <p>Active verbs over adjectives. &ldquo;Build&rdquo; not &ldquo;powerful.&rdquo; &ldquo;Find&rdquo; not &ldquo;innovative.&rdquo;</p>
+            </div>
+            <div class="col dont">
+              <h5>Don&rsquo;t</h5>
+              <p>Stack adjectives. &ldquo;Cutting-edge, transformative, world-class AI.&rdquo;</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rule">
+          <div class="num">Rule 05</div>
+          <div class="row">
+            <div class="col do">
+              <h5>Do</h5>
+              <p>Specific over abstract. &ldquo;Send me the next 30 days of invoices&rdquo; not &ldquo;optimise your finance workflow.&rdquo;</p>
+            </div>
+            <div class="col dont">
+              <h5>Don&rsquo;t</h5>
+              <p>Vague aspiration. &ldquo;Unlock the future of work.&rdquo;</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>EMVY · Brand Guidelines</span>
+      <span>05 · Voice</span>
+    </div>
+  </section>
+
+  <!-- ============== 08 · APPLICATIONS ============== -->
+  <section class="page">
+    <div class="section-head">
+      <span class="label">06 · Applications</span>
+      <span class="num">p. 8</span>
+    </div>
+
+    <div class="stack-4">
+      <div>
+        <h2>The brand in the world.</h2>
+        <p class="lede">Three canonical surfaces. If your design doesn&rsquo;t look like one of these, check the rules above.</p>
+      </div>
+
+      <div class="example">
+        <div class="frame hero-example">
+          <div class="eyebrow">AI systems for growing businesses</div>
+          <h2>We find where AI fits, then we build it.</h2>
+          <p class="lede">A 15-minute call, a written audit, a system that ships. No retainer for the discovery. No six-month roadmap for the build.</p>
+        </div>
+        <div class="meta">
+          <div class="label">01 · Hero (homepage)</div>
+          <h4>Display heading + lede on the dark surface.</h4>
+          <p>Space Grotesk display weight 600, tight letter-spacing. Body in Manrope muted. One accent — the eyebrow and the link.</p>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="frame social-example">
+          <div class="og">
+            <svg viewBox="0 0 1200 630" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="g" cx="20%" cy="0%" r="60%">
+                  <stop offset="0%" stop-color="#56d9ff" stop-opacity="0.18"/>
+                  <stop offset="100%" stop-color="#56d9ff" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+              <rect width="1200" height="630" fill="#0a1118"/>
+              <rect width="1200" height="630" fill="url(#g)"/>
+              <g transform="translate(120 175)">
+                <path d="M 0 0 H 240 V 280 H 0 Z M 60 0 L 180 0 L 120 240 Z" fill="#56d9ff" fill-rule="evenodd" />
+              </g>
+              <g transform="translate(440 0)" fill="#f4f7fb">
+                <text x="0" y="240" font-family="Space Grotesk, system-ui, sans-serif" font-size="120" font-weight="600" letter-spacing="-4">emvy</text>
+                <line x1="0" y1="290" x2="600" y2="290" stroke="#56d9ff" stroke-width="2" stroke-opacity="0.5"/>
+                <text x="0" y="360" font-family="Manrope, system-ui, sans-serif" font-size="34" font-weight="500" letter-spacing="3" fill-opacity="0.75">FIND IT.  LEVERAGE IT.  BUILD IT.</text>
+                <text x="0" y="430" font-family="Manrope, system-ui, sans-serif" font-size="26" font-weight="400" letter-spacing="0.5" fill-opacity="0.55">AI systems for growing businesses.</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div class="meta">
+          <div class="label">02 · Social (OG / Twitter card · 1200×630)</div>
+          <h4>Mark + wordmark + tagline.</h4>
+          <p>Horizontal lockup with the short tagline as the display copy. Soft cyan glow in the top-left corner — the only place we use a gradient.</p>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="frame sig-example">
+          <div class="sig">
+            <div class="name">Dusk Wunz</div>
+            <div class="role">Founder · EMVY</div>
+            <div class="line"><span class="k">email</span><span class="v"><a href="mailto:hello@emvyai.com">hello@emvyai.com</a></span></div>
+            <div class="line"><span class="k">web</span><span class="v"><a href="https://emvyai.com">emvyai.com</a></span></div>
+            <div class="line"><span class="k">abn</span><span class="v">82 488 276 510</span></div>
+          </div>
+        </div>
+        <div class="meta">
+          <div class="label">03 · Email signature</div>
+          <h4>Name, role, three lines, one accent rule.</h4>
+          <p>2px sky rule on the left. Plain serif-free type. No banner image, no logo, no social-icon row.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>EMVY · Brand Guidelines</span>
+      <span>06 · Applications</span>
+    </div>
+  </section>
+
+  <!-- ============== 09 · ASSETS ============== -->
+  <section class="page">
+    <div class="section-head">
+      <span class="label">07 · Asset pack</span>
+      <span class="num">p. 9</span>
+    </div>
+
+    <div class="stack-4">
+      <div>
+        <h2>Where to find what.</h2>
+        <p class="lede">Everything lives under <code>/public/brand/</code> in the website repo. SVG is the source of truth; PNG exports are bundled for the platforms that need them.</p>
+      </div>
+
+      <table class="specs">
+        <tr><th>Mark (SVG)</th><td><code>/brand/mv-mark.svg</code> &middot; <code>/brand/mv-mark-light.svg</code> &middot; <code>/brand/mv-mark-mono.svg</code></td></tr>
+        <tr><th>Wordmark</th><td><code>/brand/emvy-wordmark.svg</code></td></tr>
+        <tr><th>Lockups</th><td><code>/brand/lockup-horizontal.svg</code> &middot; <code>/brand/lockup-stacked.svg</code></td></tr>
+        <tr><th>Favicon</th><td><code>/brand/favicon.svg</code> &middot; PNG exports 16 / 32 / 64 / 192 / 512 px in <code>/brand/exports/</code></td></tr>
+        <tr><th>Apple touch</th><td><code>/brand/exports/apple-touch-icon.png</code> (180&times;180)</td></tr>
+        <tr><th>Social</th><td><code>/brand/og-image.svg</code> (source) &middot; <code>/brand/exports/og-image.png</code> (1200&times;630)</td></tr>
+        <tr><th>React component</th><td><code>@/components/EmvyLogo</code> &mdash; renders the MV monogram inline. Use in headers and inline contexts.</td></tr>
+        <tr><th>Design tokens</th><td><code>/lib/design-tokens.ts</code> &mdash; canonical TS reference. Mirrored to <code>/app/globals.css</code> as CSS custom properties.</td></tr>
+        <tr><th>Brand config</th><td><code>/config/brand.ts</code> &mdash; the brand strings (name, tagline, voice) per the Build Principles.</td></tr>
+      </table>
+
+      <div>
+        <h3>Token cheat sheet</h3>
+        <table class="specs">
+          <tr><th>Primary accent</th><td><code>#56d9ff</code> · <code>oklch(0.78 0.15 220)</code></td></tr>
+          <tr><th>Background</th><td><code>#0a1118</code> · <code>oklch(0.13 0.005 250)</code></td></tr>
+          <tr><th>Text</th><td><code>#f4f7fb</code> · <code>oklch(0.97 0.005 250)</code></td></tr>
+          <tr><th>Muted</th><td><code>#a9b3bf</code> · <code>oklch(0.7 0.02 250)</code></td></tr>
+          <tr><th>Display font</th><td>Space Grotesk, weights 500 / 600 / 700</td></tr>
+          <tr><th>Body font</th><td>Manrope, weights 400 / 500 / 600 / 700 / 800</td></tr>
+          <tr><th>Mono font</th><td>JetBrains Mono, weights 400 / 500 / 600</td></tr>
+          <tr><th>Mark min size</th><td>16 px</td></tr>
+          <tr><th>Mark clear space</th><td>¼ of mark height, all sides</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>EMVY · Brand Guidelines</span>
+      <span>07 · Asset pack</span>
+    </div>
+  </section>
+
+</body>
+</html>
