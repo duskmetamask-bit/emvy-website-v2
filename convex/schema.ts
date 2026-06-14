@@ -24,6 +24,77 @@ export default defineSchema({
     createdAt: v.number(),
   }).index('by_email', ['email']).index('by_createdAt', ['createdAt']),
 
+  // Audit chatbot leads (emvy-audit-chatbot.vercel.app). Richer than
+  // assessment_submissions — carries the 30/60/90 roadmap, per-category
+  // scores, and full findings. Public mutation writes here + auto-creates
+  // a `leads` row so the board's existing /pipeline picks it up.
+  //
+  // The chat front-end writes a 'new' row at email-submit time with
+  // score: 0, scoreLabel: 'Pending'. The MiniMax M2.7 report lands a few
+  // seconds later and the front-end calls :update to flip status to
+  // 'completed' + fill in the roadmap + score. The board's /audit-chatbot
+  // view reads this table and groups by status.
+  audit_chatbot_leads: defineTable({
+    name: v.string(),
+    email: v.string(),
+    company: v.optional(v.string()),
+
+    // Business profile (from the chat)
+    businessName: v.optional(v.string()),
+    industry: v.optional(v.string()),
+    teamSize: v.optional(v.string()),
+
+    // Score + headline
+    score: v.number(),
+    scoreLabel: v.string(),
+    scoreBlurb: v.optional(v.string()),
+    summary: v.optional(v.string()),
+
+    // 30/60/90 roadmap actions (arrays of strings).
+    // Backfilled by the front-end via :update once the report lands.
+    week1: v.optional(v.array(v.string())),
+    weeks24: v.optional(v.array(v.string())),
+    months23: v.optional(v.array(v.string())),
+    nextStep: v.optional(v.string()),
+
+    // Full assessment snapshot
+    findings: v.array(
+      v.object({
+        category: v.string(),
+        text: v.string(),
+        severity: v.union(v.literal('high'), v.literal('medium'), v.literal('low')),
+      })
+    ),
+    categoriesCovered: v.array(v.string()),
+    painPoints: v.array(v.string()),
+    manualTasks: v.array(v.string()),
+    scores: v.record(v.string(), v.number()),
+    aiTools: v.optional(v.string()),
+    budget: v.optional(v.string()),
+    goal: v.optional(v.string()),
+    obstacles: v.optional(v.string()),
+
+    // Operator review workflow. 'new' = just submitted, score: 0.
+    // 'completed' = full report backfilled via :update.
+    // 'reviewed' = operator looked at it on the board.
+    // 'converted' = promoted into the leads pipeline (v2 slice).
+    status: v.optional(
+      v.union(
+        v.literal('new'),
+        v.literal('completed'),
+        v.literal('reviewed'),
+        v.literal('converted'),
+      )
+    ),
+    updatedAt: v.optional(v.number()),
+
+    createdAt: v.number(),
+  })
+    .index('by_email', ['email'])
+    .index('by_createdAt', ['createdAt'])
+    .index('by_score', ['score'])
+    .index('by_status', ['status']),
+
   leads: defineTable({
     company: v.optional(v.string()),
     contact: v.optional(v.string()),
@@ -289,6 +360,40 @@ export default defineSchema({
   })
     .index('by_contact', ['contactId'])
     .index('by_occurredAt', ['occurredAt']),
+
+  // Maya publication log — content drafts/posts from the Maya agent
+  // (VPS Hermes profile). Mirrors the vault doc MAYA-PUBLICATION-LOG.md
+  // and is fed by the `maya-publication-log` cron via
+  // convex/hermes/marketing.ts:appendEntry. Read by the board's /maya
+  // tab so the operator can see the full pipeline (drafts → published
+  // → engagement) without opening the vault.
+  //
+  // Engagement + link are filled in by the operator or a future
+  // analytics cron (placeholder JSON `{ likes, reposts, replies }` for
+  // X / LinkedIn, `{ pageviews }` for Blog).
+  maya_publication_log: defineTable({
+    date: v.string(), // YYYY-MM-DD
+    platform: v.union(
+      v.literal('X'),
+      v.literal('LinkedIn'),
+      v.literal('Blog')
+    ),
+    title: v.string(), // first heading/line of the draft, truncated 80 chars
+    status: v.union(
+      v.literal('draft'),
+      v.literal('published'),
+      v.literal('revised')
+    ),
+    engagement: v.optional(v.any()), // JSON: {likes, reposts, replies} or {pageviews}
+    link: v.optional(v.string()),
+    sourcePath: v.string(), // relative path to the draft file
+    agentId: v.literal('maya'),
+    createdAt: v.number(),
+  })
+    .index('by_date', ['date'])
+    .index('by_platform', ['platform'])
+    .index('by_status', ['status'])
+    .index('by_createdAt', ['createdAt']),
 
   // === Personal Board tables (Dusk personal management) ===
   // Single-user data; auth-gated by the board's HMAC middleware.
