@@ -431,6 +431,69 @@ export default defineSchema({
     .index('by_reportType', ['reportType'])
     .index('by_createdAt', ['createdAt']),
 
+  // Audit register — deliverables from the Sage agent (VPS Hermes profile).
+  // One row per business audited. Mirrors the vault doc
+  // ~/obsidian-vault/audit/AUDIT-REGISTER.md (to be created in a follow-up
+  // session). Fed by the `AI Business Audit — Daily Crawler` cron via
+  // convex/hermes/audit.ts:appendEntry. Read by the board's /audits tab so
+  // the operator can see the audit pipeline + suggested build ideas without
+  // opening the vault.
+  //
+  // Schema shape: 4 user-facing columns (businessName + 3 markdown bodies),
+  // one row per business, deduped on businessName (case-insensitive lookup
+  // in the mutation, see hermes/audit.ts).
+  // activity_log is NOT written here — audits are not lead-scoped. The
+  // audit_register row (with agentId + createdAt + sourcePath) is the
+  // audit trail.
+  audit_register: defineTable({
+    date: v.string(), // YYYY-MM-DD
+    businessName: v.string(), // 1-200 chars, deduplicated (case-insensitive)
+    auditConducted: v.string(), // markdown, 1-20000 chars
+    findingsRecommendations: v.string(), // markdown, 1-20000 chars
+    buildIdeas: v.string(), // markdown, 1-20000 chars
+    sourcePath: v.string(), // relative path in ~/obsidian-vault/audit/
+    agentId: v.literal('sage'),
+    createdAt: v.number(),
+  })
+    .index('by_date', ['date'])
+    .index('by_businessName', ['businessName'])
+    .index('by_createdAt', ['createdAt']),
+
+  // Build register — production-code build pipeline from the Cartz/Builds
+  // agent. One row per build project; stage is mutable across crons. Mirrors
+  // the vault doc ~/obsidian-vault/builds/BUILD-REGISTER.md (5 stages
+  // currently; expanding to 6 with this slice — adding "awaiting_dusk_approval"
+  // between reviewed and the prior "live" stage, which is renamed
+  // "product_ready_to_sell" to make the gate explicit). Fed by the
+  // `Build Register — Daily Review` cron via convex/hermes/builds.ts:appendEntry
+  // (upsert semantics: insert new project, or update stage of existing).
+  // Read by the board's /builds tab.
+  //
+  // 6 stages: build_idea → design_visuals → planning → reviewed →
+  //   awaiting_dusk_approval → product_ready_to_sell.
+  // The "awaiting_dusk_approval" gate is explicit; nothing advances past
+  // "reviewed" without operator sign-off (the cron won't auto-advance —
+  // the operator edits the vault file, and the next daily review picks it up).
+  // activity_log is NOT written here — builds are not lead-scoped.
+  build_register: defineTable({
+    date: v.string(), // YYYY-MM-DD (date the row was last touched)
+    project: v.string(), // 1-200 chars, upserted (see hermes/builds.ts)
+    stage: v.union(
+      v.literal('build_idea'),
+      v.literal('design_visuals'),
+      v.literal('planning'),
+      v.literal('reviewed'),
+      v.literal('awaiting_dusk_approval'),
+      v.literal('product_ready_to_sell'),
+    ),
+    sourcePath: v.string(), // relative path in ~/obsidian-vault/builds/
+    agentId: v.literal('builds'),
+    createdAt: v.number(),
+  })
+    .index('by_date', ['date'])
+    .index('by_stage', ['stage'])
+    .index('by_createdAt', ['createdAt']),
+
   // === Personal Board tables (Dusk personal management) ===
   // Single-user data; auth-gated by the board's HMAC middleware.
   // The board repo is the only client; the website schema mirrors so
