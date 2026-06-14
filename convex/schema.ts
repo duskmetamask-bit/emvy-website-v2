@@ -395,6 +395,42 @@ export default defineSchema({
     .index('by_status', ['status'])
     .index('by_createdAt', ['createdAt']),
 
+  // Intelligence reports from the VPS `intelligence` agent (formerly
+  // `deep-state`). The agent produces 10+ daily/weekly briefs — competitor
+  // pricing, deep dives, sentiment pulse, ISO 42001 tracking, etc. — and
+  // historically wrote them to Obsidian vault markdown files. As of
+  // 2026-06-14 they also POST to `hermes/intelligence:appendEntry` so the
+  // board's /intelligence tab can render them alongside Maya's publication
+  // log. activity_log is NOT written here — these are research outputs,
+  // not lead-scoped events.
+  intelligence_reports: defineTable({
+    date: v.string(), // YYYY-MM-DD
+    reportType: v.union(
+      v.literal('daily_competitive_intel'),
+      v.literal('competitor_pricing'),
+      v.literal('competitor_deep_dive'),
+      v.literal('compliance_tracker'),
+      v.literal('sentiment_pulse'),
+      v.literal('launch_tracker'),
+      v.literal('seo_gap'),
+      v.literal('sector_assessment'),
+      v.literal('content_routing'),
+      v.literal('pricing_strategy'),
+      v.literal('ico_target'),
+      v.literal('positioning'),
+    ),
+    title: v.string(), // topic / first heading, truncated 120 chars
+    summary: v.string(), // 1-3 sentence brief
+    body: v.optional(v.string()), // full markdown body (can be large)
+    tags: v.optional(v.array(v.string())), // keywords (competitor names, sectors, etc.)
+    sourcePath: v.string(), // relative path in ~/obsidian-vault/intelligence/
+    agentId: v.literal('intelligence'),
+    createdAt: v.number(),
+  })
+    .index('by_date', ['date'])
+    .index('by_reportType', ['reportType'])
+    .index('by_createdAt', ['createdAt']),
+
   // === Personal Board tables (Dusk personal management) ===
   // Single-user data; auth-gated by the board's HMAC middleware.
   // The board repo is the only client; the website schema mirrors so
