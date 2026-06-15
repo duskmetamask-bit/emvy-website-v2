@@ -432,6 +432,30 @@ export default defineSchema({
     .index('by_reportType', ['reportType'])
     .index('by_createdAt', ['createdAt']),
 
+  // Synthesized daily intelligence brief — one row per day, written by
+  // the VPS `brief-synthesizer` cron (17:30 AWST, post End-of-Day Sector
+  // Assessment). The brief reads every intelligence_reports row for the
+  // date and concatenates them into a single executive summary so the
+  // operator doesn't have to click through 12 reports. The board's
+  // /intelligence hero reads this table for the "today's brief" card.
+  //
+  // Schema: 1 row per date (upsert). body holds the synthesized markdown;
+  // sourceReportIds is the list of contributing intelligence_reports ids
+  // for traceability.
+  // activity_log is NOT written here — same reason as intelligence_reports
+  // (research output, not lead-scoped). The brief row is its own audit trail.
+  intelligence_brief: defineTable({
+    date: v.string(), // YYYY-MM-DD
+    title: v.string(), // "Daily Intelligence Brief — 2026-06-15"
+    summary: v.string(), // 1-3 sentence exec summary
+    body: v.string(), // synthesized markdown body
+    sourceReportIds: v.array(v.id('intelligence_reports')),
+    agentId: v.literal('intelligence'),
+    createdAt: v.number(),
+  })
+    .index('by_date', ['date'])
+    .index('by_createdAt', ['createdAt']),
+
   // Audit register — deliverables from the Sage agent (VPS Hermes profile).
   // One row per business audited. Mirrors the vault doc
   // ~/obsidian-vault/audit/AUDIT-REGISTER.md (to be created in a follow-up

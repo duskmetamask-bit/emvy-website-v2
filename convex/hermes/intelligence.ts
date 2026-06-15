@@ -62,3 +62,55 @@ export const appendEntry = mutation({
     return { id, createdAt: now }
   },
 })
+
+// Daily synthesized brief — upsert one row in `intelligence_brief` per
+// date. Called by the VPS `brief-synthesizer` cron at 17:30 AWST
+// (after End-of-Day Sector Assessment). The cron reads every
+// intelligence_reports row for the date, concatenates the summaries
+// (and bodies, capped) into a single executive brief, and POSTs the
+// result. The board's /intelligence hero reads this table for the
+// "today's brief" card.
+//
+// Idempotent — re-running with the same date patches the existing row.
+// sourceReportIds lets the brief link back to the individual reports
+// that contributed.
+export const appendBrief = mutation({
+  args: {
+    token: v.string(),
+    agent: v.literal('intelligence'),
+    date: v.string(), // YYYY-MM-DD
+    title: v.string(),
+    summary: v.string(),
+    body: v.string(),
+    sourceReportIds: v.array(v.id('intelligence_reports')),
+  },
+  handler: async (ctx, args) => {
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, ...data } = args
+    const now = Date.now()
+    const existing = await ctx.db
+      .query('intelligence_brief')
+      .withIndex('by_date', (q) => q.eq('date', data.date))
+      .unique()
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        title: data.title,
+        summary: data.summary,
+        body: data.body,
+        sourceReportIds: data.sourceReportIds,
+        updatedAt: now,
+      } as Record<string, unknown>)
+      return { id: existing._id, action: 'updated' as const }
+    }
+    const id = await ctx.db.insert('intelligence_brief', {
+      date: data.date,
+      title: data.title,
+      summary: data.summary,
+      body: data.body,
+      sourceReportIds: data.sourceReportIds,
+      agentId: 'intelligence',
+      createdAt: now,
+    })
+    return { id, action: 'created' as const }
+  },
+})
