@@ -57,3 +57,45 @@ export const appendEntry = mutation({
     return { id, createdAt: now }
   },
 })
+
+// Upserts one row in `maya_content_topics` per (date). Called by the
+// VPS `~/.hermes/profiles/maya/bin/log_topics.py` after parsing the
+// 30-DAY-CALENDAR-v2.md vault file. The board's /marketing 7-day grid
+// reads this for per-date topic labels ("June 17 — Memory Thread").
+// Added 2026-06-15.
+export const appendTopic = mutation({
+  args: {
+    token: v.string(),
+    date: v.string(),         // YYYY-MM-DD
+    dayName: v.string(),      // Monday, Tuesday, ...
+    topic: v.string(),        // "Memory Thread", "Quick Win", ...
+    bucket: v.string(),       // "Operator" | "Business Outcome"
+  },
+  handler: async (ctx, args) => {
+    requireHermes(args.token)
+    const { token: _token, ...data } = args
+    const now = Date.now()
+    const existing = await ctx.db
+      .query('maya_content_topics')
+      .withIndex('by_date', (q) => q.eq('date', data.date))
+      .unique()
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        dayName: data.dayName,
+        topic: data.topic,
+        bucket: data.bucket,
+        updatedAt: now,
+      })
+      return { id: existing._id, action: 'updated' as const }
+    }
+    const id = await ctx.db.insert('maya_content_topics', {
+      date: data.date,
+      dayName: data.dayName,
+      topic: data.topic,
+      bucket: data.bucket,
+      createdAt: now,
+      updatedAt: now,
+    })
+    return { id, action: 'created' as const }
+  },
+})

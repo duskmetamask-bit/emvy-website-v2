@@ -486,6 +486,22 @@ export default defineSchema({
     .index('by_state', ['state'])
     .index('by_updatedAt', ['updatedAt']),
 
+  // Maya content topics — one row per date in the 30-day content
+  // calendar. Parsed from ~/obsidian-vault/maya/content-calendar/30-DAY-CALENDAR-v2.md
+  // by ~/.hermes/profiles/maya/bin/log_topics.py. The board's /marketing
+  // 7-day grid reads this for per-date topic labels (e.g. "June 17 —
+  // Memory Thread"). Written by hermes/marketing.ts:appendTopic.
+  maya_content_topics: defineTable({
+    date: v.string(),         // YYYY-MM-DD
+    dayName: v.string(),      // Monday, Tuesday, ...
+    topic: v.string(),        // "Memory Thread", "Quick Win", "Exact Setup", ...
+    bucket: v.string(),       // "Operator" | "Business Outcome"
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_date', ['date'])
+    .index('by_updatedAt', ['updatedAt']),
+
   // Build register — production-code build pipeline from the Cartz/Builds
   // agent. One row per build project; stage is mutable across crons. Mirrors
   // the vault doc ~/obsidian-vault/builds/BUILD-REGISTER.md (5 stages
