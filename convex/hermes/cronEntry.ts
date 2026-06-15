@@ -31,6 +31,7 @@ export const runDailyCron = internalAction({
   handler: async (ctx): Promise<{ planned: number; sent: number; failed: number; suppressed: number; errors: string[] }> => {
     return await ctx.runAction(api.hermes.runner.runDaily, {
       token: getToken(),
+      agent: 'blando',
     })
   },
 })
@@ -40,6 +41,7 @@ export const runFollowupsCron = internalAction({
   handler: async (ctx): Promise<{ sent: number; failed: number; errors: string[] }> => {
     return await ctx.runAction(api.hermes.runner.runFollowups, {
       token: getToken(),
+      agent: 'blando',
     })
   },
 })
