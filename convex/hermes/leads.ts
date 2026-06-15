@@ -4,13 +4,14 @@
 // - All Hermes writes carry `actor: 'hermes'` (set server-side, immutable).
 // - `source` is immutable on update (per glossary attribution rule).
 // - Hermes CANNOT delete.
-// - Every function requires the Bearer token as the first arg.
+// - Every function requires the per-agent (token, agent) — only
+//   agent='blando' is accepted (Blando owns the lead pipeline).
 // - Stage values are normalised from Blando's UPPERCASE taxonomy to
 //   Convex's lowercase 9-stage taxonomy (see normaliseStage below).
 
 import { mutation } from '../_generated/server'
 import { v } from 'convex/values'
-import { requireHermes } from '../hermesAuth'
+import { requireHermesAgent } from '../hermesAuth'
 
 // Blando UPPERCASE -> Convex lowercase. See Glossary 2026-06-01 for the
 // canonical 9-stage taxonomy. Anything not in the map falls through to
@@ -45,6 +46,7 @@ function normaliseStage(input: string | undefined): string | undefined {
 export const upsert = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('blando'),
     email: v.string(),
     company: v.optional(v.string()),
     contact: v.optional(v.string()),
@@ -63,8 +65,8 @@ export const upsert = mutation({
     enrichedAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
-    const { token: _token, ...data } = args
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, ...data } = args
     if (data.stage) data.stage = normaliseStage(data.stage)
     const existing = await ctx.db
       .query('leads')
@@ -95,13 +97,14 @@ export const upsert = mutation({
 export const updateStage = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('blando'),
     id: v.id('leads'),
     toStage: v.string(),
     reason: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
-    const { token: _token, id, toStage, reason } = args
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, id, toStage, reason } = args
     const lead = await ctx.db.get(id)
     if (!lead) throw new Error('Lead not found')
     const fromStage = lead.stage ?? 'discover'
@@ -126,13 +129,14 @@ export const updateStage = mutation({
 export const addActivity = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('blando'),
     leadId: v.id('leads'),
     action: v.string(),
     details: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
-    const { token: _token, leadId, action, details } = args
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, leadId, action, details } = args
     return await ctx.db.insert('activity_log', {
       leadId,
       action,

@@ -4,16 +4,14 @@
 // - All Hermes writes carry `actor: 'hermes'` (set server-side, immutable).
 // - Hermes CANNOT change `actor`, `source`, or `assignee`.
 // - Hermes CANNOT delete. The full action surface is create/list/update/complete.
-// - Every function requires the Bearer token as the first arg.
-//
-// This surface ships without Q1–Q6 of the Hermes Access Plan resolved.
-// The function shapes are stable; the auth/transport decisions
-// (proxy vs direct, rotation cadence, drafts.publish, lost from discover,
-// idempotency) land in PRD-6.
+// - Every function requires per-agent (token, agent). Mewy is the only
+//   caller — it acts on behalf of the orchestrator + any future agent
+//   that needs to enqueue work. Bound agents do not write to the
+//   actions table directly.
 
 import { mutation, query } from '../_generated/server'
 import { v } from 'convex/values'
-import { requireHermes } from '../hermesAuth'
+import { requireHermesAgent } from '../hermesAuth'
 
 const TRACKS = ['workspace', 'growth', 'clients', 'harden', 'polish'] as const
 const PRIORITIES = ['P0', 'P1', 'P2', 'P3'] as const
@@ -34,13 +32,14 @@ function assertOneOf<T extends readonly string[]>(
 export const list = query({
   args: {
     token: v.string(),
+    agent: v.literal('mewy'),
     status: v.optional(v.string()),
     track: v.optional(v.string()),
     priority: v.optional(v.string()),
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
+    requireHermesAgent(args.token, args.agent)
     const take = args.limit ?? 500
     if (args.status) {
       assertOneOf(args.status, STATUSES, 'status')
@@ -73,6 +72,7 @@ export const list = query({
 export const create = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('mewy'),
     title: v.string(),
     description: v.optional(v.string()),
     track: v.string(),
@@ -80,7 +80,7 @@ export const create = mutation({
     dueAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
+    requireHermesAgent(args.token, args.agent)
     assertOneOf(args.track, TRACKS, 'track')
     assertOneOf(args.priority, PRIORITIES, 'priority')
     if (!args.title.trim()) {
@@ -107,6 +107,7 @@ export const create = mutation({
 export const update = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('mewy'),
     id: v.id('actions'),
     title: v.optional(v.string()),
     description: v.optional(v.string()),
@@ -116,13 +117,13 @@ export const update = mutation({
     evidence: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
+    requireHermesAgent(args.token, args.agent)
     if (args.priority) assertOneOf(args.priority, PRIORITIES, 'priority')
     if (args.status) assertOneOf(args.status, STATUSES, 'status')
 
     // Strip Hermes-controlled fields from the patch — actor/source/assignee
     // are immutable from Hermes's perspective.
-    const { token: _token, id, ...fields } = args
+    const { token: _token, agent: _agent, id, ...fields } = args
     const patch: Record<string, unknown> = { ...fields, updatedAt: Date.now() }
     if (args.status === 'done') {
       patch.completedAt = Date.now()
@@ -135,10 +136,11 @@ export const update = mutation({
 export const complete = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('mewy'),
     id: v.id('actions'),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
+    requireHermesAgent(args.token, args.agent)
     const now = Date.now()
     await ctx.db.patch(args.id, {
       status: 'done',

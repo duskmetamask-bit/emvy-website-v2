@@ -6,10 +6,10 @@
 // this table to surface the audit pipeline + suggested build ideas in
 // the operator CRM.
 //
-// Auth: requireHermes (single shared HERMES_ACTIONS_TOKEN env var,
-// per the Hermes Access Plan v1). agentId is set server-side to
-// 'sage' (immutable, set on insert) so the source of every row is
-// clear at query time.
+// Auth: requireHermesAgent(token, agent) where agent MUST be 'sage'.
+// Cross-agent calls (any other agent) throw. agentId is also set
+// server-side to 'sage' (immutable, set on insert) so the source of every
+// row is clear at query time.
 //
 // Semantics: appendEntry dedupes on businessName. Re-runs of the
 // same audit don't create duplicate rows — the cron backs off and
@@ -22,11 +22,12 @@
 
 import { mutation } from '../_generated/server'
 import { v } from 'convex/values'
-import { requireHermes } from '../hermesAuth'
+import { requireHermesAgent } from '../hermesAuth'
 
 export const appendEntry = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('sage'),
     date: v.string(), // YYYY-MM-DD
     businessName: v.string(), // 1-200 chars
     auditConducted: v.string(), // markdown body
@@ -35,8 +36,8 @@ export const appendEntry = mutation({
     sourcePath: v.string(),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
-    const { token: _token, ...data } = args
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, ...data } = args
     const now = Date.now()
 
     // Dedupe by businessName. The lookup is case-sensitive in v1

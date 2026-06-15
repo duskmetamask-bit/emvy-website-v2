@@ -4,10 +4,10 @@
 // to ~/obsidian-vault/maya/MAYA-PUBLICATION-LOG.md. The board's /maya
 // tab reads this table to surface drafts/posts in the operator CRM.
 //
-// Auth: requireHermes (single shared HERMES_ACTIONS_TOKEN env var,
-// per the Hermes Access Plan v1). actor is set server-side to
-// 'maya' (immutable, set on insert) so the source of every row is
-// clear at query time.
+// Auth: requireHermesAgent(token, agent) where agent MUST be 'maya'.
+// Cross-agent calls (any other agent) throw. agentId is also set
+// server-side to 'maya' (immutable, set on insert) so the source of
+// every row is clear at query time.
 //
 // Per-agent attribution pattern: 'maya' for content drafts/posts,
 // 'intelligence' for competitive intel reports. The board's
@@ -16,13 +16,14 @@
 // drafts/posts are not lead-scoped. The maya_publication_log row
 // (with agentId + createdAt + sourcePath) is the audit trail.
 
-import { mutation } from '../_generated/server'
+import { mutation, query } from '../_generated/server'
 import { v } from 'convex/values'
-import { requireHermes } from '../hermesAuth'
+import { requireHermesAgent } from '../hermesAuth'
 
 export const appendEntry = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('maya'),
     date: v.string(), // YYYY-MM-DD
     platform: v.union(
       v.literal('X'),
@@ -37,18 +38,20 @@ export const appendEntry = mutation({
         v.literal('revised')
       )
     ),
+    body: v.optional(v.string()), // full post text (markdown). Optional for backfill rows that predate the field.
     link: v.optional(v.string()),
     sourcePath: v.string(),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
-    const { token: _token, ...data } = args
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, ...data } = args
     const now = Date.now()
     const id = await ctx.db.insert('maya_publication_log', {
       date: data.date,
       platform: data.platform,
       title: data.title,
       status: data.status ?? 'draft',
+      body: data.body,
       link: data.link,
       sourcePath: data.sourcePath,
       agentId: 'maya',
@@ -66,14 +69,15 @@ export const appendEntry = mutation({
 export const appendTopic = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('maya'),
     date: v.string(),         // YYYY-MM-DD
     dayName: v.string(),      // Monday, Tuesday, ...
     topic: v.string(),        // "Memory Thread", "Quick Win", ...
     bucket: v.string(),       // "Operator" | "Business Outcome"
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
-    const { token: _token, ...data } = args
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, ...data } = args
     const now = Date.now()
     const existing = await ctx.db
       .query('maya_content_topics')
@@ -97,5 +101,38 @@ export const appendTopic = mutation({
       updatedAt: now,
     })
     return { id, action: 'created' as const }
+  },
+})
+
+// Backfill helper: returns [{_id, sourcePath}] for all existing rows.
+// Used by the VPS backfill_bodies.py script to PATCH bodies onto rows
+// that were inserted before the body field was wired through.
+// Auth: requireHermesAgent with agent='maya' (script supplies its token).
+export const listForBackfill = query({
+  args: {
+    token: v.string(),
+    agent: v.literal('maya'),
+  },
+  handler: async (ctx, args) => {
+    requireHermesAgent(args.token, args.agent)
+    const rows = await ctx.db.query('maya_publication_log').collect()
+    return rows.map((r) => ({ _id: r._id, sourcePath: r.sourcePath, hasBody: r.body != null }))
+  },
+})
+
+// Backfill helper: PATCHes the body field on an existing row. Used by
+// the VPS backfill script. Idempotent — calling twice with the same
+// body is a noop.
+export const updateEntryBody = mutation({
+  args: {
+    token: v.string(),
+    agent: v.literal('maya'),
+    id: v.id('maya_publication_log'),
+    body: v.string(),
+  },
+  handler: async (ctx, args) => {
+    requireHermesAgent(args.token, args.agent)
+    await ctx.db.patch(args.id, { body: args.body })
+    return { id: args.id, ok: true }
   },
 })

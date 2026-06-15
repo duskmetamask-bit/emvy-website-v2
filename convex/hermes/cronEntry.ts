@@ -1,18 +1,22 @@
-// Cron entry points. These are internal actions that read the Hermes
-// token from the server env and call the public runner actions.
+// Cron entry points + the public cron_runs append mutation.
 //
-// Convex crons can only call internal functions, so this thin wrapper
-// is the bridge between the schedule and the token-gated public surface.
-//
-// Also exposes the public `appendRun` mutation that the VPS
-// `~/.hermes/bin/log_cron_health.py` calls to upsert one row per cron
-// job into `cron_runs` (live state for the board's /intelligence roster).
-// Added 2026-06-15.
+// Auth model (per-agent tokens, deployed 2026-06-15 PM):
+// - `appendRun` is called by the VPS `log_cron_health.py` script which
+//   runs from a generic context (it can be invoked by mewy or any
+//   other agent to push cron health). It accepts agent='mewy' ONLY —
+//   mewy is the orchestrator that aggregates cron health across all
+//   agent profiles. The mutation validates that args.agent === 'mewy'
+//   and that mewy has a configured token. Even if a bound agent tried
+//   to call it with agent='mewy', the token check would fail (they
+//   don't have mewey's token).
+// - `runDailyCron` and `runFollowupsCron` remain internal actions;
+//   they read the env directly (no per-agent token needed because
+//   they're server-side only and Convex blocks external calls).
 
 import { internalAction, mutation } from '../_generated/server'
 import { api } from '../_generated/api'
 import { v } from 'convex/values'
-import { requireHermes } from '../hermesAuth'
+import { requireHermesAgent } from '../hermesAuth'
 
 function getToken(): string {
   const t = process.env.HERMES_ACTIONS_TOKEN
@@ -44,14 +48,15 @@ export const runFollowupsCron = internalAction({
 // Upserts one row in `cron_runs` per (agentId, cronName) pair. The
 // board's /intelligence cron roster reads this table live.
 //
-// Token-gated: the VPS client passes HERMES_ACTIONS_TOKEN in the
-// Authorization header. 409-style conflict (same agentId+cronName, newer
-// updatedAt) is handled by overwriting in place — `log_cron_health.py`
-// is the single writer.
+// Auth: requireHermesAgent(token, 'mewy') — only mewy writes here. The
+// mewy token is set in HERMES_TOKEN_MEWY. The cron_health script reads
+// it from ~/.hermes/.env. Bound agents do NOT have the mewy token, so
+// even if a sync wrapper mis-routes a call, the auth check rejects.
 export const appendRun = mutation({
   args: {
     token: v.string(),
-    agentId: v.string(),
+    agent: v.literal('mewy'),
+    agentId: v.string(),      // the *target* agent whose cron ran (intelligence, audit, etc.)
     cronName: v.string(),
     schedule: v.string(),
     state: v.union(
@@ -65,7 +70,7 @@ export const appendRun = mutation({
     note: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
+    requireHermesAgent(args.token, args.agent)
     const now = Date.now()
     const existing = await ctx.db
       .query('cron_runs')

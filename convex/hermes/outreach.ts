@@ -1,26 +1,27 @@
 // Hermes function surface for outreach (email_drafts + email_sends).
 //
-// Public surface (requires Bearer token):
-// - createDraft — Hermes writes a draft
-// - approveDraft — operator approves (operator actor)
-// - logSend — operator logs a manual send
-// - autoSend — Hermes fires Resend + logs + schedules follow-ups (NEW for 40/day)
-// - cancelFollowups — stops the sequence on reply/bounce/unsubscribe
+// Auth: every public function requires (token, agent) where
+// agent='blando' for the lead-pipeline functions and agent='mewy'
+// for the operator flow (`sendEditedFromBoard` + `recordLearning` +
+// `listRecentLearnings` + `hasRecentBounce`) which the operator
+// triggers from the board's /drafts UI. Mewy is the orchestrator
+// and acts on the operator's behalf here; in v1 the operator sends
+// from the board and the board's API hits this surface using the
+// mewy token (or the operator's own server-side session).
 //
-// Internal mutations (no token, called from autoSend / webhooks / runner):
-// - recordAutoSend — writes email_sends + activity_log
-// - scheduleFollowups — creates outreach_followups rows for touch 2/3
-// - markQueueItem — updates outreach_queue status
-// - suppressForReply — flips queue + followups to suppressed on inbound reply
+// Internal mutations/actions (no token, called from autoSend /
+// webhooks / runner): recordAutoSend, scheduleFollowups,
+// markQueueItem, suppressForReply.
 //
-// All Hermes writes carry `actor: 'hermes'` (or 'operator' for human-gated
-// actions like approveDraft and logSend, which the operator triggers after
-// Dusk reviews/sends). See Glossary + data flow doc for the manual gates.
+// All Hermes writes carry `actor: 'hermes'` (or 'operator' for human-
+// gated actions like approveDraft and logSend, which the operator
+// triggers after Dusk reviews/sends). See Glossary + data flow doc
+// for the manual gates.
 
 import { action, internalMutation, internalQuery, mutation, query } from '../_generated/server'
 import { v } from 'convex/values'
 import { api, internal } from '../_generated/api'
-import { requireHermes } from '../hermesAuth'
+import { requireHermesAgent } from '../hermesAuth'
 import { wrapEmailBody } from './emailTemplate'
 
 const RESEND_API = 'https://api.resend.com/emails'
@@ -37,13 +38,14 @@ const TOUCH_GAP_MS = (days: number) => days * 24 * 60 * 60 * 1000
 export const createDraft = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('blando'),
     leadId: v.id('leads'),
     subject: v.string(),
     body: v.string(),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
-    const { token: _token, leadId, subject, body } = args
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, leadId, subject, body } = args
     const now = Date.now()
     const id = await ctx.db.insert('email_drafts', {
       leadId,
@@ -66,11 +68,12 @@ export const createDraft = mutation({
 export const approveDraft = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('blando'),
     id: v.id('email_drafts'),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
-    const { token: _token, id } = args
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, id } = args
     const draft = await ctx.db.get(id)
     if (!draft) throw new Error('Draft not found')
     if (draft.status === 'approved' || draft.status === 'sent') {
@@ -94,12 +97,13 @@ export const approveDraft = mutation({
 export const logSend = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('blando'),
     leadId: v.id('leads'),
     subject: v.string(),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
-    const { token: _token, leadId, subject } = args
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, leadId, subject } = args
     const now = Date.now()
     const id = await ctx.db.insert('email_sends', {
       leadId,
@@ -132,13 +136,14 @@ export const logSend = mutation({
 export const autoSend = action({
   args: {
     token: v.string(),
+    agent: v.literal('blando'),
     queueId: v.id('outreach_queue'),
     subject: v.string(),
     body: v.string(),
     touch: v.optional(v.number()),
   },
   handler: async (ctx, args): Promise<{ ok: boolean; noop?: boolean; reason?: string; sendId?: string; resendId?: string; touch: number }> => {
-    requireHermes(args.token)
+    requireHermesAgent(args.token, args.agent)
     const queue = await ctx.runQuery(internal.hermes.outreach.getQueueItem, {
       id: args.queueId,
     })
@@ -214,12 +219,13 @@ export const autoSend = action({
 export const cancelFollowups = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('blando'),
     leadId: v.id('leads'),
     reason: v.string(),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
-    const { token: _token, leadId, reason } = args
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, leadId, reason } = args
     const pending = await ctx.db
       .query('outreach_followups')
       .withIndex('by_lead', (q) => q.eq('leadId', leadId))
@@ -403,9 +409,14 @@ export const suppressForReply = internalMutation({
 // recordOperatorSend atomically: email_sends row, draft -> 'sent',
 // activity_log (actor=operator), new learnings row (operator_edit, weight 2.0),
 // lead stage bump, followups cancelled, queue suppressed.
+//
+// Auth: agent='mewy' — the board's API route calls this on behalf of
+// the operator. Mewy's token lives in the board's server env (or the
+// website's, since this action is called via the shared Convex deploy).
 export const sendEditedFromBoard = action({
   args: {
     token: v.string(),
+    agent: v.literal('mewy'),
     draftId: v.id('email_drafts'),
     leadId: v.id('leads'),
     to: v.string(),
@@ -416,7 +427,7 @@ export const sendEditedFromBoard = action({
     ctx,
     args,
   ): Promise<{ ok: boolean; noop?: boolean; reason?: string; sendId?: string; resendId?: string }> => {
-    requireHermes(args.token)
+    requireHermesAgent(args.token, args.agent)
     const draft = await ctx.runQuery(internal.hermes.outreach.getDraft, { id: args.draftId })
     if (!draft) throw new Error(`Draft not found: ${args.draftId}`)
     if (draft.status === 'sent') {
@@ -479,6 +490,7 @@ export const sendEditedFromBoard = action({
     // taken ownership, no automated touches should follow.
     await ctx.runMutation(api.hermes.outreach.cancelFollowups, {
       token: args.token,
+      agent: 'blando',
       leadId: args.leadId,
       reason: 'operator_sent',
     })
@@ -592,9 +604,13 @@ export const recordOperatorSend = internalMutation({
 // Public mutation: operator saves edits to a draft without sending.
 // Captures a 'learnings' row (operator_save) so Blando can read the
 // preference back. Draft stays in its current status (draft/approved).
+//
+// Auth: agent='mewy' — the board's API route calls this on the
+// operator's behalf.
 export const recordLearning = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('mewy'),
     draftId: v.id('email_drafts'),
     leadId: v.id('leads'),
     subject: v.string(),
@@ -602,8 +618,8 @@ export const recordLearning = mutation({
     source: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
-    const { token: _token, draftId, leadId, subject, editedBody, source } = args
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, draftId, leadId, subject, editedBody, source } = args
     const draft = await ctx.db.get(draftId)
     if (!draft) throw new Error(`Draft not found: ${draftId}`)
     const lead = await ctx.db.get(leadId)
@@ -640,19 +656,17 @@ export const recordLearning = mutation({
 })
 
 // Public query: pulls recent learnings for Blando's pull_learnings.py script.
-// Token-gated. Returns rows strictly newer than `since` (ms epoch), up to
-// `limit`, ordered by capturedAt ascending so the script can append in
-// order. Strictly-greater (gt, not gte) so the high-water mark itself is
-// never re-pulled on subsequent runs.
+// Auth: agent='blando' — only Blando reads the learnings table.
 export const listRecentLearnings = query({
   args: {
     token: v.string(),
+    agent: v.literal('blando'),
     since: v.optional(v.number()),
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
-    const { token: _token, since, limit } = args
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, since, limit } = args
     const cap = limit ?? 200
     const rows = await ctx.db
       .query('learnings')
@@ -665,15 +679,17 @@ export const listRecentLearnings = query({
 
 // Public query: has this lead had a recent bounce event? Used by the
 // board detail page to show a soft-warn banner before re-sending.
+// Auth: agent='mewy' — board's API route calls this for the operator.
 export const hasRecentBounce = query({
   args: {
     token: v.string(),
+    agent: v.literal('mewy'),
     leadId: v.id('leads'),
     windowMs: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
-    const { token: _token, leadId, windowMs } = args
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, leadId, windowMs } = args
     const since = Date.now() - (windowMs ?? 30 * 24 * 60 * 60 * 1000)
     const events = await ctx.db
       .query('email_events')

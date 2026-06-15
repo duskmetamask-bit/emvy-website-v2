@@ -5,10 +5,10 @@
 // The board's /intelligence tab reads this table to surface the
 // competitive intel pipeline in the operator CRM.
 //
-// Auth: requireHermes (single shared HERMES_ACTIONS_TOKEN env var,
-// per the Hermes Access Plan v1). actor is set server-side to
-// 'intelligence' (immutable, set on insert) so the source of every row
-// is clear at query time.
+// Auth: requireHermesAgent(token, agent) where agent MUST be 'intelligence'.
+// Cross-agent calls (any other agent) throw. agentId is also set
+// server-side to 'intelligence' (immutable, set on insert) so the source
+// of every row is clear at query time.
 //
 // Mirrors the structure of convex/hermes/marketing.ts (Maya's appendEntry).
 // activity_log is NOT written here — these are research outputs, not
@@ -17,11 +17,12 @@
 
 import { mutation } from '../_generated/server'
 import { v } from 'convex/values'
-import { requireHermes } from '../hermesAuth'
+import { requireHermesAgent } from '../hermesAuth'
 
 export const appendEntry = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('intelligence'),
     date: v.string(), // YYYY-MM-DD
     reportType: v.union(
       v.literal('daily_competitive_intel'),
@@ -44,8 +45,8 @@ export const appendEntry = mutation({
     sourcePath: v.string(),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
-    const { token: _token, ...data } = args
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, ...data } = args
     const now = Date.now()
     const id = await ctx.db.insert('intelligence_reports', {
       date: data.date,

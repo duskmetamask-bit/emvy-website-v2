@@ -1,20 +1,24 @@
 // Operator-facing outreach queue operations.
 // Re-timing helper: collapses all queued items to scheduledFor=now (or
 // spaced within a single day) so the daily cron actually fires them.
+//
+// Auth: agent='mewy' (operator-driven; the board's API route calls this
+// when the operator runs "reschedule queue" from the dashboard). The
+// mewy token is in the board's server env.
 
 import { mutation } from '../_generated/server';
 import { v } from 'convex/values';
+import { requireHermesAgent } from '../hermesAuth';
 
 export const rescheduleQueue = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('mewy'),
     horizonHours: v.optional(v.number()),
     onlyStatus: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    if (args.token !== process.env.HERMES_ACTIONS_TOKEN) {
-      throw new Error('unauthorized');
-    }
+    requireHermesAgent(args.token, args.agent)
     const horizonHours = args.horizonHours ?? 24;
     const onlyStatus = args.onlyStatus ?? 'queued';
     const items = await ctx.db
@@ -37,11 +41,10 @@ export const rescheduleQueue = mutation({
 export const requeueFailed = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('mewy'),
   },
   handler: async (ctx, args) => {
-    if (args.token !== process.env.HERMES_ACTIONS_TOKEN) {
-      throw new Error('unauthorized');
-    }
+    requireHermesAgent(args.token, args.agent)
     const items = await ctx.db
       .query('outreach_queue')
       .withIndex('by_status', (q) => q.eq('status', 'failed'))

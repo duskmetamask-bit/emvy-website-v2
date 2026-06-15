@@ -1,14 +1,17 @@
 // Hermes runner — daily cadence + follow-up cadence.
 //
-// Public actions (Bearer token):
+// Public actions (per-agent Bearer token):
 // - runDaily: pick up to N items from outreach_queue with status=queued
 //   and scheduledFor<=now, generate trades-voice email via template
 //   rotation, call autoSend for each, log digest.
+//   Auth: agent='blando' — only Blando's daily runner drives the queue.
 // - runFollowups: pick outreach_followups with status=scheduled and
 //   sendAt<=now, generate touch-2/touch-3 email, call autoSend,
 //   then mark the followup row sent.
+//   Auth: agent='blando'.
 // - enqueue: add a lead to the queue (used by CSV seeder and the
-//   warm-intro conversion path).
+//   warm-intro conversion path). Auth: agent='blando'.
+// - recentDigests: read the digest log. Auth: agent='mewy' (board).
 //
 // Templates rotate by hour-of-day so the same lead never sees the
 // same template back-to-back. Personalisation is plain string
@@ -18,7 +21,7 @@
 import { action, internalMutation, internalQuery, mutation, query } from '../_generated/server'
 import { v } from 'convex/values'
 import { internal, api } from '../_generated/api'
-import { requireHermes } from '../hermesAuth'
+import { requireHermesAgent } from '../hermesAuth'
 
 const DAILY_LIMIT = Number(process.env.HERMES_DAILY_LIMIT ?? 40)
 const HOURLY_FOLLOWUP_LIMIT = Number(process.env.HERMES_HOURLY_FOLLOWUP_LIMIT ?? 60)
@@ -139,10 +142,11 @@ function buildVars(q: {
 export const runDaily = action({
   args: {
     token: v.string(),
+    agent: v.literal('blando'),
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args): Promise<{ planned: number; sent: number; failed: number; suppressed: number; errors: string[] }> => {
-    requireHermes(args.token)
+    requireHermesAgent(args.token, args.agent)
     const limit = args.limit ?? DAILY_LIMIT
     const now = Date.now()
     const today = new Date(now).toISOString().slice(0, 10)
@@ -165,6 +169,7 @@ export const runDaily = action({
         const { subject, body } = fillTemplate(tpl, vars)
         await ctx.runAction(api.hermes.outreach.autoSend, {
           token: args.token,
+          agent: 'blando',
           queueId: item._id,
           subject,
           body,
@@ -195,10 +200,11 @@ export const runDaily = action({
 export const runFollowups = action({
   args: {
     token: v.string(),
+    agent: v.literal('blando'),
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args): Promise<{ sent: number; failed: number; errors: string[] }> => {
-    requireHermes(args.token)
+    requireHermesAgent(args.token, args.agent)
     const limit = args.limit ?? HOURLY_FOLLOWUP_LIMIT
     const now = Date.now()
     const seed = Math.floor(now / (60 * 60 * 1000))
@@ -230,6 +236,7 @@ export const runFollowups = action({
       try {
         await ctx.runAction(api.hermes.outreach.autoSend, {
           token: args.token,
+          agent: 'blando',
           queueId: queue._id,
           subject,
           body,
@@ -258,6 +265,7 @@ export const runFollowups = action({
 export const enqueue = mutation({
   args: {
     token: v.string(),
+    agent: v.literal('blando'),
     leadId: v.optional(v.id('leads')),
     company: v.string(),
     contact: v.optional(v.string()),
@@ -270,8 +278,8 @@ export const enqueue = mutation({
     scheduledFor: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
-    const { token: _token, ...data } = args
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, ...data } = args
     const id = await ctx.db.insert('outreach_queue', {
       ...data,
       status: 'queued',
@@ -344,14 +352,16 @@ export const writeDigest = internalMutation({
   },
 })
 
-// Operator-facing summary query (used by the board digest view)
+// Operator-facing summary query (used by the board digest view).
+// Auth: agent='mewy' — only the board's API route reads digests.
 export const recentDigests = query({
   args: {
     token: v.string(),
+    agent: v.literal('mewy'),
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    requireHermes(args.token)
+    requireHermesAgent(args.token, args.agent)
     return await ctx.db
       .query('hermes_daily_digest')
       .withIndex('by_date')

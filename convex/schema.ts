@@ -384,6 +384,7 @@ export default defineSchema({
       v.literal('published'),
       v.literal('revised')
     ),
+    body: v.optional(v.string()), // full post text (markdown). Powers the board's detail panel — no vault access from the board.
     engagement: v.optional(v.any()), // JSON: {likes, reposts, replies} or {pageviews}
     link: v.optional(v.string()),
     sourcePath: v.string(), // relative path to the draft file
