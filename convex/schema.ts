@@ -459,6 +459,33 @@ export default defineSchema({
     .index('by_businessName', ['businessName'])
     .index('by_createdAt', ['createdAt']),
 
+  // Cron health rows — one row per cron job across all 9 EMVY agents,
+  // upserted by the VPS `~/.hermes/bin/log_cron_health.py` every 5 min
+  // (added 2026-06-15). The board's /intelligence cron roster reads
+  // this live, replacing the static INTEL_CRON_ROSTER array. The
+  // /cron-health surface (future) will paginate by agent.
+  // Written by hermes/cronEntry.ts:appendRun.
+  cron_runs: defineTable({
+    agentId: v.string(), // 'maya' | 'intelligence' | 'blando' | 'audit' | 'builds' | 'happy-harold' | 'mewy' | 'ops' | 'sage'
+    cronName: v.string(),
+    schedule: v.string(), // cron expr in whatever timezone the agent uses
+    state: v.union(
+      v.literal('scheduled'),
+      v.literal('paused'),
+      v.literal('unscheduled'),
+      v.literal('error'),
+    ),
+    lastStatus: v.optional(v.string()), // 'ok' | error message | null
+    lastRunAt: v.optional(v.number()), // ms epoch
+    note: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_agentId', ['agentId'])
+    .index('by_agent_cronName', ['agentId', 'cronName'])
+    .index('by_state', ['state'])
+    .index('by_updatedAt', ['updatedAt']),
+
   // Build register — production-code build pipeline from the Cartz/Builds
   // agent. One row per build project; stage is mutable across crons. Mirrors
   // the vault doc ~/obsidian-vault/builds/BUILD-REGISTER.md (5 stages
