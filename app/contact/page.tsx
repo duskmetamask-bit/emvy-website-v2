@@ -76,7 +76,7 @@ export default function ContactPage() {
             </p>
             <div className="contact-list">
               <Link href="/services/discovery-call">Free Discovery Call</Link>
-              <Link href="/assessment">AI Readiness Quiz</Link>
+              <Link href="/services/ai-strategy-call">$500 AI Strategy Call</Link>
               <Link href="/why-ai">Why AI</Link>
             </div>
           </div>

@@ -562,6 +562,44 @@ export default defineSchema({
     .index('by_stage', ['stage'])
     .index('by_createdAt', ['createdAt']),
 
+  // === Competitor Pricing Matrix (Intelligence agent output, surfaced on /pricing) ===
+  // Written by the seed script from the 2026-06-16 VPS pricing_matrix artifact.
+  // The intelligence agent can PATCH rows via hermes/pricing:upsertCompetitor;
+  // the operator can override notes via board/pricing:setEmvyNotes.
+
+  competitor_pricing: defineTable({
+    competitor: v.string(), // canonical name (e.g. 'Nimbull')
+    isEmvy: v.boolean(), // true for the EMVY row, false for competitors
+    location: v.string(), // 'Sydney' | 'AU' | 'Perth' | etc.
+    positioning: v.string(), // one-liner
+    website: v.string(), // URL
+    auditPrice: v.string(), // '$797' | 'NP' | 'Free'
+    auditFormat: v.string(), // '40-60 min + written report'
+    auditIncludes: v.string(), // what the audit deliverable covers
+    auditBuildCredit: v.boolean(), // true if the audit fee is credited to a subsequent build
+    buildMin: v.string(), // '$3,000' | 'NP' | '$2,000/mo'
+    buildMax: v.string(),
+    buildType: v.string(), // 'Chatbot, Voice AI, Workflow'
+    buildNotes: v.string(), // 'Scoped from audit' | etc.
+    retainerPrice: v.string(), // '$300-$600/mo' | 'NP'
+    retainerIncludes: v.string(),
+    emvyNotes: v.optional(v.string()), // operator notes, initially empty
+    source: v.union(v.literal('manual'), v.literal('intel_agent')),
+    updatedAt: v.number(),
+  })
+    .index('by_competitor', ['competitor'])
+    .index('by_isEmvy', ['isEmvy']),
+
+  pricing_recommendation: defineTable({
+    number: v.number(), // 1..5, order from the intel report
+    title: v.string(), // 'Move audit from $797 -> $997'
+    body: v.string(), // the rationale
+    status: v.union(v.literal('open'), v.literal('applied'), v.literal('dropped')),
+    createdAt: v.number(),
+  })
+    .index('by_number', ['number'])
+    .index('by_status', ['status']),
+
   // === Personal Board tables (Dusk personal management) ===
   // Single-user data; auth-gated by the board's HMAC middleware.
   // The board repo is the only client; the website schema mirrors so

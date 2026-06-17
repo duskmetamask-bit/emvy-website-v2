@@ -24,9 +24,9 @@ const relatedServices = [
     body: 'Connect AI workflows to the systems that already hold the data, with clear access boundaries.',
   },
   {
-    href: '/services/ai-assessment',
-    title: 'AI Assessment',
-    body: 'Workflow analysis, technical readiness review, and a practical implementation plan with governance baked in.',
+    href: '/services/ai-strategy-call',
+    title: 'AI Strategy Call',
+    body: 'A paid 60-minute session that maps your workflow, surfaces the strongest opportunities, and lays out a 0–30 / 30–90 / 90–180 day plan.',
   },
   {
     href: '/services/systems-maintenance',

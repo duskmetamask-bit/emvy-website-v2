@@ -29,6 +29,12 @@ export async function POST(req: NextRequest) {
         name: payload.name,
         email: payload.email,
         location: payload.location,
+        // Paid-booking fields (Cal.com doesn't always send these — defensive).
+        // Booking-level payment info goes in BOOKING_PAID events; some Cal.com
+        // setups include the price on BOOKING_CREATED for paid event types.
+        price: payload.price,
+        currency: payload.currency,
+        paymentId: payload.paymentId,
       },
     })
 

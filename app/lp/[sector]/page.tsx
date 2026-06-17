@@ -106,7 +106,7 @@ const SECTOR_CONTENT: Record<
       },
       {
         step: '02',
-        title: 'Tradies Ops Audit ($1,500)',
+        title: 'AI Strategy ($500)',
         body: 'We map your quoting, follow-up, inbox, booking, and bookkeeping workflows. You get a written report with a 90-day plan and a clear investment range.',
       },
       {
@@ -170,7 +170,7 @@ export default function SectorLandingPage({ params }: Props) {
               eventName="quiz_start"
               eventLabel={`sector-${params.sector}-hero`}
             >
-              Take the 2-min ops quiz
+              Take the 2-min Mini AI Strategy Assessment
             </TrackedLink>
           </div>
           <div className="hero-ribbon">
@@ -298,7 +298,7 @@ export default function SectorLandingPage({ params }: Props) {
           <article className="final-cta-card">
             <p className="service-flow-number">02</p>
             <h3>
-              <MessageSquare size={18} /> Take the ops quiz
+              <MessageSquare size={18} /> Take the Mini AI Strategy Assessment
             </h3>
             <p>2-minute quiz that scores your admin load and emails you the result.</p>
             <TrackedLink

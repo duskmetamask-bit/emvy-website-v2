@@ -162,7 +162,7 @@ const AssessmentReport: React.FC<AssessmentReportProps> = ({
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Text style={styles.kicker}>EMVY Mini Ops Assessment</Text>
+          <Text style={styles.kicker}>EMVY Mini AI Strategy Assessment</Text>
           <Text style={styles.title}>Your Ops Efficiency Report</Text>
           <Text style={styles.subtitle}>Prepared for {name}</Text>
         </View>

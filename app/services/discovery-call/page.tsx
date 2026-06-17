@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckCircle2 } from 'lucide-react'
 import PageHero from '../../../components/PageHero'
-import CalBookingGate from '../../../components/CalBookingGate'
+import CalInlineEmbed from '../../../components/CalInlineEmbed'
 import JsonLd from '@/components/JsonLd'
 import { service } from '@/lib/schema/jsonld'
 import { SERVICES } from '@/lib/schema/service-data'
@@ -34,14 +34,28 @@ export default function DiscoveryCallPage() {
       <PageHero
         eyebrow="Free Discovery Call"
         title="A free 15-minute call to explore where AI could help your business."
-        description="This is a short introduction call to understand your business, what you want to improve, and what the best next step looks like."
+        description="This is a short introduction call to understand your business, what you want to improve, and what the best next step looks like. Pick a time below."
         image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1800&q=90&auto=format&fit=crop"
       >
-        <CalBookingGate triggerLabel="Book Free Discovery Call" className="button primary" />
+        <a href="#book" className="button primary">
+          Pick a time
+        </a>
         <Link href="/services" className="button secondary">
           See service flow
         </Link>
       </PageHero>
+
+      <section className="section" id="book">
+        <div className="section-header">
+          <p className="section-kicker">Book</p>
+          <h2 className="section-title">Pick a 15-minute slot.</h2>
+          <p className="section-text">
+            The calendar is live — choose any time that works. You'll get an email confirmation
+            with a brief agenda and a link to reschedule if you need to.
+          </p>
+        </div>
+        <CalInlineEmbed eventSlug="discovery-call" />
+      </section>
 
       <section className="section">
         <div className="section-header">
@@ -68,17 +82,6 @@ export default function DiscoveryCallPage() {
             </article>
           ))}
         </div>
-      </section>
-
-      <section className="section cta-band">
-        <div>
-          <p className="section-kicker">Ready To Book</p>
-          <h2 className="section-title">Book your free discovery call.</h2>
-          <p className="section-text">
-            Share a few details first, then choose a time that suits you.
-          </p>
-        </div>
-        <CalBookingGate triggerLabel="Continue to booking" className="button primary" />
       </section>
     </>
   )

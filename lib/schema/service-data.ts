@@ -20,11 +20,11 @@ export const SERVICES = {
     url: `${SITE_URL}/services/discovery-call`,
     serviceType: 'Consulting call',
   },
-  'ai-assessment': {
-    name: 'AI Assessment',
-    description: 'AI assessment services for identifying the right workflow and opportunity areas.',
-    url: `${SITE_URL}/services/ai-assessment`,
-    serviceType: 'AI consultancy',
+  'ai-strategy-call': {
+    name: 'AI Strategy Call',
+    description: 'A paid 60-minute AI strategy session — scope, sequencing, and approach for an AI build.',
+    url: `${SITE_URL}/services/ai-strategy-call`,
+    serviceType: 'Consulting call',
   },
   'ai-builds': {
     name: 'AI Builds',

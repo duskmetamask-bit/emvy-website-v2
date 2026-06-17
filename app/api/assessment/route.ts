@@ -120,15 +120,15 @@ export async function POST(request: NextRequest) {
     const { data, error } = await resend.emails.send({
       from: 'EMVY <noreply@emvyai.com>',
       to: email,
-      subject: 'Your EMVY Mini Ops Assessment Report',
+      subject: 'Your EMVY Mini AI Strategy Assessment Report',
       html: `
         <div style="font-family: system-ui, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-          <h1 style="color: #05070b; font-size: 24px; margin-bottom: 20px;">Your Ops Efficiency Report</h1>
+          <h1 style="color: #05070b; font-size: 24px; margin-bottom: 20px;">Your AI Readiness Report</h1>
           <p style="color: #333; font-size: 16px; line-height: 1.6;">
             Hi ${name},
           </p>
           <p style="color: #333; font-size: 16px; line-height: 1.6;">
-            Thanks for completing the EMVY Mini Ops Assessment. Based on your responses, here is your personalised ops efficiency report.
+            Thanks for completing the EMVY Mini AI Strategy Assessment. Based on your responses, here is your personalised AI readiness report.
           </p>
           <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <p style="color: #333; margin: 0 0 10px;"><strong>Your Score:</strong> ${score}</p>

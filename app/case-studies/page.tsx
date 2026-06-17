@@ -59,7 +59,7 @@ export default function CaseStudiesPage() {
           View services
         </Link>
         <Link href="/assessment" className="button secondary">
-          Start the quiz
+          Start the Mini AI Strategy Assessment
         </Link>
       </PageHero>
 

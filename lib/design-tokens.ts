@@ -192,7 +192,7 @@ export const brand = {
  */
 export const voice = {
   /** Single-line position. The sentence a stranger reads first. */
-  position: 'We identify where your business can leverage AI, then build the systems to make it work.',
+  position: 'Find out where AI actually pays off — before you spend a dollar on it.',
   /** Brand promise in one phrase. */
   promise: 'Calm expertise. Plain-spoken. Built to work.',
   /** Voice rules — do these, avoid their opposites. */

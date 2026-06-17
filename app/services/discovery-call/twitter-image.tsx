@@ -10,6 +10,6 @@ export default async function Image() {
     eyebrow: 'Discovery Call',
     title: 'Free 15-minute strategy call',
     subtitle:
-      'No pitch. We map your highest-leverage AI opportunity and tell you if we can help.',
+      'No pitch. We map your highest-ROI AI opportunity and tell you straight if we can help.',
   })
 }

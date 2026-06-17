@@ -12,7 +12,7 @@ type NavItem = {
 
 const services: NavItem[] = [
   { label: 'Discovery Call', href: '/services/discovery-call' },
-  { label: 'AI Assessment', href: '/services/ai-assessment' },
+  { label: 'AI Strategy Call', href: '/services/ai-strategy-call' },
   { label: 'AI Builds', href: '/services/ai-builds' },
   { label: 'Systems Maintenance', href: '/services/systems-maintenance' },
 ]
@@ -75,7 +75,7 @@ export default function Header() {
         Why AI
       </Link>
       <Link className="nav-link" href="/assessment">
-        Assessment
+        Mini AI Strategy
       </Link>
 
       <Link className="nav-link" href="/about">
@@ -106,6 +106,14 @@ export default function Header() {
         >
           Book Free Discovery Call
         </TrackedLink>
+        <TrackedLink
+          href="/services/ai-strategy-call"
+          className="button secondary small"
+          eventName="ai_strategy_call_click"
+          eventLabel="header"
+        >
+          AI Strategy Call ($500)
+        </TrackedLink>
         <button className="menu-button" type="button" onClick={() => setMobileOpen((value) => !value)} aria-label="Open menu">
           {mobileOpen ? <X size={18} /> : <Menu size={18} />}
         </button>
@@ -116,10 +124,11 @@ export default function Header() {
           <Link href="/services" onClick={() => setMobileOpen(false)}>Services</Link>
           <Link href="/case-studies" onClick={() => setMobileOpen(false)}>Case Studies</Link>
           <Link href="/why-ai" onClick={() => setMobileOpen(false)}>Why AI</Link>
-          <Link href="/assessment" onClick={() => setMobileOpen(false)}>Assessment</Link>
+          <Link href="/assessment" onClick={() => setMobileOpen(false)}>Mini AI Strategy</Link>
           <Link href="/about" onClick={() => setMobileOpen(false)}>About</Link>
           <Link href="/contact" onClick={() => setMobileOpen(false)}>Contact</Link>
           <Link href="/services/discovery-call" onClick={() => setMobileOpen(false)}>Book Free Discovery Call</Link>
+          <Link href="/services/ai-strategy-call" onClick={() => setMobileOpen(false)}>Book AI Strategy Call ($500)</Link>
         </div>
       ) : null}
     </header>

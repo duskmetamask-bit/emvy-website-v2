@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import EmvyLogo from './EmvyLogo'
+import Image from 'next/image'
 
 const primaryLinks = [
   { label: 'Services', href: '/services' },
@@ -10,9 +10,9 @@ const primaryLinks = [
 ]
 
 const conversionLinks = [
-  { label: 'AI Assessment', href: '/assessment' },
+  { label: 'Mini AI Strategy', href: '/assessment' },
   { label: 'Free Discovery Call', href: '/services/discovery-call' },
-  { label: 'AI Audit', href: '/services/ai-assessment' },
+  { label: 'AI Strategy Call ($500)', href: '/services/ai-strategy-call' },
   { label: 'AI Builds', href: '/services/ai-builds' },
   { label: 'Systems Maintenance', href: '/services/systems-maintenance' },
 ]
@@ -23,7 +23,13 @@ export default function Footer() {
       <div className="site-footer__grid">
         <div className="site-footer__intro">
           <Link href="/" className="footer-brand" aria-label="EMVY — home">
-            <EmvyLogo className="footer-brand__mark" aria-hidden="true" />
+            <Image
+              src="/brand/logo-icon.png"
+              alt="EMVY"
+              width={48}
+              height={48}
+              className="footer-brand__mark"
+            />
             <span className="footer-brand__wordmark">emvy</span>
           </Link>
           <h2>Identify the right AI opportunity, then build the system around it.</h2>

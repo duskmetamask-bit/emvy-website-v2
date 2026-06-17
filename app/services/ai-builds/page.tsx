@@ -40,7 +40,7 @@ export default function AIBuildsPage() {
       <PageHero
         eyebrow="Build with AI"
         title="Build the AI systems that support the opportunity."
-        description="Fully leverage the latest technology of automation and implement into your business operating system"
+        description="Scoped implementation of the AI systems, automations, and workflow improvements from your AI Strategy. $3K–$5K depending on scope."
         image="https://images.unsplash.com/photo-1484417894907-623942c8ee29?w=1800&q=90&auto=format&fit=crop"
       >
         <Link href="/contact" className="button light">

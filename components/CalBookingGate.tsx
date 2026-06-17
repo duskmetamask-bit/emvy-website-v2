@@ -6,13 +6,38 @@ import { CalendarDays, ShieldCheck, X } from 'lucide-react'
 type CalBookingGateProps = {
   triggerLabel: string
   className?: string
+  /** Slug of the Cal.com event type to book. Defaults to the 15-min AI chat. */
+  eventSlug?: string
+  /** Optional override for the full Cal.com URL (use for non-jake-emvy accounts). */
+  calUrl?: string
+  /** Display name for the event in the modal title. */
   eventLabel?: string
+  /** Whether this event requires payment — shows a payment disclosure in the modal. */
+  paid?: boolean
+  /** Display price (e.g. "$500 AUD") when paid. */
+  priceLabel?: string
 }
 
-const CAL_URL = 'https://cal.com/jake-emvy/15-min-ai-chat'
+/**
+ * Resolve the Cal.com booking URL from a slug + base. `jake-emvy` is the
+ * canonical account for the public site CTAs per
+ * `Sessions/2026-06-17 — emvy-board.md`.
+ */
+const CAL_BASE = 'https://cal.com/jake-emvy'
+const DEFAULT_EVENT_SLUG = '15-min-ai-chat'
 
-export default function CalBookingGate({ triggerLabel, className }: CalBookingGateProps) {
+export default function CalBookingGate({
+  triggerLabel,
+  className,
+  eventSlug,
+  calUrl,
+  eventLabel,
+  paid,
+  priceLabel,
+}: CalBookingGateProps) {
   const [open, setOpen] = useState(false)
+  const resolvedUrl = calUrl ?? `${CAL_BASE}/${eventSlug ?? DEFAULT_EVENT_SLUG}`
+  const title = eventLabel ? `Book the ${eventLabel}.` : 'Book the first conversation.'
 
   return (
     <>
@@ -21,32 +46,42 @@ export default function CalBookingGate({ triggerLabel, className }: CalBookingGa
       </button>
 
       {open ? (
-        <div className="booking-modal" role="dialog" aria-modal="true" aria-label="Discovery booking">
+        <div className="booking-modal" role="dialog" aria-modal="true" aria-label={`Booking: ${eventLabel ?? 'call'}`}>
           <button className="booking-modal__backdrop" type="button" onClick={() => setOpen(false)} aria-label="Close booking modal" />
           <div className="booking-modal__panel">
             <div className="booking-modal__header">
               <div>
                 <p className="section-kicker">Next step</p>
-                <h2>Book the first conversation.</h2>
+                <h2>{title}</h2>
               </div>
               <button className="booking-modal__close" type="button" onClick={() => setOpen(false)} aria-label="Close">
                 <X size={18} />
               </button>
             </div>
 
-            <div className="booking-modal__note">
-              <ShieldCheck size={18} />
-              <p>
-                This call is where we decide the right path, whether that becomes a quick audit, a
-                build engagement, or a longer-term delivery and maintenance plan.
-              </p>
-            </div>
+            {paid ? (
+              <div className="booking-modal__note" style={{ borderColor: '#2be3a355', background: '#2be3a312' }}>
+                <ShieldCheck size={18} style={{ color: '#2be3a3' }} />
+                <p>
+                  This is a paid {eventLabel ?? 'call'} ({priceLabel ?? 'see calendar'}). Payment is
+                  collected by Cal.com via Stripe before the time is locked in.
+                </p>
+              </div>
+            ) : (
+              <div className="booking-modal__note">
+                <ShieldCheck size={18} />
+                <p>
+                  This call is where we decide the right path, whether that becomes a quick audit, a
+                  build engagement, or a longer-term delivery and maintenance plan.
+                </p>
+              </div>
+            )}
 
             <form
               className="booking-form"
               onSubmit={(event) => {
                 event.preventDefault()
-                window.open(CAL_URL, '_blank', 'noopener,noreferrer')
+                window.open(resolvedUrl, '_blank', 'noopener,noreferrer')
                 setOpen(false)
               }}
             >
@@ -88,7 +123,7 @@ export default function CalBookingGate({ triggerLabel, className }: CalBookingGa
               </div>
 
               <button type="submit" className="button primary booking-form__submit">
-                Continue to booking
+                {paid ? `Continue to ${priceLabel ?? 'paid'} booking` : 'Continue to booking'}
               </button>
             </form>
           </div>

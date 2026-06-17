@@ -4,7 +4,7 @@ import { service } from '@/lib/schema/jsonld'
 
 const EXPECTED_SLUGS: ReadonlyArray<ServiceSlug> = [
   'discovery-call',
-  'ai-assessment',
+  'ai-strategy-call',
   'ai-builds',
   'systems-maintenance',
 ]
@@ -12,7 +12,7 @@ const EXPECTED_SLUGS: ReadonlyArray<ServiceSlug> = [
 const SITE_ORIGIN = 'https://emvyai.com'
 
 describe('SERVICES', () => {
-  it('has exactly the 4 expected service slugs', () => {
+  it('has exactly the expected service slugs', () => {
     expect(Object.keys(SERVICES).sort()).toEqual([...EXPECTED_SLUGS].sort())
   })
 

@@ -5,7 +5,7 @@ import PageHero from '../../components/PageHero'
 export const metadata: Metadata = {
   title: 'Services',
   description:
-    'Explore the EMVY service flow: Discovery, Audit, Build, and Systems Maintenance.',
+    'Explore the EMVY service flow: Discovery, AI Strategy, Build, and Systems Maintenance.',
 }
 
 const services = [
@@ -18,24 +18,24 @@ const services = [
   },
   {
     number: '02',
-    href: '/services/ai-assessment',
-    title: 'Audit',
+    href: '/services/ai-strategy-call',
+    title: 'AI Strategy',
     summary:
-      'A structured review of where AI can help, what needs to be mapped in more detail, and which opportunities are worth pursuing.',
+      'A $500, 60-minute structured AI readiness assessment — surfaces the highest-ROI opportunities and lays out a 0–30 / 30–90 / 90–180 day plan.',
   },
   {
     number: '03',
     href: '/services/ai-builds',
     title: 'Build',
     summary:
-      'Implementation of AI systems, products, and automations that reduce admin and improve operational efficiency.',
+      'Scoped implementation of the AI systems, automations, and workflow improvements from your strategy — $3K to $5K depending on scope.',
   },
   {
     number: '04',
     href: '/services/systems-maintenance',
     title: 'Maintenance',
     summary:
-      'Ongoing support, optimisation, and monitoring for businesses that want EMVY involved after launch.',
+      '$500/month retainer for ongoing optimisation, monitoring, and roadmap updates after launch.',
   },
 ]
 
@@ -45,7 +45,7 @@ export default function ServicesPage() {
       <PageHero
         eyebrow="Services"
         title="A clear path from AI opportunity to working system."
-        description="EMVY identifies where your business can leverage AI, then audits, builds, and supports the systems around that opportunity."
+        description="We help Australian SMBs figure out where AI pays off — then build only what's worth building. Platform-agnostic, honest pricing, real outcomes."
         image="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1800&q=90&auto=format&fit=crop"
       >
         <Link href="/services/discovery-call" className="button light">

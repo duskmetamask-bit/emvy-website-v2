@@ -14,7 +14,7 @@ const aboutCards = [
   },
   {
     title: 'How we work',
-    body: 'We start with the actual process, not the shiny tool. Then we build the smallest system that creates useful leverage and can be maintained properly.',
+    body: 'We start with the actual process, not the shiny tool. Then we build the smallest system that pays for itself and can be maintained properly.',
   },
   {
     title: 'What you can expect',

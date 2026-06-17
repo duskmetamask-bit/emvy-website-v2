@@ -1546,6 +1546,81 @@ main {
   margin-top: 0.35rem;
 }
 
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.pricing-card {
+  align-content: start;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.pricing-card__price {
+  font-size: 2.25rem;
+  font-weight: 600;
+  line-height: 1;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.pricing-card__cadence {
+  font-size: 0.875rem;
+  opacity: 0.7;
+  margin: 0;
+}
+
+.pricing-card .button {
+  width: fit-content;
+  margin-top: 0.4rem;
+}
+
+.pricing-card--highlight {
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.faq-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.faq-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+}
+
+.faq-item summary {
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: '+';
+  float: right;
+  font-weight: 400;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.faq-item[open] summary::after {
+  content: '−';
+}
+
+.faq-item p {
+  margin-top: 0.6rem;
+  margin-bottom: 0;
+}
+
 .detail-card {
   align-content: start;
 }

@@ -1,26 +1,27 @@
 import type { Metadata } from 'next'
 
-// /assessment — the EMVY Mini AI Audit chatbot. Renders the standalone
-// chatbot app (deployed at emvy-audit-chatbot.vercel.app) full-viewport
-// via iframe. The site chrome (header/footer) is suppressed for this route
-// in components/SiteChrome.tsx so the chatbot owns the entire viewport.
+// /assessment — the EMVY Mini AI Strategy Assessment chatbot. Renders the
+// standalone chatbot app (deployed at emvy-audit-chatbot.vercel.app) full-
+// viewport via iframe. The site chrome (header/footer) is suppressed for
+// this route in components/SiteChrome.tsx so the chatbot owns the entire
+// viewport.
 
 const CHATBOT_URL =
   process.env.NEXT_PUBLIC_AUDIT_CHATBOT_URL ||
   'https://emvy-audit-chatbot.vercel.app'
 
 export const metadata: Metadata = {
-  title: 'Mini AI Audit',
+  title: 'Mini AI Strategy Assessment',
   description:
-    'A 5-minute Mini AI Audit for your business. Answer 13 questions, get a personalised 30/60/90 day AI roadmap. Built by EMVY.',
+    'A free 2-minute Mini AI Strategy Assessment for your business. Answer 13 questions, get a personalised AI readiness report. Built by EMVY.',
   robots: {
     index: true,
     follow: true,
   },
   openGraph: {
-    title: 'EMVY Mini AI Audit',
+    title: 'EMVY Mini AI Strategy Assessment',
     description:
-      'A 5-minute Mini AI Audit. Personalised 30/60/90 day AI roadmap in your inbox.',
+      'A free 2-minute Mini AI Strategy Assessment. Personalised AI readiness report in your inbox.',
     url: 'https://emvyai.com/assessment',
     siteName: 'EMVY',
     type: 'website',
@@ -41,7 +42,7 @@ export default function AssessmentPage() {
     >
       <iframe
         src={CHATBOT_URL}
-        title="EMVY Mini AI Audit"
+        title="EMVY — Mini AI Strategy Assessment"
         allow="clipboard-write"
         style={{
           width: '100%',

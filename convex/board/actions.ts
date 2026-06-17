@@ -63,12 +63,14 @@ export const create = mutation({
     track: v.string(),
     priority: v.string(),
     assignee: v.optional(v.string()),
+    source: v.optional(v.string()),
     dueAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     assertOneOf(args.track, TRACKS, 'track');
     assertOneOf(args.priority, PRIORITIES, 'priority');
     if (args.assignee) assertOneOf(args.assignee, ['operator', 'hermes'], 'assignee');
+    if (args.source) assertOneOf(args.source, ['manual', 'hermes', 'import'], 'source');
 
     const now = Date.now();
     return await ctx.db.insert('actions', {
@@ -79,7 +81,7 @@ export const create = mutation({
       status: 'open',
       assignee: args.assignee ?? 'operator',
       actor: 'operator',
-      source: 'manual',
+      source: args.source ?? 'manual',
       dueAt: args.dueAt,
       createdAt: now,
       updatedAt: now,
@@ -136,6 +138,14 @@ export const reopen = mutation({
   handler: async (ctx, { id }) => {
     const now = Date.now();
     await ctx.db.patch(id, { status: 'open', completedAt: undefined, updatedAt: now });
+    return id;
+  },
+});
+
+export const remove = mutation({
+  args: { id: v.id('actions') },
+  handler: async (ctx, { id }) => {
+    await ctx.db.delete(id);
     return id;
   },
 });

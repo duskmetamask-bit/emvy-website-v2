@@ -184,7 +184,7 @@ export default function ProcessPage() {
               </Link>
               {' · '}
               <Link href="/assessment" className="inline-link">
-                Take the 2-min ops quiz <ArrowRight size={14} />
+                Take the 2-min Mini AI Strategy Assessment <ArrowRight size={14} />
               </Link>
             </span>
           </div>

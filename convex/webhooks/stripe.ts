@@ -23,12 +23,31 @@ export const handlePaymentEvent = mutation({
     const { type, data } = args
     const payment = data.object
 
-    // Find lead if linked
+    // Find lead if linked. Three-tier match:
+    //   1. metadata.leadId (set by our own checkout flows — emvy-board's
+    //      parked Stripe build, the website's own Stripe routes)
+    //   2. receipt_email on the PaymentIntent (most reliable for Cal.com-native
+    //      Stripe — Cal.com forwards the booker's email)
+    //   3. fallback to metadata.email if present
+    // Without the fallback, payments from Cal.com's native Stripe integration
+    // never link to leads (Cal.com sets its own metadata, not ours).
     let leadId: Id<'leads'> | undefined = undefined
     if (payment.metadata?.leadId) {
       const leads = await ctx.db.query('leads').collect()
       const lead = leads.find(l => l._id.toString() === payment.metadata!.leadId)
       leadId = lead?._id
+    }
+    if (!leadId) {
+      const email =
+        (payment as unknown as { receipt_email?: string }).receipt_email ??
+        (payment.metadata as { email?: string } | undefined)?.email
+      if (email) {
+        const leads = await ctx.db
+          .query('leads')
+          .withIndex('by_email', (q) => q.eq('email', email))
+          .collect()
+        leadId = leads[0]?._id
+      }
     }
 
     // Map Stripe events to our status

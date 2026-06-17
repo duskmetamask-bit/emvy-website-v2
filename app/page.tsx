@@ -18,11 +18,11 @@ const services = [
   },
   {
     number: '02',
-    title: 'Audit',
+    title: 'Strategy',
     subtitle: 'Find the strongest AI opportunities',
     description:
       'We assess the workflow, systems, and operational constraints so you know where AI will genuinely help.',
-    href: '/services/ai-assessment',
+    href: '/services/ai-strategy-call',
     image:
       'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=90&auto=format&fit=crop',
   },
@@ -113,7 +113,7 @@ function HeroCtas() {
         eventName="quiz_start"
         eventLabel="homepage hero"
       >
-        Start the Mini Ops Assessment
+        Start the Mini AI Strategy Assessment
       </TrackedLink>
     </>
   )
@@ -139,18 +139,19 @@ export default function Home() {
           </div>
 
           <div className="hero-copy">
-            <p className="section-kicker hero-kicker">AI systems for growing businesses</p>
-            <h1>We identify where your business can leverage AI, then build the systems to make it work.</h1>
+            <p className="section-kicker hero-kicker">AI readiness for Australian small businesses</p>
+            <h1>Find out where AI actually pays off — before you spend a dollar on it.</h1>
             <p>
-              EMVY helps businesses reduce admin, improve system efficiency, and build better
-              workflows with practical AI systems, automations, and operational support.
+              EMVY helps tradies, accountants, and other Aussie SMBs cut through the AI noise. A
+              $500 readiness assessment shows you exactly where AI will save time — then we build
+              only what's worth building.
             </p>
 
             <div className="hero-ribbon">
-              <strong>Discovery, audit, build, and maintenance when needed.</strong>
+              <strong>Readiness before investment. $500 — the only structured AI assessment in this price band.</strong>
               <span>
-                Start with a free discovery call, or explore the quiz if you want a simple first
-                step.
+                Free 2-min Mini AI Strategy Assessment → $500 AI Strategy → $3K–$5K build. No
+                fluff, no follow-up unless you ask.
               </span>
             </div>
 
@@ -283,10 +284,10 @@ export default function Home() {
 
           <article className="final-cta-card">
             <p className="service-flow-number">02</p>
-            <h3>Start the Mini Ops Assessment</h3>
+            <h3>Start the Mini AI Strategy Assessment</h3>
             <p>
-              A simple lead magnet that gives you a better sense of where AI may help and sends the
-              result straight to your email.
+              A free 2-minute self-assessment that surfaces exactly where your business is losing
+              time and money — and emails you a personalised readiness report.
             </p>
             <TrackedLink
               href="/assessment"
