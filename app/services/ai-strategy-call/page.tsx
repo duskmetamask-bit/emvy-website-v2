@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckCircle2, Clock, CreditCard } from 'lucide-react'
 import PageHero from '../../../components/PageHero'
+import CalInlineEmbed from '../../../components/CalInlineEmbed'
 import JsonLd from '@/components/JsonLd'
 import { service } from '@/lib/schema/jsonld'
 import { SERVICES } from '@/lib/schema/service-data'
@@ -12,10 +13,12 @@ export const metadata: Metadata = {
     'A paid 60-minute AI strategy session with EMVY — scope, sequencing, and an implementation plan for an AI build.',
 }
 
-// The board owns the paid booking funnel end-to-end — it has the slot
-// picker, Stripe Checkout, webhook, and Cal.com createBooking all on its
-// own domain. The website landing just deep-links into it.
-const BOARD_BOOKING_URL = 'https://board.emvyai.com/book/ai-strategy'
+// Cal.com owns the booking + Stripe payment flow end-to-end via its
+// inline embed + Stripe App integration. The board receives the
+// BOOKING_CREATED webhook for the operator's view; the customer never
+// leaves the website.
+const CAL_ACCOUNT = 'jake-emvy'
+const CAL_EVENT_SLUG = 'ai-strategy'
 
 const outcomes = [
   {
@@ -57,10 +60,10 @@ export default function AIStrategyCallPage() {
       <PageHero
         eyebrow="AI Strategy Call · $500 AUD"
         title="A 60-minute AI strategy session for a real build."
-        description="For when you already know AI is on the table and you want a concrete scope, sequence, and approach — not another intro call. Pick a time and pay below."
+        description="For when you already know AI is on the table and you want a concrete scope, sequence, and approach — not another intro call. Pick a time below."
         image="https://images.unsplash.com/photo-1551434678-e076c223a692?w=1800&q=90&auto=format&fit=crop"
       >
-        <a href={BOARD_BOOKING_URL} className="button primary">
+        <a href="#book" className="button primary">
           Pick a time — $500
         </a>
         <Link href="/services" className="button secondary">
@@ -73,16 +76,16 @@ export default function AIStrategyCallPage() {
           <p className="section-kicker">Book</p>
           <h2 className="section-title">Pick a 60-minute slot. Payment is collected at booking.</h2>
           <p className="section-text">
-            You'll choose your time on the board — Stripe collects the $500 AUD
-            before the slot is locked in on Cal.com. Refundable up to 24 hours
-            before the call.
+            You'll choose your time on Cal.com — Stripe collects the $500 AUD before the
+            slot is locked in. Refundable up to 24 hours before the call.
           </p>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '1rem 0' }}>
-          <a href={BOARD_BOOKING_URL} className="button primary">
-            Open the booking page →
-          </a>
-        </div>
+        <CalInlineEmbed
+          eventSlug={CAL_EVENT_SLUG}
+          accountSlug={CAL_ACCOUNT}
+          paid
+          minHeight={760}
+        />
       </section>
 
       <section className="section">
