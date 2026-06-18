@@ -14,9 +14,9 @@ const relatedServices = [
     body: 'Operational AI for handover, reporting, approvals, and visibility — built with sensible access and review controls.',
   },
   {
-    href: '/services/audit-questionnaire',
-    title: 'Audit Questionnaire',
-    body: 'A structured questionnaire that produces a written AI-readiness assessment, not a sales pitch.',
+    href: '/assessment',
+    title: 'Mini AI Strategy Assessment',
+    body: 'A structured questionnaire that produces a written AI strategy report, not a sales pitch.',
   },
   {
     href: '/services/integrations',

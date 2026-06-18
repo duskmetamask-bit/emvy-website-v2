@@ -21,7 +21,7 @@ const services = [
     href: '/services/ai-strategy-call',
     title: 'AI Strategy',
     summary:
-      'A $500, 60-minute structured AI readiness assessment — surfaces the highest-ROI opportunities and lays out a 0–30 / 30–90 / 90–180 day plan.',
+      'A $500, 60-minute structured AI strategy session — surfaces the highest-ROI opportunities and lays out a 0–30 / 30–90 / 90–180 day plan.',
   },
   {
     number: '03',
@@ -45,7 +45,7 @@ export default function ServicesPage() {
       <PageHero
         eyebrow="Services"
         title="A clear path from AI opportunity to working system."
-        description="We help Australian SMBs figure out where AI pays off — then build only what's worth building. Platform-agnostic, honest pricing, real outcomes."
+        description="We help Australian small businesses figure out where AI pays off — then build only what's worth building. Platform-agnostic, honest pricing, real outcomes."
         image="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1800&q=90&auto=format&fit=crop"
       >
         <Link href="/services/discovery-call" className="button light">

@@ -1,9 +1,8 @@
 import Link from 'next/link'
-import Image from 'next/image'
 
 const primaryLinks = [
   { label: 'Services', href: '/services' },
-  { label: 'Case Studies', href: '/case-studies' },
+  { label: 'Use Cases', href: '/use-cases' },
   { label: 'Why AI', href: '/why-ai' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
@@ -23,17 +22,8 @@ export default function Footer() {
       <div className="site-footer__grid">
         <div className="site-footer__intro">
           <Link href="/" className="footer-brand" aria-label="EMVY — home">
-            <Image
-              src="/brand/logo-icon.png"
-              alt="EMVY"
-              width={48}
-              height={48}
-              className="footer-brand__mark"
-            />
-            <span className="footer-brand__wordmark">emvy</span>
+            <img src="/brand/lockup-horizontal.svg" alt="EMVY" className="footer-brand__img" />
           </Link>
-          <h2>Identify the right AI opportunity, then build the system around it.</h2>
-          <p>EMVY helps businesses audit, build, hand over, and maintain practical AI systems.</p>
         </div>
 
         <div className="footer-start-here">

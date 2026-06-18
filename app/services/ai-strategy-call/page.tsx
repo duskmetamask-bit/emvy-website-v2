@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { CheckCircle2, Clock, CreditCard } from 'lucide-react'
 import PageHero from '../../../components/PageHero'
 import CalInlineEmbed from '../../../components/CalInlineEmbed'
 import JsonLd from '@/components/JsonLd'
@@ -20,37 +19,22 @@ export const metadata: Metadata = {
 const CAL_ACCOUNT = 'jake-emvy'
 const CAL_EVENT_SLUG = 'ai-strategy'
 
-const outcomes = [
+const deliverables = [
   {
-    title: 'Scope',
-    points: [
-      'What we are actually building (and what we are explicitly not)',
-      'The one workflow where this AI lands first',
-      'Risks, dependencies, and what to leave for a later phase',
-    ],
+    number: '01',
+    title: 'AI Assessment',
+    detail: 'A mapped view of your workflows with findings and recommendations specific to your business.',
   },
   {
-    title: 'Sequencing',
-    points: [
-      'A staged plan: discovery → build → ship → maintain',
-      'Estimated time-to-first-working-system',
-      'Where you can keep moving while we build',
-    ],
+    number: '02',
+    title: 'Findings & Recommendations',
+    detail: 'Where AI will actually pay off for you — and where it won’t.',
   },
   {
-    title: 'Approach',
-    points: [
-      'The specific stack we would use (models, infra, integrations)',
-      'What success looks like in week 1, week 4, week 12',
-      'Cost ranges so the next decision is a business decision, not a guess',
-    ],
+    number: '03',
+    title: 'Pathway & Implementation',
+    detail: 'A staged 0–30 / 30–90 / 90–180 day plan with the future state mapped out.',
   },
-]
-
-const facts = [
-  { icon: Clock, label: '60 minutes', detail: 'One focused session, not an open-ended intro call' },
-  { icon: CreditCard, label: '$500 AUD', detail: 'Paid via Stripe at booking — refundable up to 24h before' },
-  { icon: CheckCircle2, label: 'Written follow-up', detail: 'A short written summary of scope, sequence, and next steps' },
 ]
 
 export default function AIStrategyCallPage() {
@@ -76,8 +60,7 @@ export default function AIStrategyCallPage() {
           <p className="section-kicker">Book</p>
           <h2 className="section-title">Pick a 60-minute slot. Payment is collected at booking.</h2>
           <p className="section-text">
-            You'll choose your time on Cal.com — Stripe collects the $500 AUD before the
-            slot is locked in. Refundable up to 24 hours before the call.
+            Stripe collects the $500 AUD when you confirm the booking.
           </p>
         </div>
         <CalInlineEmbed
@@ -90,47 +73,17 @@ export default function AIStrategyCallPage() {
 
       <section className="section">
         <div className="section-header">
-          <p className="section-kicker">At a glance</p>
-          <h2 className="section-title">What you get for the $500.</h2>
+          <p className="section-kicker">What you get for the $500</p>
+          <h2 className="section-title">Three deliverables, one session.</h2>
         </div>
         <div className="lead-grid discovery-outcomes">
-          {facts.map((fact) => {
-            const Icon = fact.icon
-            return (
-              <article key={fact.label} className="proof-card discovery-card">
-                <div className="discovery-icon">
-                  <Icon size={24} />
-                </div>
-                <h3>{fact.label}</h3>
-                <p style={{ color: 'var(--muted-foreground, #94a3b8)', marginTop: '0.5rem' }}>{fact.detail}</p>
-              </article>
-            )
-          })}
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="section-header">
-          <p className="section-kicker">What To Expect</p>
-          <h2 className="section-title">Scope, sequence, and approach.</h2>
-          <p className="section-text">
-            The session is structured so you walk away with decisions you can act on — not a
-            transcript you have to parse later.
-          </p>
-        </div>
-
-        <div className="lead-grid discovery-outcomes">
-          {outcomes.map((item) => (
-            <article key={item.title} className="proof-card discovery-card">
-              <div className="discovery-icon">
-                <CheckCircle2 size={24} />
+          {deliverables.map((item) => (
+            <article key={item.number} className="proof-card discovery-card">
+              <div className="discovery-phase">
+                <span className="discovery-phase__number">{item.number}</span>
               </div>
               <h3>{item.title}</h3>
-              <ul className="discovery-list">
-                {item.points.map((point) => (
-                  <li key={point}>{point}</li>
-                ))}
-              </ul>
+              <p style={{ color: 'var(--muted-foreground, #94a3b8)', marginTop: '0.5rem' }}>{item.detail}</p>
             </article>
           ))}
         </div>

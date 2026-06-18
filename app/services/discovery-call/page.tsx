@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { CheckCircle2 } from 'lucide-react'
 import PageHero from '../../../components/PageHero'
 import CalInlineEmbed from '../../../components/CalInlineEmbed'
 import JsonLd from '@/components/JsonLd'
@@ -12,18 +11,36 @@ export const metadata: Metadata = {
   description: 'Book a free 15-minute discovery call with EMVY.',
 }
 
-const outcomes = [
+const phases = [
   {
-    title: 'Introduction',
-    points: ['General introduction', 'Who we are', 'What we do'],
+    number: '01',
+    title: 'Introductions',
+    duration: '~3 min',
+    points: [
+      'Quick round of who you are and who we are',
+      'What EMVY actually does (and what we don’t)',
+      'Why a short call beats a long proposal',
+    ],
   },
   {
-    title: 'Background Overview',
-    points: ['Overview of your business', 'Mapping our processes (where we can help)', 'Highlighting any big pain points'],
+    number: '02',
+    title: 'Your business',
+    duration: '~7 min',
+    points: [
+      'What your business does day-to-day',
+      'The workflow or bottleneck you’d most like to improve',
+      'Any pain points eating into your week',
+    ],
   },
   {
+    number: '03',
     title: 'Next step',
-    points: ['We will highlight the direction we think is best', 'No pressure, decision is yours if you want to progress', 'Email sent through around next steps & pricing'],
+    duration: '~5 min',
+    points: [
+      'We share the direction we think fits best',
+      'No pressure — the decision to proceed is yours',
+      'A follow-up email with next steps and pricing',
+    ],
   },
 ]
 
@@ -68,14 +85,15 @@ export default function DiscoveryCallPage() {
         </div>
 
         <div className="lead-grid discovery-outcomes">
-          {outcomes.map((item) => (
-            <article key={item.title} className="proof-card discovery-card">
-              <div className="discovery-icon">
-                <CheckCircle2 size={24} />
+          {phases.map((phase) => (
+            <article key={phase.number} className="proof-card discovery-card">
+              <div className="discovery-phase">
+                <span className="discovery-phase__number">{phase.number}</span>
+                <span className="discovery-phase__duration">{phase.duration}</span>
               </div>
-              <h3>{item.title}</h3>
+              <h3>{phase.title}</h3>
               <ul className="discovery-list">
-                {item.points.map((point) => (
+                {phase.points.map((point) => (
                   <li key={point}>{point}</li>
                 ))}
               </ul>

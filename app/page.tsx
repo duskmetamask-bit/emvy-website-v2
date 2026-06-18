@@ -139,16 +139,15 @@ export default function Home() {
           </div>
 
           <div className="hero-copy">
-            <p className="section-kicker hero-kicker">AI readiness for Australian small businesses</p>
-            <h1>Find out where AI actually pays off — before you spend a dollar on it.</h1>
+            <p className="section-kicker hero-kicker">AI strategy for Australian small businesses</p>
+            <h1>We identify where your business can leverage AI, then build the systems to make it work.</h1>
             <p>
-              EMVY helps tradies, accountants, and other Aussie SMBs cut through the AI noise. A
-              $500 readiness assessment shows you exactly where AI will save time — then we build
-              only what's worth building.
+              We help small businesses in Australia remove bottlenecks and admin tasks by
+              leveraging AI.
             </p>
 
             <div className="hero-ribbon">
-              <strong>Readiness before investment. $500 — the only structured AI assessment in this price band.</strong>
+              <strong>Strategy before investment. $500 — the only structured AI assessment in this price band.</strong>
               <span>
                 Free 2-min Mini AI Strategy Assessment → $500 AI Strategy → $3K–$5K build. No
                 fluff, no follow-up unless you ask.
@@ -287,7 +286,7 @@ export default function Home() {
             <h3>Start the Mini AI Strategy Assessment</h3>
             <p>
               A free 2-minute self-assessment that surfaces exactly where your business is losing
-              time and money — and emails you a personalised readiness report.
+              time and money — and emails you a personalised strategy report.
             </p>
             <TrackedLink
               href="/assessment"

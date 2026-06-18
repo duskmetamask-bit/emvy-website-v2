@@ -3,7 +3,7 @@ import Link from 'next/link'
 import PageHero from '../../components/PageHero'
 
 export const metadata: Metadata = {
-  title: 'Case Studies',
+  title: 'Use Cases',
   description: 'Selected outcomes and implementation stories for EMVY clients.',
 }
 
@@ -46,11 +46,11 @@ const studies = [
   },
 ]
 
-export default function CaseStudiesPage() {
+export default function UseCasesPage() {
   return (
     <>
       <PageHero
-        eyebrow="Case Studies"
+        eyebrow="Use Cases"
         title="Examples of the outcomes a well-scoped AI system should create."
         description="These examples show the kinds of operational gains EMVY is designed to create: quicker responses, cleaner delivery, and more time back for the team."
         image="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1800&q=90&auto=format&fit=crop"
@@ -65,7 +65,7 @@ export default function CaseStudiesPage() {
 
       <section className="section">
         <div className="section-header">
-          <p className="section-kicker">Case Studies</p>
+          <p className="section-kicker">Use Cases</p>
           <h2 className="section-title">Outcomes first, technology second.</h2>
           <p className="section-text">
             Each example focuses on the business result, not just the tooling behind it.

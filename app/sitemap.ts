@@ -12,7 +12,7 @@ const ROUTES: ReadonlyArray<RouteEntry> = [
   { path: '/', priority: 1.0, changeFrequency: 'weekly' },
 
   { path: '/about', priority: 0.8, changeFrequency: 'monthly' },
-  { path: '/case-studies', priority: 0.8, changeFrequency: 'monthly' },
+  { path: '/use-cases', priority: 0.8, changeFrequency: 'monthly' },
   { path: '/industries', priority: 0.7, changeFrequency: 'monthly' },
   { path: '/pricing', priority: 0.8, changeFrequency: 'monthly' },
   { path: '/process', priority: 0.8, changeFrequency: 'monthly' },

@@ -7,7 +7,7 @@ import { service, faqPage } from '@/lib/schema/jsonld'
 export const metadata: Metadata = {
   title: 'Pricing',
   description:
-    'EMVY pricing: free Mini AI Strategy Assessment, $500 AI Strategy, $3K–$5K builds, $500/mo retainer. The only structured AI readiness assessment in the $497–$1,500 band.',
+    'EMVY pricing: free Mini AI Strategy Assessment, $500 AI Strategy, $3K–$5K builds, $500/mo retainer. The only structured AI strategy session in the $497–$1,500 band.',
 }
 
 type Tier = {
@@ -26,7 +26,7 @@ const tiers: Tier[] = [
     price: 'Free',
     cadence: '2 minutes',
     description:
-      '13 questions. Instant AI readiness report in your inbox. The fastest way to see whether AI is worth a serious look for your business.',
+      '13 questions. Instant AI strategy report in your inbox. The fastest way to see whether AI is worth a serious look for your business.',
     href: '/assessment',
     ctaLabel: 'Start the assessment',
   },
@@ -90,7 +90,7 @@ const buildTiers = [
 const faqs = [
   {
     q: 'Why $500 for the AI Strategy?',
-    a: "It's the only structured AI readiness assessment in the $497–$1,500 price band. Most AU AI consultants charge $750+ (Nimbull) or $1,500+ (FlowWorks) — and they audit your existing AI stack. EMVY assesses whether AI is worth building for your specific workflow first.",
+    a: "It's the only structured AI strategy session in the $497–$1,500 price band. Most AU AI consultants charge $750+ (Nimbull) or $1,500+ (FlowWorks) — and they audit your existing AI stack. EMVY assesses whether AI is worth building for your specific workflow first.",
   },
   {
     q: "What's included in the $500 AI Strategy?",
@@ -117,17 +117,17 @@ export default function PricingPage() {
         data={[
           service({
             name: 'AI Strategy',
-            description: '$500, 60-minute AI readiness assessment with a 5-page written roadmap.',
+            description: '$500, 60-minute AI strategy session with a 5-page written roadmap.',
             url: 'https://emvyai.com/services/ai-strategy-call',
             serviceType: 'AI consulting',
           }),
-          faqPage(faqs),
+          faqPage({ questions: faqs.map((f) => ({ question: f.q, answer: f.a })) }),
         ]}
       />
       <PageHero
         eyebrow="Pricing"
-        title="$500 for the only structured AI readiness assessment in this price band."
-        description="Readiness first. Then build, only if it's worth it. Platform-agnostic, honest pricing, real outcomes — no $5K PDF roadmaps you don't use."
+        title="$500 for the only structured AI strategy session in this price band."
+        description="Strategy first. Then build, only if it's worth it. Platform-agnostic, honest pricing, real outcomes — no $5K PDF roadmaps you don't use."
         image="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1800&q=90&auto=format&fit=crop"
       >
         <Link href="/assessment" className="button light">
@@ -192,7 +192,7 @@ export default function PricingPage() {
             <h2 className="section-title">The $497–$1,500 audit band is empty. We're filling it.</h2>
           </div>
           <p className="section-text">
-            Most AU AI consultancies either charge $750+ to audit what you already have (Nimbull), $1,500+ for a readiness check (FlowWorks), or $5K+ to build something you might not even need (Source Digital, Enterprise Monkey). EMVY sits at $500 with the only structured readiness assessment in this band — and the only one platform-agnostic enough to recommend the right tool for the job.
+            Most AU AI consultancies either charge $750+ to audit what you already have (Nimbull), $1,500+ for a strategy check (FlowWorks), or $5K+ to build something you might not even need (Source Digital, Enterprise Monkey). EMVY sits at $500 with the only structured AI strategy session in this band — and the only one platform-agnostic enough to recommend the right tool for the job.
           </p>
         </div>
 

@@ -13,7 +13,7 @@ const CHATBOT_URL =
 export const metadata: Metadata = {
   title: 'Mini AI Strategy Assessment',
   description:
-    'A free 2-minute Mini AI Strategy Assessment for your business. Answer 13 questions, get a personalised AI readiness report. Built by EMVY.',
+    'A free 2-minute Mini AI Strategy Assessment for your business. Answer 13 questions, get a personalised AI strategy report. Built by EMVY.',
   robots: {
     index: true,
     follow: true,
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'EMVY Mini AI Strategy Assessment',
     description:
-      'A free 2-minute Mini AI Strategy Assessment. Personalised AI readiness report in your inbox.',
+      'A free 2-minute Mini AI Strategy Assessment. Personalised AI strategy report in your inbox.',
     url: 'https://emvyai.com/assessment',
     siteName: 'EMVY',
     type: 'website',

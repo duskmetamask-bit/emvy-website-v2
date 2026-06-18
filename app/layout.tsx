@@ -33,10 +33,10 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://emvyai.com"),
   title: {
-    default: "EMVY — AI Consultancy for Australian SMBs",
+    default: "EMVY — AI Strategy for Trades and Professional Services",
     template: "%s | EMVY"
   },
-  description: "AI consultancy for Australian SMBs. AI strategy, process automation, custom AI solutions and data analytics for businesses ready to work smarter.",
+  description: "AI strategy and systems for Australian trades and professional services. AI strategy, process automation, custom AI solutions and data analytics for businesses ready to work smarter.",
   keywords: ["AI consultancy", "AI agents", "workflow automation", "Australian business AI", "AI strategy", "AI operations", "EMVY"],
   icons: {
     icon: [
@@ -50,20 +50,20 @@ export const metadata: Metadata = {
     ]
   },
   openGraph: {
-    title: "EMVY — AI Consultancy for Australian SMBs",
-    description: "AI strategy and automation systems for businesses ready to work smarter.",
+    title: "EMVY — AI Strategy for Trades and Professional Services",
+    description: "AI strategy and automation systems for trades and professional services ready to work smarter.",
     url: "https://emvyai.com",
     siteName: "EMVY",
     type: "website",
     locale: "en_AU",
     images: [
-      { url: "/brand/exports/og-image.png", width: 1200, height: 630, alt: "EMVY — AI systems for growing businesses" }
+      { url: "/brand/exports/og-image.png", width: 1200, height: 630, alt: "EMVY — AI systems for trades and professional services" }
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "EMVY — AI Consultancy for Australian SMBs",
-    description: "AI strategy and automation systems for businesses ready to work smarter.",
+    title: "EMVY — AI Strategy for Trades and Professional Services",
+    description: "AI strategy and automation systems for trades and professional services ready to work smarter.",
     images: ["/brand/exports/og-image.png"],
   },
   manifest: "/manifest.webmanifest",

@@ -1334,8 +1334,8 @@ main {
 .discovery-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  align-items: flex-start;
+  text-align: left;
   padding: 2rem 1.5rem;
 }
 
@@ -1344,9 +1344,32 @@ main {
   margin-bottom: 0.5rem;
 }
 
+.discovery-phase {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-mono);
+}
+
+.discovery-phase__number {
+  color: var(--accent);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.discovery-phase__duration {
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .discovery-card h3 {
-  text-align: center;
+  text-align: left;
   margin-bottom: 1rem;
+  width: 100%;
 }
 
 .discovery-list {
@@ -1354,14 +1377,26 @@ main {
   padding: 0;
   margin: 0;
   width: 100%;
-  text-align: center;
+  text-align: left;
 }
 
 .discovery-list li {
   color: var(--muted);
-  padding: 0.4rem 0;
-  border-bottom: 1px solid var(--line);
+  padding: 0.4rem 0 0.4rem 1.1rem;
+  border-bottom: none;
   font-size: 0.95rem;
+  position: relative;
+}
+
+.discovery-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.95rem;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
 }
 
 .discovery-list li:last-child {
@@ -1733,6 +1768,21 @@ main {
   letter-spacing: -0.02em;
   text-transform: lowercase;
   color: var(--text);
+}
+
+.footer-brand__img {
+  height: 38px;
+  width: auto;
+  display: block;
+}
+
+.cal-inline-embed__fallback {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.cal-inline-embed__fallback .button {
+  font-size: 0.85rem;
 }
 
 .site-footer__intro h2 {
