@@ -74,8 +74,21 @@ export default defineSchema({
       v.object({
         category: v.string(),
         text: v.string(),
+        severity: v.optional(v.union(v.literal('low'), v.literal('medium'), v.literal('high'))),
       })
     ),
+
+    // Audit-chatbot scoring output (added 2026-06-18: schema was out of sync
+    // with what the audit chatbot actually writes). All optional so older
+    // rows without these fields still validate.
+    categoriesCovered: v.optional(v.array(v.string())),
+    score: v.optional(v.float64()),
+    scoreLabel: v.optional(v.string()),
+    scoreBlurb: v.optional(v.string()),
+    scores: v.optional(v.record(v.string(), v.float64())),
+    week1: v.optional(v.array(v.string())),
+    weeks24: v.optional(v.array(v.string())),
+    months23: v.optional(v.array(v.string())),
     painPoints: v.array(v.string()),
     manualTasks: v.array(v.string()),
     aiTools: v.optional(v.string()),
