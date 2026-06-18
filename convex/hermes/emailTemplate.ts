@@ -16,10 +16,10 @@ const WEBSITE_DISPLAY = 'emvyai.com'
 const ABN = '82 488 276 510'
 
 const ACCENT = '#56d9ff'
-const TEXT = '#e5e7eb'
-const MUTED = '#9ca3af'
-const FAINT = '#6b7280'
-const RULE = '#1f2937'
+const TEXT = '#0f172a'
+const MUTED = '#6b7280'
+const FAINT = '#9ca3af'
+const RULE = '#e5e7eb'
 
 // Override the logo URL via env (useful for staging or after a brand swap).
 // OUTREACH_LOGO_URL is read at module load — re-deploy to pick up changes.

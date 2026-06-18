@@ -27,7 +27,6 @@ import { wrapEmailBody } from './emailTemplate'
 const RESEND_API = 'https://api.resend.com/emails'
 const FROM_ADDRESS =
   process.env.OUTREACH_FROM_EMAIL ??
-  process.env.BREVO_SENDER_EMAIL ??
   'hello@emvyai.com'
 // Board operator flow sends as Jake — matches Blando's reviewable signature
 // and keeps a clear human/persona separation from the mass-mail FROM_ADDRESS.
