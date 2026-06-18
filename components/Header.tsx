@@ -90,7 +90,7 @@ export default function Header() {
   return (
     <header className="site-header">
       <Link className="brand" href="/" onClick={() => setOpenMenu(null)} aria-label="EMVY — AI Consultancy home">
-        <img src="/brand/logo.png" alt="EMVY — AI Consultancy" className="brand-img" />
+        <img src="/brand/lockup-horizontal.svg" alt="EMVY" className="brand-img" />
       </Link>
 
       <nav className="nav" onMouseLeave={scheduleClose}>

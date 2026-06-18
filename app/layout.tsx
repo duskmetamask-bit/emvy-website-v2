@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "EMVY — AI Consultancy for Australian SMBs",
-    description: "AI strategy, audits, and automation systems for businesses ready to work smarter.",
+    description: "AI strategy and automation systems for businesses ready to work smarter.",
     url: "https://emvyai.com",
     siteName: "EMVY",
     type: "website",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "EMVY — AI Consultancy for Australian SMBs",
-    description: "AI strategy, audits, and automation systems for businesses ready to work smarter.",
+    description: "AI strategy and automation systems for businesses ready to work smarter.",
     images: ["/brand/exports/og-image.png"],
   },
   manifest: "/manifest.webmanifest",
