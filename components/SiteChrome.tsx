@@ -6,8 +6,10 @@ import Header from './Header'
 import Footer from './Footer'
 
 // Routes that need to own the entire viewport (no site chrome).
-// Reserved for fullscreen apps (none currently).
-const CHROMELESS_ROUTES = new Set<string>([])
+// /assessment iframes the standalone audit chatbot app full-bleed; rendering
+// the site header/footer underneath causes a brief flash of marketing chrome
+// before the fixed iframe covers it, which reads as "buggy".
+const CHROMELESS_ROUTES = new Set<string>(['/assessment'])
 
 export default function SiteChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname() || ''
