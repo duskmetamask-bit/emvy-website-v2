@@ -49,6 +49,7 @@ export async function POST(req: Request) {
     const token = process.env.HERMES_ACTIONS_TOKEN!
     const result = await convex.action(api.hermes.outreach.sendEditedFromBoard, {
       token,
+      agent: 'mewy',
       draftId,
       leadId,
       to,

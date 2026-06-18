@@ -25,15 +25,16 @@ export default defineSchema({
   }).index('by_email', ['email']).index('by_createdAt', ['createdAt']),
 
   // Audit chatbot leads (emvy-audit-chatbot.vercel.app). Richer than
-  // assessment_submissions — carries the 30/60/90 roadmap, per-category
-  // scores, and full findings. Public mutation writes here + auto-creates
-  // a `leads` row so the board's existing /pipeline picks it up.
+  // assessment_submissions — carries the 5-section report (Strategy
+  // Summary, 3 Opportunities, Quick Win, First 90 Days, Next Step) plus
+  // the full assessment snapshot. Public mutation writes here + auto-
+  // creates a `leads` row so the board's existing /pipeline picks it up.
   //
-  // The chat front-end writes a 'new' row at email-submit time with
-  // score: 0, scoreLabel: 'Pending'. The MiniMax M2.7 report lands a few
-  // seconds later and the front-end calls :update to flip status to
-  // 'completed' + fill in the roadmap + score. The board's /audit-chatbot
-  // view reads this table and groups by status.
+  // The chat front-end writes a 'new' row at email-submit time. The
+  // MiniMax M2.7 report lands a few seconds later and the front-end
+  // calls :update to flip status to 'completed' + fill in the report.
+  // The board's /audit-chatbot view reads this table and groups by
+  // status.
   audit_chatbot_leads: defineTable({
     name: v.string(),
     email: v.string(),
@@ -44,17 +45,28 @@ export default defineSchema({
     industry: v.optional(v.string()),
     teamSize: v.optional(v.string()),
 
-    // Score + headline
-    score: v.number(),
-    scoreLabel: v.string(),
-    scoreBlurb: v.optional(v.string()),
+    // 5-section report (backfilled by the front-end via :update).
     summary: v.optional(v.string()),
-
-    // 30/60/90 roadmap actions (arrays of strings).
-    // Backfilled by the front-end via :update once the report lands.
-    week1: v.optional(v.array(v.string())),
-    weeks24: v.optional(v.array(v.string())),
-    months23: v.optional(v.array(v.string())),
+    opportunities: v.optional(
+      v.array(
+        v.object({
+          title: v.string(),
+          whatItIs: v.string(),
+          whyMatters: v.string(),
+          whatChanges: v.string(),
+          howFast: v.string(),
+        })
+      )
+    ),
+    quickWin: v.optional(v.string()),
+    first90Days: v.optional(
+      v.array(
+        v.object({
+          title: v.string(),
+          actions: v.array(v.string()),
+        })
+      )
+    ),
     nextStep: v.optional(v.string()),
 
     // Full assessment snapshot
@@ -62,22 +74,18 @@ export default defineSchema({
       v.object({
         category: v.string(),
         text: v.string(),
-        severity: v.union(v.literal('high'), v.literal('medium'), v.literal('low')),
       })
     ),
-    categoriesCovered: v.array(v.string()),
     painPoints: v.array(v.string()),
     manualTasks: v.array(v.string()),
-    scores: v.record(v.string(), v.number()),
     aiTools: v.optional(v.string()),
-    budget: v.optional(v.string()),
     goal: v.optional(v.string()),
-    obstacles: v.optional(v.string()),
 
-    // Operator review workflow. 'new' = just submitted, score: 0.
+    // Operator review workflow.
+    // 'new' = just submitted, report not yet backfilled.
     // 'completed' = full report backfilled via :update.
     // 'reviewed' = operator looked at it on the board.
-    // 'converted' = promoted into the leads pipeline (v2 slice).
+    // 'converted' = promoted into the leads pipeline.
     status: v.optional(
       v.union(
         v.literal('new'),
@@ -92,7 +100,6 @@ export default defineSchema({
   })
     .index('by_email', ['email'])
     .index('by_createdAt', ['createdAt'])
-    .index('by_score', ['score'])
     .index('by_status', ['status']),
 
   leads: defineTable({

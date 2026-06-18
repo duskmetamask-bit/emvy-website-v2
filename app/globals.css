@@ -169,7 +169,7 @@ main {
 }
 
 .brand-img {
-  height: 34px;
+  height: 140px;
   width: auto;
   flex-shrink: 0;
   display: block;
@@ -1771,18 +1771,42 @@ main {
 }
 
 .footer-brand__img {
-  height: 38px;
+  height: 150px;
   width: auto;
   display: block;
 }
 
 .cal-inline-embed__fallback {
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .cal-inline-embed__fallback .button {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+}
+
+.cal-inline-embed__fallback-hint {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.cal-inline-embed__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+}
+
+.cal-inline-embed {
+  position: relative;
 }
 
 .site-footer__intro h2 {

@@ -100,6 +100,7 @@ export async function POST(req: Request) {
       try {
         const upsert = await convex.mutation(api.hermes.leads.upsert, {
           token,
+          agent: 'blando',
           email: r.email,
           company: r.company,
           contact: r.contact,
@@ -112,6 +113,7 @@ export async function POST(req: Request) {
         })
         const queueId = await convex.mutation(api.hermes.runner.enqueue, {
           token,
+          agent: 'blando',
           leadId: upsert.id,
           company: r.company,
           contact: r.contact,

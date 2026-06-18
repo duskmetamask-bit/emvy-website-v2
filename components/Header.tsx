@@ -90,7 +90,7 @@ export default function Header() {
   return (
     <header className="site-header">
       <Link className="brand" href="/" onClick={() => setOpenMenu(null)} aria-label="EMVY — AI Consultancy home">
-        <img src="/brand/lockup-horizontal.svg" alt="EMVY" className="brand-img" />
+        <img src="/brand/logo-transparent.png" alt="EMVY" className="brand-img" />
       </Link>
 
       <nav className="nav" onMouseLeave={scheduleClose}>
@@ -112,7 +112,7 @@ export default function Header() {
           eventName="ai_strategy_call_click"
           eventLabel="header"
         >
-          AI Strategy Call ($500)
+          AI Strategy Call
         </TrackedLink>
         <button className="menu-button" type="button" onClick={() => setMobileOpen((value) => !value)} aria-label="Open menu">
           {mobileOpen ? <X size={18} /> : <Menu size={18} />}
@@ -128,7 +128,7 @@ export default function Header() {
           <Link href="/about" onClick={() => setMobileOpen(false)}>About</Link>
           <Link href="/contact" onClick={() => setMobileOpen(false)}>Contact</Link>
           <Link href="/services/discovery-call" onClick={() => setMobileOpen(false)}>Book Free Discovery Call</Link>
-          <Link href="/services/ai-strategy-call" onClick={() => setMobileOpen(false)}>Book AI Strategy Call ($500)</Link>
+          <Link href="/services/ai-strategy-call" onClick={() => setMobileOpen(false)}>Book AI Strategy Call</Link>
         </div>
       ) : null}
     </header>

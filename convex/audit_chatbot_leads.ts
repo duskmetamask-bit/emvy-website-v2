@@ -19,31 +19,34 @@ export const create = mutation({
     industry: v.optional(v.string()),
     teamSize: v.optional(v.string()),
 
-    score: v.number(),
-    scoreLabel: v.string(),
-    scoreBlurb: v.optional(v.string()),
     summary: v.optional(v.string()),
-
-    week1: v.optional(v.array(v.string())),
-    weeks24: v.optional(v.array(v.string())),
-    months23: v.optional(v.array(v.string())),
+    opportunities: v.optional(
+      v.array(
+        v.object({
+          title: v.string(),
+          whatItIs: v.string(),
+          whyMatters: v.string(),
+          whatChanges: v.string(),
+          howFast: v.string(),
+        }),
+      ),
+    ),
+    quickWin: v.optional(v.string()),
+    first90Days: v.optional(
+      v.array(v.object({ title: v.string(), actions: v.array(v.string()) })),
+    ),
     nextStep: v.optional(v.string()),
 
     findings: v.array(
       v.object({
         category: v.string(),
         text: v.string(),
-        severity: v.union(v.literal('high'), v.literal('medium'), v.literal('low')),
-      })
+      }),
     ),
-    categoriesCovered: v.array(v.string()),
     painPoints: v.array(v.string()),
     manualTasks: v.array(v.string()),
-    scores: v.record(v.string(), v.number()),
     aiTools: v.optional(v.string()),
-    budget: v.optional(v.string()),
     goal: v.optional(v.string()),
-    obstacles: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const chatbotLeadId = await ctx.db.insert('audit_chatbot_leads', {
@@ -69,7 +72,6 @@ export const create = mutation({
         contact: args.name,
         company: args.company || args.businessName || undefined,
         source: 'audit_chatbot',
-        score: args.score,
         stage: 'assessed',
         lastTouchpoint: 'audit_chatbot_completed',
         sector: args.industry || undefined,
@@ -79,16 +81,13 @@ export const create = mutation({
     } else {
       leadId = existingLeads[0]._id
       const existing = existingLeads[0]
-      const scoreIsHigher = args.score > (existing.score || 0)
       const canAdvance =
         !existing.stage || ['discover', 'contacted', 'engaged'].includes(existing.stage)
 
       const updates: {
         lastTouchpoint: string
-        score?: number
         stage?: string
       } = { lastTouchpoint: 'audit_chatbot_completed' }
-      if (scoreIsHigher) updates.score = args.score
       if (canAdvance) {
         updates.stage = 'assessed'
         prevStage = existing.stage
@@ -101,14 +100,14 @@ export const create = mutation({
     await ctx.db.insert('activity_log', {
       leadId,
       action: 'audit_chatbot_completed',
-      details: `Score: ${args.score}, ${args.scoreLabel}, business: ${args.businessName || 'unspecified'}`,
+      details: `business: ${args.businessName || 'unspecified'}`,
       timestamp: Date.now(),
     })
     if (stageChanged) {
       await ctx.db.insert('activity_log', {
         leadId,
         action: 'stage_change',
-        details: `${prevStage || 'new'} → assessed (score: ${args.score})`,
+        details: `${prevStage || 'new'} → assessed`,
         timestamp: Date.now(),
       })
     }
@@ -138,15 +137,12 @@ export const get = query({
   },
 })
 
-// Stats — average score, count, etc. Mirrors getSubmissionStats.
+// Stats — count + by-industry + by-status. v2 dropped the score concept.
 export const getStats = query({
   args: {},
   handler: async (ctx) => {
     const leads = await ctx.db.query('audit_chatbot_leads').take(1000)
     const total = leads.length
-    const avgScore = total > 0 ? leads.reduce((a, l) => a + l.score, 0) / total : 0
-    const byLabel: Record<string, number> = {}
-    for (const l of leads) byLabel[l.scoreLabel] = (byLabel[l.scoreLabel] || 0) + 1
     const byIndustry: Record<string, number> = {}
     for (const l of leads) {
       const k = l.industry || 'unspecified'
@@ -162,13 +158,13 @@ export const getStats = query({
       const k = l.status ?? 'new'
       byStatus[k] = (byStatus[k] || 0) + 1
     }
-    return { total, avgScore: Math.round(avgScore), byLabel, byIndustry, byStatus }
+    return { total, byIndustry, byStatus }
   },
 })
 
 // Backfill mutation — called by the audit chatbot front-end after the
-// MiniMax M2.7 30/60/90 report lands. Fills the score + roadmap fields
-// that were unknown at email-submit time and flips status to 'completed'.
+// MiniMax M2.7 5-section report lands. Fills the report fields that
+// were unknown at email-submit time and flips status to 'completed'.
 // Idempotent: a second call just overwrites with the same data.
 //
 // Throws if the id doesn't exist; the front-end treats that as a
@@ -176,13 +172,22 @@ export const getStats = query({
 export const update = mutation({
   args: {
     id: v.id('audit_chatbot_leads'),
-    score: v.number(),
-    scoreLabel: v.string(),
-    scoreBlurb: v.optional(v.string()),
     summary: v.optional(v.string()),
-    week1: v.optional(v.array(v.string())),
-    weeks24: v.optional(v.array(v.string())),
-    months23: v.optional(v.array(v.string())),
+    opportunities: v.optional(
+      v.array(
+        v.object({
+          title: v.string(),
+          whatItIs: v.string(),
+          whyMatters: v.string(),
+          whatChanges: v.string(),
+          howFast: v.string(),
+        }),
+      ),
+    ),
+    quickWin: v.optional(v.string()),
+    first90Days: v.optional(
+      v.array(v.object({ title: v.string(), actions: v.array(v.string()) })),
+    ),
     nextStep: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -206,7 +211,7 @@ export const update = mutation({
       await ctx.db.insert('activity_log', {
         leadId: leads[0]._id,
         action: 'audit_chatbot_report_generated',
-        details: `Score: ${args.score}, ${args.scoreLabel}`,
+        details: '5-section report generated',
         timestamp: now,
       })
     }

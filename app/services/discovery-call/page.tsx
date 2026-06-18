@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import PageHero from '../../../components/PageHero'
-import CalInlineEmbed from '../../../components/CalInlineEmbed'
 import JsonLd from '@/components/JsonLd'
 import { service } from '@/lib/schema/jsonld'
 import { SERVICES } from '@/lib/schema/service-data'
@@ -54,25 +53,18 @@ export default function DiscoveryCallPage() {
         description="This is a short introduction call to understand your business, what you want to improve, and what the best next step looks like. Pick a time below."
         image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1800&q=90&auto=format&fit=crop"
       >
-        <a href="#book" className="button primary">
-          Pick a time
+        <a
+          href="https://cal.com/jake-emvy/discovery-call"
+          className="button primary"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Book a discovery call
         </a>
         <Link href="/services" className="button secondary">
           See service flow
         </Link>
       </PageHero>
-
-      <section className="section" id="book">
-        <div className="section-header">
-          <p className="section-kicker">Book</p>
-          <h2 className="section-title">Pick a 15-minute slot.</h2>
-          <p className="section-text">
-            The calendar is live — choose any time that works. You'll get an email confirmation
-            with a brief agenda and a link to reschedule if you need to.
-          </p>
-        </div>
-        <CalInlineEmbed eventSlug="discovery-call" />
-      </section>
 
       <section className="section">
         <div className="section-header">
@@ -100,6 +92,24 @@ export default function DiscoveryCallPage() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="section cta-band">
+        <div>
+          <p className="section-kicker">Ready To Book</p>
+          <h2 className="section-title">Lock in your free 15-minute discovery call.</h2>
+          <p className="section-text">
+            Pick a 15-minute slot that works for you.
+          </p>
+        </div>
+        <a
+          className="button primary"
+          href="https://cal.com/jake-emvy/discovery-call"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Book a discovery call
+        </a>
       </section>
     </>
   )

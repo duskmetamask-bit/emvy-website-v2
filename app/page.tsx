@@ -146,14 +146,6 @@ export default function Home() {
               leveraging AI.
             </p>
 
-            <div className="hero-ribbon">
-              <strong>Strategy before investment. $500 — the only structured AI assessment in this price band.</strong>
-              <span>
-                Free 2-min Mini AI Strategy Assessment → $500 AI Strategy → $3K–$5K build. No
-                fluff, no follow-up unless you ask.
-              </span>
-            </div>
-
             <div className="hero-actions">
               <HeroCtas />
             </div>

@@ -11,7 +11,7 @@ const primaryLinks = [
 const conversionLinks = [
   { label: 'Mini AI Strategy', href: '/assessment' },
   { label: 'Free Discovery Call', href: '/services/discovery-call' },
-  { label: 'AI Strategy Call ($500)', href: '/services/ai-strategy-call' },
+  { label: 'AI Strategy Call', href: '/services/ai-strategy-call' },
   { label: 'AI Builds', href: '/services/ai-builds' },
   { label: 'Systems Maintenance', href: '/services/systems-maintenance' },
 ]
@@ -22,7 +22,7 @@ export default function Footer() {
       <div className="site-footer__grid">
         <div className="site-footer__intro">
           <Link href="/" className="footer-brand" aria-label="EMVY — home">
-            <img src="/brand/lockup-horizontal.svg" alt="EMVY" className="footer-brand__img" />
+            <img src="/brand/logo-transparent.png" alt="EMVY" className="footer-brand__img" />
           </Link>
         </div>
 

@@ -38,12 +38,15 @@ export async function POST(req: Request) {
     const action = url.searchParams.get('action') ?? 'daily'
     const token = process.env.HERMES_ACTIONS_TOKEN!
     if (action === 'followups') {
-      const result = await convex.action(api.hermes.runner.runFollowups, { token })
+      const result = await convex.action(api.hermes.runner.runFollowups, {
+        token,
+        agent: 'blando',
+      })
       return NextResponse.json({ ok: true, mode: 'followups', result })
     }
     const result = await convex.action(api.hermes.runner.runDaily, {
       token,
-      limit: undefined,
+      agent: 'blando',
     })
     return NextResponse.json({ ok: true, mode: 'daily', result })
   } catch (error) {
