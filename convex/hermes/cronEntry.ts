@@ -105,3 +105,40 @@ export const appendRun = mutation({
     return { id, action: 'created' as const }
   },
 })
+
+// Append-only log entry for cron run history. Written by the VPS
+// `~/.hermes/bin/log_cron_health.py` after each cron invocation. The
+// board's /cron-history page reads this for stats + per-cron timelines.
+//
+// Auth: same as appendRun — requireHermesAgent(token, 'mewy'). The VPS
+// script uses MEWY's token because mewy is the orchestrator that
+// aggregates cron health across all agent profiles.
+export const appendHistory = mutation({
+  args: {
+    token: v.string(),
+    agent: v.literal('mewy'),
+    agentId: v.string(),
+    cronName: v.string(),
+    startedAt: v.number(),
+    finishedAt: v.optional(v.number()),
+    durationMs: v.optional(v.number()),
+    status: v.union(v.literal('ok'), v.literal('fail'), v.literal('running')),
+    error: v.optional(v.string()),
+    source: v.optional(v.string()),
+    runId: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    requireHermesAgent(args.token, args.agent)
+    return await ctx.db.insert('cron_run_history', {
+      agentId: args.agentId,
+      cronName: args.cronName,
+      startedAt: args.startedAt,
+      finishedAt: args.finishedAt,
+      durationMs: args.durationMs,
+      status: args.status,
+      error: args.error,
+      source: args.source,
+      runId: args.runId,
+    })
+  },
+})

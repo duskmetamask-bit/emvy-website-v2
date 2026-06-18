@@ -531,6 +531,31 @@ export default defineSchema({
     .index('by_state', ['state'])
     .index('by_updatedAt', ['updatedAt']),
 
+  // Cron run history — append-only log of every cron invocation.
+  // One row per (agentId, cronName, startedAt). Written by
+  // hermes/cronEntry.ts:appendHistory. The board's /cron-history page
+  // surfaces this for stats (success rate, p50/p95 duration) and a
+  // per-cron timeline. Retention is operator-managed (see vault note).
+  cron_run_history: defineTable({
+    agentId: v.string(),        // 'mewy' | 'maya' | 'intelligence' | 'blando' | 'audit' | 'builds' | 'happy-harold' | 'ops' | 'sage'
+    cronName: v.string(),       // matches cron_runs.cronName for the same agent
+    startedAt: v.number(),      // ms epoch when the cron started
+    finishedAt: v.optional(v.number()), // ms epoch when it finished (null if still running)
+    durationMs: v.optional(v.number()), // finishedAt - startedAt, set on completion
+    status: v.union(
+      v.literal('ok'),
+      v.literal('fail'),
+      v.literal('running'),
+    ),
+    error: v.optional(v.string()),  // failure message if status='fail'
+    source: v.optional(v.string()),  // 'log_cron_health.py' | 'manual' | etc.
+    runId: v.optional(v.string()),  // optional correlation id from the calling script
+  })
+    .index('by_agentId_startedAt', ['agentId', 'startedAt'])
+    .index('by_agent_cronName_startedAt', ['agentId', 'cronName', 'startedAt'])
+    .index('by_status', ['status'])
+    .index('by_startedAt', ['startedAt']),
+
   // Maya content topics — one row per date in the 30-day content
   // calendar. Parsed from ~/obsidian-vault/maya/content-calendar/30-DAY-CALENDAR-v2.md
   // by ~/.hermes/profiles/maya/bin/log_topics.py. The board's /marketing
