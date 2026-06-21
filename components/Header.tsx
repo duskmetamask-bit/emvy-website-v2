@@ -74,6 +74,9 @@ export default function Header() {
       <Link className="nav-link" href="/why-ai">
         Why AI
       </Link>
+      <Link className="nav-link" href="/blog">
+        Blog
+      </Link>
       <Link className="nav-link" href="/assessment">
         Mini AI Strategy
       </Link>
