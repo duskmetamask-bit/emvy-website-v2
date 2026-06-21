@@ -1,95 +1,65 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import PageHero from '../../components/PageHero'
 
 export const metadata: Metadata = {
   title: 'Blog | EMVY',
-  description: 'Practical AI strategy guides for small business owners. Real builds, honest takes, no fluff.',
+  description: 'AI strategy, workflows, and honest takes from the build.',
 }
 
-const posts = [
-  {
-    slug: 'ai-agents-business',
-    title: 'How AI agents actually fit into a business',
-    summary: 'A practical guide to where agents help, where they do not, and how to deploy them well.',
-    image: 'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=1200&q=90&auto=format&fit=crop',
-  },
-  {
-    slug: 'ai-automation-stacks',
-    title: 'What a good automation stack looks like',
-    summary: 'The tools, handoffs, and controls that matter when you want automation to be reliable.',
-    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=90&auto=format&fit=crop',
-  },
-]
+type Post = {
+  slug: string
+  title: string
+  summary: string
+  vertical: string
+  publishedAt?: number
+}
 
-export default function BlogPage() {
+// Fetch posts from the API at build time
+async function getPosts(): Promise<Post[]> {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://emvyai.com'
+    const res = await fetch(`${baseUrl}/api/blog`, { next: { revalidate: 3600 } })
+    if (!res.ok) return []
+    const data = await res.json()
+    return data.posts || []
+  } catch {
+    return []
+  }
+}
+
+export default async function BlogPage() {
+  const posts = await getPosts()
+
   return (
-    <>
-      <PageHero
-        eyebrow="Blog"
-        title="AI strategy for your business — practical guides and real builds."
-        description="Each post helps you understand where AI fits, what actually works for small business, and when it makes sense to move forward."
-        image="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1800&q=90&auto=format&fit=crop"
-      >
-        <Link href="/why-ai" className="button light">
-          Read Why AI
-        </Link>
-        <Link href="/quiz" className="button secondary">
-          Start the quiz
-        </Link>
-      </PageHero>
+    <div className="section" style={{ maxWidth: 700, margin: '0 auto', padding: '64px 24px' }}>
+      <p className="section-kicker">Blog</p>
+      <h1 style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 600, lineHeight: 1.1, marginBottom: 16 }}>
+        AI strategy, workflows, and honest takes from the build.
+      </h1>
 
-      <section className="section blog-feature-section">
-        <article className="blog-feature-card">
-          <div className="blog-feature-image">
-            <img
-              src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=1600&q=90&auto=format&fit=crop"
-              alt="AI strategy and workflow planning"
-            />
-          </div>
-          <div className="blog-feature-copy">
-            <p className="section-kicker">Featured article</p>
-            <h2 className="section-title">How AI fits into a small business without creating more noise.</h2>
-            <p>
-              Practical guide to where AI agents help, where they don't, and how to deploy them in a way that actually saves you time.
-            </p>
-            <Link href="/blog/ai-agents-business" className="button secondary" style={{ width: 'fit-content' }}>
-              Read the featured piece
-            </Link>
-          </div>
-        </article>
-      </section>
+      {posts.length === 0 && (
+        <p style={{ color: 'var(--text-secondary)', marginTop: 48 }}>Articles coming soon.</p>
+      )}
 
-      <section className="section">
-        <div className="blog-grid">
-          {posts.map((post) => (
-            <article key={post.slug} className="blog-card">
-              <div className="blog-card-image">
-                <img src={post.image} alt={post.title} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 48 }}>
+        {posts.map((post) => (
+          <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <article style={{ padding: '20px 24px', border: '1px solid var(--border)', borderRadius: 8 }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
+                {post.vertical === 'trades' && <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'rgba(6, 182, 212, 0.1)', color: 'var(--accent)' }}>Trades</span>}
+                {post.vertical === 'professional-services' && <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'rgba(99, 102, 241, 0.1)', color: '#818cf8' }}>Professional Services</span>}
               </div>
-              <div className="blog-card-body">
-                <h3>{post.title}</h3>
-                <p>{post.summary}</p>
-                <Link href={`/blog/${post.slug}`} className="button secondary" style={{ width: 'fit-content' }}>
-                  Read more
-                </Link>
-              </div>
+              <h2 style={{ fontSize: 17, fontWeight: 600, margin: '0 0 6px' }}>{post.title}</h2>
+              <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>{post.summary}</p>
+              {post.publishedAt && (
+                <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8 }}>
+                  {new Date(post.publishedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </p>
+              )}
             </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="section blog-cta-section">
-        <div className="blog-cta-band">
-          <div>
-            <p className="section-kicker">Next step</p>
-            <h2 className="section-title">If the writing feels relevant, start with the quiz.</h2>
-          </div>
-          <Link href="/quiz" className="button primary">
-            Start the quiz
           </Link>
-        </div>
-      </section>
-    </>
+        ))}
+      </div>
+    </div>
   )
 }

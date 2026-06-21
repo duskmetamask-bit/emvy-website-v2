@@ -667,4 +667,22 @@ export default defineSchema({
   })
     .index('by_status', ['status'])
     .index('by_createdAt', ['createdAt']),
+
+  // Blog posts — Maya publishes daily via cron. Target keywords for
+  // trades, professional services, and AU SMB SEO.
+  blog_posts: defineTable({
+    title: v.string(),
+    slug: v.string(),
+    summary: v.string(),
+    body: v.optional(v.string()),
+    targetKeyword: v.optional(v.string()),
+    vertical: v.union(v.literal('trades'), v.literal('professional-services'), v.literal('general')),
+    status: v.union(v.literal('draft'), v.literal('published')),
+    publishedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index('by_slug', ['slug'])
+    .index('by_status', ['status'])
+    .index('by_publishedAt', ['publishedAt'])
+    .index('by_vertical', ['vertical']),
 })
