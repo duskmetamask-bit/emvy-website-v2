@@ -11,6 +11,7 @@
 import type * as actions from "../actions.js";
 import type * as assessment_submissions from "../assessment/submissions.js";
 import type * as audit_chatbot_leads from "../audit_chatbot_leads.js";
+import type * as blog from "../blog.js";
 import type * as board_actions from "../board/actions.js";
 import type * as board_assessment from "../board/assessment.js";
 import type * as board_audit from "../board/audit.js";
@@ -36,6 +37,7 @@ import type * as board_triage from "../board/triage.js";
 import type * as bootstrapActions from "../bootstrapActions.js";
 import type * as case_studies from "../case_studies.js";
 import type * as crons from "../crons.js";
+import type * as diag_sentBodies from "../diag_sentBodies.js";
 import type * as email_inbox from "../email_inbox.js";
 import type * as hermes_actions from "../hermes/actions.js";
 import type * as hermes_audit from "../hermes/audit.js";
@@ -68,6 +70,7 @@ declare const fullApi: ApiFromModules<{
   actions: typeof actions;
   "assessment/submissions": typeof assessment_submissions;
   audit_chatbot_leads: typeof audit_chatbot_leads;
+  blog: typeof blog;
   "board/actions": typeof board_actions;
   "board/assessment": typeof board_assessment;
   "board/audit": typeof board_audit;
@@ -93,6 +96,7 @@ declare const fullApi: ApiFromModules<{
   bootstrapActions: typeof bootstrapActions;
   case_studies: typeof case_studies;
   crons: typeof crons;
+  diag_sentBodies: typeof diag_sentBodies;
   email_inbox: typeof email_inbox;
   "hermes/actions": typeof hermes_actions;
   "hermes/audit": typeof hermes_audit;

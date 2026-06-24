@@ -12,21 +12,35 @@ const DEFAULT_POSTS: Post[] = [
     title: '5 Things I Wish I Had Known Before Starting with AI Agents',
     summary: 'What I learned from running AI agents in production — the misconceptions, the surprises, and what actually matters.',
     vertical: 'general',
-    publishedAt: Date.now() - 86400000 * 3,
+    publishedAt: Date.now() - 86400000 * 4,
   },
   {
     slug: 'ai-agent-memory-problem',
     title: 'The Memory Problem in AI Agents Is Not What You Think',
     summary: 'Why most AI agents forget everything after every session and how to fix it.',
     vertical: 'professional-services',
-    publishedAt: Date.now() - 86400000 * 2,
+    publishedAt: Date.now() - 86400000 * 3,
   },
   {
     slug: 'measure-ai-roi-small-business',
     title: 'How to Measure AI ROI for Your Small Business',
     summary: 'A practical framework for figuring out if an AI tool is actually saving you money or just adding noise.',
     vertical: 'trades',
-    publishedAt: Date.now() - 86400000,
+    publishedAt: Date.now() - 86400000 * 2,
+  },
+  {
+    slug: 'ai-for-accountants',
+    title: 'AI for Accountants: What Actually Works in 2026',
+    summary: 'Most accounting firms are drowning in repetitive work — data entry, client follow-ups, and quote chasing. Here\'s what real AI automation looks like for accountants right now, no hype.',
+    vertical: 'professional-services',
+    publishedAt: Date.now(),
+  },
+  {
+    slug: 'ai-for-tradies-australia',
+    title: 'AI for Tradies in Australia: What Actually Works in 2026',
+    summary: 'Most trade businesses are drowning in admin — quotes, follow-ups, scheduling. Here\'s what real AI automation looks like for electricians, plumbers, and builders. No hype.',
+    vertical: 'trades',
+    publishedAt: Date.now(),
   },
 ]
 
