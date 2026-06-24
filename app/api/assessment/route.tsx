@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
 
     // Build Cal.com CTA URL with leadId + UTM
     const ctaUrl = (() => {
-      const base = process.env.CALCOM_BOOKING_URL || 'https://cal.com/emvy/discovery-call'
+      const base = process.env.CALCOM_BOOKING_URL || 'https://cal.com/jake-emvy/discovery-call'
       const url = new URL(base)
       url.searchParams.set('utm_source', 'pdf')
       url.searchParams.set('utm_medium', 'email')
