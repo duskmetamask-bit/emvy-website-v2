@@ -6,8 +6,9 @@
 //
 // Mirrors the pattern in convex/assessment/submissions.ts:saveSubmission.
 
-import { mutation, query } from './_generated/server'
+import { mutation, query, internalMutation } from './_generated/server'
 import { v } from 'convex/values'
+import { internal } from './_generated/api'
 
 export const create = mutation({
   args: {
@@ -111,6 +112,16 @@ export const create = mutation({
         timestamp: Date.now(),
       })
     }
+
+    // Fire-and-forget operator notification + VPS webhook. Scheduled
+    // (not awaited) so the public mutation returns fast and a slow
+    // Resend call or webhook receiver doesn't block the user. Failures
+    // land in convex logs but don't roll back the lead.
+    await ctx.scheduler.runAfter(
+      0,
+      internal.audit_chatbot_notify_action.notifyOperator,
+      { chatbotLeadId }
+    )
 
     return { chatbotLeadId, leadId }
   },

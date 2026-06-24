@@ -109,6 +109,13 @@ export default defineSchema({
     ),
     updatedAt: v.optional(v.number()),
 
+    // Operator-notification bookkeeping (added 2026-06-24: webhook +
+    // email pipeline via audit_chatbot_notify.ts:notifyOperator).
+    // notifiedAt gates idempotency — re-runs no-op. notificationErrors
+    // captures any partial failures so the operator can see what broke.
+    notifiedAt: v.optional(v.number()),
+    notificationErrors: v.optional(v.array(v.string())),
+
     createdAt: v.number(),
   })
     .index('by_email', ['email'])
