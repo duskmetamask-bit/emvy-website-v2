@@ -44,6 +44,7 @@ const REQUIRED = [
   'board/activity.js:stats',
   'board/email_inbox.js:list',
   'board/webhookFeed.js:listAll',
+  'board/notifications.js:list',
 ]
 
 function fetchFunctionSpec() {
