@@ -108,7 +108,6 @@ export default defineSchema({
       )
     ),
     updatedAt: v.optional(v.number()),
-    notifiedAt: v.optional(v.number()),
 
     // Operator-notification bookkeeping (added 2026-06-24: webhook +
     // email pipeline via audit_chatbot_notify.ts:notifyOperator).
