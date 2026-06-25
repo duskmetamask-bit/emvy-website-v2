@@ -8,11 +8,15 @@
  * @module
  */
 
+import type * as _admin_cleanup from "../_admin_cleanup.js";
 import type * as actions from "../actions.js";
 import type * as assessment_submissions from "../assessment/submissions.js";
 import type * as audit_chatbot_leads from "../audit_chatbot_leads.js";
+import type * as audit_chatbot_notify from "../audit_chatbot_notify.js";
+import type * as audit_chatbot_notify_action from "../audit_chatbot_notify_action.js";
 import type * as blog from "../blog.js";
 import type * as board_actions from "../board/actions.js";
+import type * as board_activity from "../board/activity.js";
 import type * as board_assessment from "../board/assessment.js";
 import type * as board_audit from "../board/audit.js";
 import type * as board_audit_chatbot from "../board/audit_chatbot.js";
@@ -34,6 +38,7 @@ import type * as board_pricing from "../board/pricing.js";
 import type * as board_retainers from "../board/retainers.js";
 import type * as board_sent from "../board/sent.js";
 import type * as board_triage from "../board/triage.js";
+import type * as board_webhookFeed from "../board/webhookFeed.js";
 import type * as bootstrapActions from "../bootstrapActions.js";
 import type * as case_studies from "../case_studies.js";
 import type * as crons from "../crons.js";
@@ -67,11 +72,15 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  _admin_cleanup: typeof _admin_cleanup;
   actions: typeof actions;
   "assessment/submissions": typeof assessment_submissions;
   audit_chatbot_leads: typeof audit_chatbot_leads;
+  audit_chatbot_notify: typeof audit_chatbot_notify;
+  audit_chatbot_notify_action: typeof audit_chatbot_notify_action;
   blog: typeof blog;
   "board/actions": typeof board_actions;
+  "board/activity": typeof board_activity;
   "board/assessment": typeof board_assessment;
   "board/audit": typeof board_audit;
   "board/audit_chatbot": typeof board_audit_chatbot;
@@ -93,6 +102,7 @@ declare const fullApi: ApiFromModules<{
   "board/retainers": typeof board_retainers;
   "board/sent": typeof board_sent;
   "board/triage": typeof board_triage;
+  "board/webhookFeed": typeof board_webhookFeed;
   bootstrapActions: typeof bootstrapActions;
   case_studies: typeof case_studies;
   crons: typeof crons;

@@ -40,6 +40,10 @@ const REQUIRED = [
   'board/drafts.js:listPending',
   'board/contacts.js:list',
   'board/leads.js:list',
+  'board/activity.js:list',
+  'board/activity.js:stats',
+  'board/email_inbox.js:list',
+  'board/webhookFeed.js:listAll',
 ]
 
 function fetchFunctionSpec() {
