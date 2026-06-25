@@ -220,6 +220,8 @@ export default defineSchema({
     company: v.optional(v.string()),
     message: v.optional(v.string()),
     source: v.optional(v.string()), // contact-form, footer, etc.
+    notifiedAt: v.optional(v.number()),
+    notificationErrors: v.optional(v.array(v.string())),
     createdAt: v.number(),
   }).index('by_email', ['email']).index('by_createdAt', ['createdAt']),
 

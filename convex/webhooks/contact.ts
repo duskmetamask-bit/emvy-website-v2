@@ -1,5 +1,6 @@
 import { mutation } from '../_generated/server'
 import { v } from 'convex/values'
+import { internal } from '../_generated/api'
 
 // Contact form submission
 export const submit = mutation({
@@ -42,6 +43,12 @@ export const submit = mutation({
         })
       }
     }
+
+    // Fire-and-forget operator notification (Resend email). Idempotent
+    // — re-runs of notifyOperator check notifiedAt and no-op.
+    await ctx.scheduler.runAfter(0, internal.contact_notify_action.notifyOperator, {
+      submissionId: submission,
+    })
 
     return { status: 'success', submissionId: submission }
   },
