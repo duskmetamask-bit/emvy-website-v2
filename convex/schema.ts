@@ -108,6 +108,7 @@ export default defineSchema({
       )
     ),
     updatedAt: v.optional(v.number()),
+    notifiedAt: v.optional(v.number()),
 
     // Operator-notification bookkeeping (added 2026-06-24: webhook +
     // email pipeline via audit_chatbot_notify.ts:notifyOperator).
@@ -163,14 +164,30 @@ export default defineSchema({
   email_sends: defineTable({
     leadId: v.id('leads'),
     subject: v.string(),
-    status: v.string(), // sent, delivered, opened, replied, bounced
+    status: v.string(), // sent, delivered, opened, replied, bounced, pending, failed
     sentAt: v.number(),
     resendId: v.optional(v.string()),
+    draftId: v.optional(v.id('email_drafts')),
+    sentBy: v.optional(v.string()), // 'auto' | 'operator' | 'board'
+    body: v.optional(v.string()),
+    errorMessage: v.optional(v.string()),
+    sequence: v.optional(v.string()),
+    touch: v.optional(v.number()),
+    fromEmail: v.optional(v.string()),
+    toEmail: v.optional(v.string()),
+    company: v.optional(v.string()),
+    contact: v.optional(v.string()),
+    openedAt: v.optional(v.number()),
+    clickedAt: v.optional(v.number()),
+    repliedAt: v.optional(v.number()),
+    bouncedAt: v.optional(v.number()),
+    deliveredAt: v.optional(v.number()),
     lastError: v.optional(v.string()),
   })
     .index('by_lead', ['leadId'])
     .index('by_status', ['status'])
-    .index('by_sentAt', ['sentAt']),
+    .index('by_sentAt', ['sentAt'])
+    .index('by_resendId', ['resendId']),
 
   pdf_lead_magnets: defineTable({
     leadId: v.optional(v.id('leads')),
@@ -732,6 +749,11 @@ export default defineSchema({
     status: v.union(v.literal('draft'), v.literal('published')),
     publishedAt: v.optional(v.number()),
     createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    agentId: v.optional(v.literal('maya')),
+    sourcePath: v.optional(v.string()),
+    heroImageUrl: v.optional(v.string()),
+    readingTimeMinutes: v.optional(v.number()),
   })
     .index('by_slug', ['slug'])
     .index('by_status', ['status'])

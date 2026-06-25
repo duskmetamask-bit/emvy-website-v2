@@ -1,4 +1,6 @@
 import type { MetadataRoute } from 'next'
+import { ConvexHttpClient } from 'convex/browser'
+import { api } from '@/convex/_generated/api'
 
 const SITE_URL = 'https://emvyai.com' as const
 
@@ -29,17 +31,47 @@ const ROUTES: ReadonlyArray<RouteEntry> = [
   { path: '/contact', priority: 0.9, changeFrequency: 'monthly' },
   { path: '/lp/trades', priority: 0.9, changeFrequency: 'monthly' },
 
+  { path: '/blog', priority: 0.9, changeFrequency: 'daily' },
+
   { path: '/success', priority: 0.5, changeFrequency: 'yearly' },
   { path: '/privacy', priority: 0.3, changeFrequency: 'yearly' },
   { path: '/terms', priority: 0.3, changeFrequency: 'yearly' },
 ]
 
-export default function sitemap(): MetadataRoute.Sitemap {
+type BlogRow = {
+  slug: string
+  publishedAt?: number
+  updatedAt?: number
+}
+
+async function getBlogRows(): Promise<BlogRow[]> {
+  try {
+    const url = process.env.NEXT_PUBLIC_CONVEX_URL
+    if (!url) return []
+    const convex = new ConvexHttpClient(url)
+    const rows = (await convex.query(api.blog.list, {})) as BlogRow[]
+    return rows
+  } catch {
+    return []
+  }
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
-  return ROUTES.map(({ path, priority, changeFrequency }) => ({
+  const staticEntries: MetadataRoute.Sitemap = ROUTES.map(({ path, priority, changeFrequency }) => ({
     url: `${SITE_URL}${path}`,
     lastModified: now,
     changeFrequency,
     priority,
   }))
+
+  const blogRows = await getBlogRows()
+  const blogEntries: MetadataRoute.Sitemap = blogRows.map((row) => ({
+    url: `${SITE_URL}/blog/${row.slug}`,
+    lastModified: row.updatedAt ? new Date(row.updatedAt) : row.publishedAt ? new Date(row.publishedAt) : now,
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }))
+
+  return [...staticEntries, ...blogEntries]
 }

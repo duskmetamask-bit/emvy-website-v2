@@ -33,28 +33,5 @@ export const getBySlug = query({
   },
 })
 
-// Publish a blog post (called by Maya's cron)
-export const publish = mutation({
-  args: {
-    title: v.string(),
-    slug: v.string(),
-    summary: v.string(),
-    body: v.optional(v.string()),
-    targetKeyword: v.optional(v.string()),
-    vertical: v.union(v.literal('trades'), v.literal('professional-services'), v.literal('general')),
-  },
-  handler: async (ctx, args) => {
-    const now = Date.now()
-    await ctx.db.insert('blog_posts', {
-      title: args.title,
-      slug: args.slug,
-      summary: args.summary,
-      body: args.body,
-      targetKeyword: args.targetKeyword,
-      vertical: args.vertical,
-      status: 'published',
-      publishedAt: now,
-      createdAt: now,
-    })
-  },
-})
+// Publish a blog post — REMOVED 2026-06-25 (was unauthenticated).
+// Use `api.hermes.blog.publishPost` instead (requires HERMES_TOKEN_MAYA).

@@ -251,6 +251,59 @@ export const cancelFollowups = mutation({
   },
 })
 
+// Operator-initiated unsubscribe (CAN-SPAM compliance).
+// Cancels all pending followups + suppresses all queued/sending rows for
+// the lead. Idempotent — re-running on an already-cancelled lead is a no-op.
+//
+// Used when the operator manually processes an unsubscribe request
+// (inbound email, web form, phone call). Auth-gated to `agent: 'maya'`
+// since unsubscribe is a content/comms action — Hermes tokens are
+// per-agent and Maya's token is operator-curated.
+export const operatorSuppressLead = mutation({
+  args: {
+    token: v.string(),
+    agent: v.literal('maya'),
+    leadId: v.id('leads'),
+    reason: v.string(),
+  },
+  handler: async (ctx, args) => {
+    requireHermesAgent(args.token, args.agent)
+    const { token: _token, agent: _agent, leadId, reason } = args
+    let cancelled = 0
+    let suppressed = 0
+    const pending = await ctx.db
+      .query('outreach_followups')
+      .withIndex('by_lead', (q) => q.eq('leadId', leadId))
+      .collect()
+    for (const f of pending) {
+      if (f.status === 'scheduled') {
+        await ctx.db.patch(f._id, {
+          status: 'cancelled',
+          cancelledReason: reason,
+        })
+        cancelled++
+      }
+    }
+    const queue = await ctx.db
+      .query('outreach_queue')
+      .withIndex('by_lead', (q) => q.eq('leadId', leadId))
+      .collect()
+    for (const q of queue) {
+      if (q.status === 'queued' || q.status === 'sending') {
+        await ctx.db.patch(q._id, { status: 'suppressed' })
+        suppressed++
+      }
+    }
+    await ctx.db.insert('activity_log', {
+      leadId,
+      action: 'unsubscribed',
+      details: reason,
+      timestamp: Date.now(),
+    })
+    return { cancelled, suppressed }
+  },
+})
+
 // ---------- Internal queries / mutations (no token, callable from actions) ----------
 
 export const getQueueItem = internalQuery({

@@ -52,6 +52,7 @@ import type * as diag_sentBodies from "../diag_sentBodies.js";
 import type * as email_inbox from "../email_inbox.js";
 import type * as hermes_actions from "../hermes/actions.js";
 import type * as hermes_audit from "../hermes/audit.js";
+import type * as hermes_blog from "../hermes/blog.js";
 import type * as hermes_builds from "../hermes/builds.js";
 import type * as hermes_cronEntry from "../hermes/cronEntry.js";
 import type * as hermes_emailTemplate from "../hermes/emailTemplate.js";
@@ -122,6 +123,7 @@ declare const fullApi: ApiFromModules<{
   email_inbox: typeof email_inbox;
   "hermes/actions": typeof hermes_actions;
   "hermes/audit": typeof hermes_audit;
+  "hermes/blog": typeof hermes_blog;
   "hermes/builds": typeof hermes_builds;
   "hermes/cronEntry": typeof hermes_cronEntry;
   "hermes/emailTemplate": typeof hermes_emailTemplate;

@@ -119,6 +119,51 @@ export function faqPage(input: FaqInput): WithContext<FAQPageLeaf> {
 
 export type BreadcrumbItem = { name: string; url: string }
 
+import type { BlogPostingLeaf } from 'schema-dts'
+
+export type BlogPostingInput = {
+  title: string
+  slug: string
+  summary: string
+  body?: string
+  heroImageUrl?: string
+  publishedAt?: number
+  updatedAt?: number
+  targetKeyword?: string
+  url: string
+}
+
+export function blogPosting(input: BlogPostingInput): WithContext<BlogPostingLeaf> {
+  const leaf: BlogPostingLeaf = {
+    '@type': 'BlogPosting',
+    headline: input.title,
+    description: input.summary,
+    url: input.url,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': input.url },
+    datePublished: input.publishedAt
+      ? new Date(input.publishedAt).toISOString()
+      : undefined,
+    dateModified: input.updatedAt
+      ? new Date(input.updatedAt).toISOString()
+      : undefined,
+    author: { '@type': 'Person', name: 'Jake Wun', url: `${SITE_URL}/about` },
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: { '@type': 'ImageObject', url: SITE_LOGO },
+    },
+    image: input.heroImageUrl ?? SITE_IMAGE,
+    keywords: input.targetKeyword,
+    inLanguage: SITE_LANGUAGE,
+    articleBody: input.body ? input.body.slice(0, 5000) : undefined,
+  }
+  return {
+    '@context': 'https://schema.org',
+    ...leaf,
+  } as unknown as WithContext<BlogPostingLeaf>
+}
+
 export function breadcrumbList(
   items: ReadonlyArray<BreadcrumbItem>,
 ): WithContext<BreadcrumbListLeaf> {
