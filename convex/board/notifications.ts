@@ -17,6 +17,19 @@ import { v } from 'convex/values';
 
 const DEFAULT_LIMIT = 20;
 
+// Domains we own — mail from these addresses is operator/system self-send.
+// Mirrors webmail.ts:isSelfEmail so the bell surfaces them as notifications
+// instead of the inbox.
+const SELF_EMAIL_DOMAIN = 'emvyai.com';
+
+function isSelfEmail(fromAddress: string): boolean {
+  if (!fromAddress) return false;
+  const addr = fromAddress.toLowerCase();
+  const at = addr.lastIndexOf('@');
+  if (at < 0) return false;
+  return addr.slice(at + 1) === SELF_EMAIL_DOMAIN;
+}
+
 export type NotificationType =
   | 'email_open'
   | 'email_click'
@@ -130,6 +143,10 @@ export const list = query({
       .order('desc')
       .take(take);
     for (const row of inbox) {
+      // Skip self-emails (audit@emvyai.com self-notify, etc.). The
+      // webhook-driven activity_log entries already cover real lead
+      // events; the email loop adds no information.
+      if (isSelfEmail(row.fromAddress ?? '')) continue;
       events.push({
         id: `email_inbox:${row._id}`,
         type: 'inbound_reply',

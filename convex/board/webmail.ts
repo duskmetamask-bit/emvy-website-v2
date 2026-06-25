@@ -33,7 +33,38 @@ const REPLY_TO = process.env.OUTREACH_REPLY_TO ?? 'hello@emvyai.com';
 const DEFAULT_LIST_LIMIT = 50;
 const MAX_LIST_LIMIT = 200;
 
-export const FOLDERS = ['inbox', 'sent', 'starred', 'archive', 'trash', 'drafts'] as const;
+// Domains we own — mail from these addresses is operator/system self-send,
+// not real inbound. Filtered out of the inbox folder and surfaced as a
+// notification instead (see notifications.ts:audit_completed).
+const SELF_EMAIL_DOMAIN = 'emvyai.com';
+
+function isSelfEmail(fromAddress: string): boolean {
+  if (!fromAddress) return false;
+  const addr = fromAddress.toLowerCase();
+  const at = addr.lastIndexOf('@');
+  if (at < 0) return false;
+  return addr.slice(at + 1) === SELF_EMAIL_DOMAIN;
+}
+
+// Test/automation senders. Not real inbox traffic — route to a dedicated
+// Test folder so the operator can find E2E leftovers without polluting
+// the main inbox. Patterns:
+//   - any *.local TLD (RFC 6762 reserved: maiv.local, test.local)
+//   - contains "@test." (e.g. foo@test.example.com)
+//   - ends with @example.com (RFC 2606 reserved)
+function isTestEmail(fromAddress: string): boolean {
+  if (!fromAddress) return false;
+  const addr = fromAddress.toLowerCase();
+  const at = addr.lastIndexOf('@');
+  if (at < 0) return false;
+  const domain = addr.slice(at + 1);
+  if (domain.endsWith('.local')) return true;
+  if (domain.startsWith('test.')) return true;
+  if (domain === 'example.com') return true;
+  return false;
+}
+
+export const FOLDERS = ['inbox', 'sent', 'starred', 'archive', 'trash', 'drafts', 'test'] as const;
 export type Folder = (typeof FOLDERS)[number];
 
 const folderLiteral = v.union(
@@ -43,6 +74,7 @@ const folderLiteral = v.union(
   v.literal('archive'),
   v.literal('trash'),
   v.literal('drafts'),
+  v.literal('test'),
 );
 
 export type WebmailMessage = {
@@ -150,6 +182,7 @@ export const folderCounts = query({
       archive: { total: 0, unread: 0 },
       trash: { total: 0, unread: 0 },
       drafts: { total: 0, unread: 0 },
+      test: { total: 0, unread: 0 },
     };
 
     for (const row of inbox) {
@@ -157,13 +190,23 @@ export const folderCounts = query({
       const state = stateByKey.get(key);
       const folder: Folder = ((state?.folder as Folder) || defaultFolderFor('inbox')) as Folder;
       const unread = !state?.lastReadAt;
-      if (counts[folder]) {
-        counts[folder].total++;
-        if (unread) counts[folder].unread++;
+      const self = isSelfEmail(row.fromAddress ?? '');
+      const test = self || isTestEmail(row.fromAddress ?? '');
+      // Inbox view excludes self-emails (audit@emvyai.com et al).
+      if (!self) {
+        if (counts[folder]) {
+          counts[folder].total++;
+          if (unread) counts[folder].unread++;
+        }
+        if (state?.starred) {
+          counts.starred.total++;
+          if (unread) counts.starred.unread++;
+        }
       }
-      if (state?.starred) {
-        counts.starred.total++;
-        if (unread) counts.starred.unread++;
+      // Test folder catches self-emails + test patterns.
+      if (test) {
+        counts.test.total++;
+        if (unread) counts.test.unread++;
       }
     }
     for (const row of sent) {
@@ -179,6 +222,9 @@ export const folderCounts = query({
         counts.starred.total++;
         if (unread) counts.starred.unread++;
       }
+      // Sent rows: schema has no `to` field (it's joined from leads),
+      // so Test counts only the inbound side. If sent-side test
+      // detection becomes needed, look up leads[row.leadId].email.
     }
     return counts;
   },
@@ -197,7 +243,7 @@ export const list = query({
     const stateByKey = new Map(stateRows.map((r) => [r.key, r]));
 
     const includeInbox = folder !== 'sent' && folder !== 'drafts';
-    const includeSent = folder !== 'inbox' && folder !== 'drafts';
+    const includeSent = folder !== 'inbox' && folder !== 'drafts' && folder !== 'test';
 
     const inboxRows = includeInbox
       ? await ctx.db.query('email_inbox').order('desc').take(1000)
@@ -211,8 +257,19 @@ export const list = query({
       const key = makeKey('inbox', row._id);
       const state = stateByKey.get(key);
       const rowFolder: Folder = ((state?.folder as Folder) || defaultFolderFor('inbox')) as Folder;
+      // Self-sent mail (e.g. audit@emvyai.com self-notify) is not real
+      // inbox traffic. Route to Test so it stays discoverable but doesn't
+      // pollute the inbox view.
+      const self = isSelfEmail(row.fromAddress ?? '');
       if (folder === 'starred') {
         if (!state?.starred) continue;
+      } else if (folder === 'test') {
+        // Test folder catches both self-sent and addresses matching
+        // test patterns (e.g. @maiv.local).
+        if (!(self || isTestEmail(row.fromAddress ?? ''))) continue;
+      } else if (self) {
+        // Inbox view: skip self-sent.
+        continue;
       } else if (rowFolder !== folder) {
         continue;
       }
@@ -225,6 +282,10 @@ export const list = query({
       const rowFolder: Folder = ((state?.folder as Folder) || defaultFolderFor('sent')) as Folder;
       if (folder === 'starred') {
         if (!state?.starred) continue;
+      } else if (folder === 'test') {
+        // Sent rows don't get a sent-side test filter (no `to` field
+        // on email_sends). Test folder is inbound-only by design.
+        continue;
       } else if (rowFolder !== folder) {
         continue;
       }
