@@ -165,6 +165,8 @@ export default defineSchema({
     subject: v.string(),
     status: v.string(), // sent, delivered, opened, replied, bounced
     sentAt: v.number(),
+    resendId: v.optional(v.string()),
+    lastError: v.optional(v.string()),
   })
     .index('by_lead', ['leadId'])
     .index('by_status', ['status'])
@@ -179,6 +181,22 @@ export default defineSchema({
     url: v.optional(v.string()),
     createdAt: v.number(),
   }).index('by_lead', ['leadId']).index('by_vertical', ['vertical']),
+
+  // Per-message operator state for the webmail UI (board).
+  // Key format: `${type}:${id}` where type is 'inbox' or 'sent'.
+  // Decoupled from email_inbox/email_sends so existing pipelines
+  // (Purelymail IMAP, Resend send) keep working without migration.
+  // Folders: 'inbox' | 'sent' | 'starred' | 'archive' | 'trash' | 'drafts'.
+  email_message_state: defineTable({
+    key: v.string(),
+    folder: v.string(),
+    starred: v.boolean(),
+    lastReadAt: v.optional(v.number()),
+    updatedAt: v.number(),
+  })
+    .index('by_key', ['key'])
+    .index('by_folder_lastReadAt', ['folder', 'lastReadAt'])
+    .index('by_starred_lastReadAt', ['starred', 'lastReadAt']),
 
   cal_bookings: defineTable({
     leadId: v.optional(v.id('leads')),
