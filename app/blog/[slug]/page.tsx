@@ -227,17 +227,28 @@ export default async function BlogPostPage({
       </p>
 
       {post.heroImageUrl ? (
-        <img
-          src={post.heroImageUrl}
-          alt=""
+        <div
           style={{
-            width: '100%',
-            height: 'auto',
-            borderRadius: 8,
-            marginBottom: 32,
+            marginBottom: 40,
+            borderRadius: 12,
+            overflow: 'hidden',
             border: '1px solid var(--border)',
+            background: '#0a0e14',
+            boxShadow: '0 1px 0 rgba(255,255,255,0.04) inset',
           }}
-        />
+        >
+          <img
+            src={post.heroImageUrl}
+            alt=""
+            style={{
+              display: 'block',
+              width: '100%',
+              height: 'auto',
+              aspectRatio: '1200 / 630',
+              objectFit: 'cover',
+            }}
+          />
+        </div>
       ) : null}
 
       {post.body ? (

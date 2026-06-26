@@ -104,71 +104,111 @@ export default async function BlogPage() {
       {posts.length === 0 ? (
         <p style={{ color: 'var(--text-secondary)', marginTop: 48 }}>Articles coming soon.</p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 48 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 32, marginTop: 56 }}>
           {posts.map((post) => {
             const pill = VERTICAL_PILL[post.vertical] ?? VERTICAL_PILL.general
             return (
               <Link
                 key={post._id}
                 href={`/blog/${post.slug}`}
-                style={{ textDecoration: 'none', color: 'inherit' }}
+                style={{
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  display: 'block',
+                }}
               >
                 <article
+                  className="blog-card"
                   style={{
-                    padding: '20px 24px',
+                    padding: 0,
                     border: '1px solid var(--border)',
-                    borderRadius: 8,
-                    transition: 'border-color 120ms ease',
+                    borderRadius: 12,
+                    overflow: 'hidden',
+                    background: 'var(--surface)',
+                    transition: 'border-color 160ms ease, transform 160ms ease',
                   }}
                 >
-                  <div
-                    style={{
-                      display: 'flex',
-                      gap: 8,
-                      alignItems: 'center',
-                      marginBottom: 6,
-                      flexWrap: 'wrap',
-                    }}
-                  >
-                    <span
+                  {post.heroImageUrl ? (
+                    <div
                       style={{
-                        fontSize: 11,
-                        padding: '2px 8px',
-                        borderRadius: 4,
-                        background: pill.bg,
-                        color: pill.fg,
+                        background: '#0a0e14',
+                        borderBottom: '1px solid var(--border)',
                       }}
                     >
-                      {pill.label}
-                    </span>
-                    {post.readingTimeMinutes ? (
-                      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                        {post.readingTimeMinutes} min read
+                      <img
+                        src={post.heroImageUrl}
+                        alt=""
+                        style={{
+                          display: 'block',
+                          width: '100%',
+                          height: 'auto',
+                          aspectRatio: '1200 / 630',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    </div>
+                  ) : null}
+                  <div style={{ padding: '20px 24px 22px' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: 8,
+                        alignItems: 'center',
+                        marginBottom: 10,
+                        flexWrap: 'wrap',
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 11,
+                          padding: '2px 8px',
+                          borderRadius: 4,
+                          background: pill.bg,
+                          color: pill.fg,
+                          fontWeight: 600,
+                          letterSpacing: '0.04em',
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {pill.label}
                       </span>
-                    ) : null}
+                      {post.readingTimeMinutes ? (
+                        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                          {post.readingTimeMinutes} min read
+                        </span>
+                      ) : null}
+                      <span
+                        style={{
+                          fontSize: 12,
+                          color: 'var(--text-muted)',
+                          marginLeft: 'auto',
+                        }}
+                      >
+                        {formatDate(post.publishedAt)}
+                      </span>
+                    </div>
+                    <h2
+                      style={{
+                        fontSize: 22,
+                        fontWeight: 600,
+                        margin: '0 0 8px',
+                        lineHeight: 1.25,
+                        letterSpacing: '-0.01em',
+                      }}
+                    >
+                      {post.title}
+                    </h2>
+                    <p
+                      style={{
+                        fontSize: 14,
+                        color: 'var(--text-secondary)',
+                        margin: 0,
+                        lineHeight: 1.55,
+                      }}
+                    >
+                      {post.summary}
+                    </p>
                   </div>
-                  <h2 style={{ fontSize: 17, fontWeight: 600, margin: '0 0 6px' }}>
-                    {post.title}
-                  </h2>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      color: 'var(--text-secondary)',
-                      margin: 0,
-                      lineHeight: 1.5,
-                    }}
-                  >
-                    {post.summary}
-                  </p>
-                  <p
-                    style={{
-                      fontSize: 12,
-                      color: 'var(--text-muted)',
-                      marginTop: 8,
-                    }}
-                  >
-                    {formatDate(post.publishedAt)}
-                  </p>
                 </article>
               </Link>
             )

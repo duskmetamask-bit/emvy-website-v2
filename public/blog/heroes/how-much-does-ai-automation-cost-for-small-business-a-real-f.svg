@@ -1,0 +1,35 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0a0e14" />
+  
+  <!-- Subtle Luminous Accent -->
+  <line x1="0" y1="0" x2="1200" y2="0" stroke="#56d9ff" stroke-width="2" opacity="0.3" />
+  
+  <!-- Eyebrow Label -->
+  <text x="80" y="220" font-family="Manrope, sans-serif" font-size="11" font-weight="700" fill="#56d9ff" letter-spacing="0.1em">EMVY · AI STRATEGY</text>
+  
+  <!-- Main Headline -->
+  <text x="80" y="300" font-family="'Space Grotesk', sans-serif" font-size="56" font-weight="700" fill="white" letter-spacing="-0.03em">
+    <tspan x="80" dy="0">How Much Does AI Automation</tspan>
+    <tspan x="80" dy="72">Cost for Small Business</tspan>
+    <tspan x="80" dy="72">— A Real Framework</tspan>
+  </text>
+  
+  <!-- Abstract Cost-Stack Diagram (Right Side) -->
+  <g transform="translate(850, 260)">
+    <!-- SaaS Tier ($50/mo) -->
+    <rect x="0" y="0" width="80" height="12" rx="2" fill="white" opacity="0.2" />
+    <text x="90" y="10" font-family="Manrope, sans-serif" font-size="10" fill="white" opacity="0.4">SaaS</text>
+    
+    <!-- Agents Tier ($200-2000/mo) -->
+    <rect x="0" y="40" width="160" height="12" rx="2" fill="white" opacity="0.4" />
+    <text x="170" y="50" font-family="Manrope, sans-serif" font-size="10" fill="white" opacity="0.6">AGENTS</text>
+    
+    <!-- Custom Systems Tier ($2000-15000/mo) -->
+    <rect x="0" y="80" width="240" height="12" rx="2" fill="#56d9ff" />
+    <text x="250" y="90" font-family="Manrope, sans-serif" font-size="10" font-weight="700" fill="#56d9ff">CUSTOM</text>
+    
+    <!-- Decorative dots for scale -->
+    <circle cx="240" cy="86" r="3" fill="#0a0e14" />
+  </g>
+</svg>
