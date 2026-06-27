@@ -83,7 +83,8 @@ export const recordInboundEmail = mutation({
       // Auto-suppress pending E2/E3 follow-ups when a lead replies
       const queue = await ctx.db
         .query('outreach_queue')
-        .withIndex('by_lead_state', (q) => q.eq('leadId', leadId).eq('status', 'queued'))
+        .withIndex('by_lead', (q) => q.eq('leadId', leadId))
+        .filter((q) => q.eq(q.field('status'), 'queued'))
         .collect()
       for (const q of queue) {
         await ctx.db.patch(q._id, { status: 'suppressed' })
