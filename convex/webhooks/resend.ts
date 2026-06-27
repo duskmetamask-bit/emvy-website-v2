@@ -86,6 +86,23 @@ export const handleEmailEvent = mutation({
         })
       }
 
+      // Auto-suppress on bounce or complaint — cancel E2/E3 follow-ups
+      if (args.type === 'bounced' || args.type === 'complained') {
+        const now = Date.now()
+        await ctx.db.patch(leadId, {
+          unsubscribedAt: now,
+          stage: 'unsubscribed',
+          lastTouchpoint: args.type === 'bounced' ? 'email_bounced' : 'email_complaint',
+        })
+        // Cancel pending queue items for this lead
+        const queue = await ctx.db.query('outreach_queue')
+          .withIndex('by_lead_state', (q) => q.eq('leadId', leadId).eq('status', 'queued'))
+          .collect()
+        for (const q of queue) {
+          await ctx.db.patch(q._id, { status: 'suppressed' })
+        }
+      }
+
       await ctx.db.insert('activity_log', {
         leadId,
         action: `email_${args.type}`,

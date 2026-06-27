@@ -79,6 +79,15 @@ export const recordInboundEmail = mutation({
         details: args.subject || '(no subject)',
         timestamp: args.receivedAt,
       })
+
+      // Auto-suppress pending E2/E3 follow-ups when a lead replies
+      const queue = await ctx.db
+        .query('outreach_queue')
+        .withIndex('by_lead_state', (q) => q.eq('leadId', leadId).eq('status', 'queued'))
+        .collect()
+      for (const q of queue) {
+        await ctx.db.patch(q._id, { status: 'suppressed' })
+      }
     }
 
     return { id, leadId, duplicate: false }
