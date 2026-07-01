@@ -32,6 +32,7 @@ const ROUTES: ReadonlyArray<RouteEntry> = [
   { path: '/lp/trades', priority: 0.9, changeFrequency: 'monthly' },
 
   { path: '/blog', priority: 0.9, changeFrequency: 'daily' },
+  { path: '/newsletter', priority: 0.8, changeFrequency: 'monthly' },
 
   { path: '/success', priority: 0.5, changeFrequency: 'yearly' },
   { path: '/privacy', priority: 0.3, changeFrequency: 'yearly' },

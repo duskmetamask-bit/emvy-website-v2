@@ -77,6 +77,9 @@ export default function Header() {
       <Link className="nav-link" href="/blog">
         Blog
       </Link>
+      <Link className="nav-link" href="/newsletter">
+        Newsletter
+      </Link>
       <Link className="nav-link" href="/assessment">
         Mini AI Strategy
       </Link>
@@ -127,6 +130,7 @@ export default function Header() {
           <Link href="/services" onClick={() => setMobileOpen(false)}>Services</Link>
           <Link href="/use-cases" onClick={() => setMobileOpen(false)}>Use Cases</Link>
           <Link href="/why-ai" onClick={() => setMobileOpen(false)}>Why AI</Link>
+          <Link href="/newsletter" onClick={() => setMobileOpen(false)}>Newsletter</Link>
           <Link href="/assessment" onClick={() => setMobileOpen(false)}>Mini AI Strategy</Link>
           <Link href="/about" onClick={() => setMobileOpen(false)}>About</Link>
           <Link href="/contact" onClick={() => setMobileOpen(false)}>Contact</Link>
