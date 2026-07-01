@@ -5,13 +5,14 @@ import { api } from '@/convex/_generated/api'
 import JsonLd from '@/components/JsonLd'
 
 export const metadata: Metadata = {
-  title: 'Blog | EMVY',
-  description: 'AI strategy, workflows, and honest takes from the build.',
+  title: 'AI for Small Business — guides, costs, and prompt patterns | EMVY',
+  description:
+    'Plain-spoken guides on AI for Australian small business. Cost breakdowns, prompt patterns, and deployment lessons.',
   alternates: { canonical: 'https://emvyai.com/blog' },
   openGraph: {
-    title: 'EMVY Blog — AI strategy, workflows, and honest takes from the build.',
+    title: 'AI for Small Business — guides, costs, and prompt patterns | EMVY',
     description:
-      'AI strategy, workflows, and honest takes from the build. Real Hermes + OpenClaw content, no generic AI theory.',
+      'Plain-spoken guides on AI for Australian small business. Cost breakdowns, prompt patterns, and deployment lessons.',
     url: 'https://emvyai.com/blog',
     siteName: 'EMVY',
     type: 'website',
@@ -19,9 +20,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'EMVY Blog — AI strategy, workflows, and honest takes from the build.',
+    title: 'AI for Small Business — guides, costs, and prompt patterns | EMVY',
     description:
-      'AI strategy, workflows, and honest takes from the build. Real Hermes + OpenClaw content, no generic AI theory.',
+      'Plain-spoken guides on AI for Australian small business. Cost breakdowns, prompt patterns, and deployment lessons.',
   },
 }
 
@@ -30,7 +31,6 @@ type BlogPost = {
   title: string
   slug: string
   summary: string
-  vertical: 'trades' | 'professional-services' | 'general'
   publishedAt?: number
   updatedAt?: number
   heroImageUrl?: string
@@ -46,8 +46,8 @@ function getConvex() {
 async function getPosts(): Promise<BlogPost[]> {
   try {
     const convex = getConvex()
-    const rows = await convex.query(api.blog.list, {})
-    return rows as BlogPost[]
+    const rows = (await convex.query(api.blog.list, {})) as BlogPost[]
+    return rows
   } catch {
     return []
   }
@@ -62,22 +62,12 @@ function formatDate(ts?: number) {
   })
 }
 
-const VERTICAL_PILL: Record<BlogPost['vertical'], { bg: string; fg: string; label: string }> = {
-  trades: { bg: 'rgba(6, 182, 212, 0.1)', fg: 'var(--accent)', label: 'Trades' },
-  'professional-services': {
-    bg: 'rgba(99, 102, 241, 0.1)',
-    fg: '#818cf8',
-    label: 'Professional Services',
-  },
-  general: { bg: 'rgba(148, 163, 184, 0.1)', fg: 'var(--text-secondary)', label: 'General' },
-}
-
 export const revalidate = 3600
 
 export default async function BlogPage() {
   const posts = await getPosts()
 
-  const itemList: import('schema-dts').Thing = {
+  const itemList = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     itemListElement: posts.map((p, i) => ({
@@ -86,28 +76,41 @@ export default async function BlogPage() {
       url: `https://emvyai.com/blog/${p.slug}`,
       name: p.title,
     })),
-  } as import('schema-dts').WithContext<import('schema-dts').ItemList> as unknown as import('schema-dts').Thing
+  }
 
   return (
-    <div className="section" style={{ maxWidth: 700, margin: '0 auto', padding: '64px 24px' }}>
-      <JsonLd data={itemList} />
+    <>
+      <section className="section" style={{ maxWidth: 720, margin: '0 auto', padding: '64px 24px 32px' }}>
+        <JsonLd data={itemList} />
 
-      <p className="section-kicker">Blog</p>
-      <h1 style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 600, lineHeight: 1.1, marginBottom: 16 }}>
-        AI strategy, workflows, and honest takes from the build.
-      </h1>
-      <p style={{ color: 'var(--text-secondary)', fontSize: 17, lineHeight: 1.5, marginBottom: 8 }}>
-        Real Hermes and OpenClaw builds. No generic AI theory. Posts go live
-        when Maya&apos;s daily bundle ships.
-      </p>
+        <p className="section-kicker">AI for small business</p>
+        <h1
+          style={{
+            fontSize: 'clamp(32px, 4vw, 48px)',
+            fontWeight: 600,
+            lineHeight: 1.1,
+            marginBottom: 16,
+            letterSpacing: '-0.02em',
+          }}
+        >
+          Plain-spoken guides on AI for Australian small business.
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: 17, lineHeight: 1.55, marginBottom: 8 }}>
+          Cost breakdowns, prompt patterns, and deployment lessons for owners and operators
+          considering AI — not building it. Read these before you spend a dollar on a tool, an
+          agency, or an intern.
+        </p>
+      </section>
 
-      {posts.length === 0 ? (
-        <p style={{ color: 'var(--text-secondary)', marginTop: 48 }}>Articles coming soon.</p>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 32, marginTop: 56 }}>
-          {posts.map((post) => {
-            const pill = VERTICAL_PILL[post.vertical] ?? VERTICAL_PILL.general
-            return (
+      <section className="section" style={{ maxWidth: 720, margin: '0 auto', padding: '0 24px 64px' }}>
+        {posts.length === 0 ? (
+          <p style={{ color: 'var(--text-secondary)', marginTop: 32 }}>
+            No guides published yet. Take the free Mini AI Strategy to get notified when new
+            guides go live.
+          </p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+            {posts.map((post) => (
               <Link
                 key={post._id}
                 href={`/blog/${post.slug}`}
@@ -152,26 +155,12 @@ export default async function BlogPage() {
                     <div
                       style={{
                         display: 'flex',
-                        gap: 8,
+                        gap: 12,
                         alignItems: 'center',
                         marginBottom: 10,
                         flexWrap: 'wrap',
                       }}
                     >
-                      <span
-                        style={{
-                          fontSize: 11,
-                          padding: '2px 8px',
-                          borderRadius: 4,
-                          background: pill.bg,
-                          color: pill.fg,
-                          fontWeight: 600,
-                          letterSpacing: '0.04em',
-                          textTransform: 'uppercase',
-                        }}
-                      >
-                        {pill.label}
-                      </span>
                       {post.readingTimeMinutes ? (
                         <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
                           {post.readingTimeMinutes} min read
@@ -211,10 +200,39 @@ export default async function BlogPage() {
                   </div>
                 </article>
               </Link>
-            )
-          })}
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section
+        className="section"
+        style={{ maxWidth: 720, margin: '0 auto', padding: '32px 24px 64px' }}
+      >
+        <p className="section-kicker">Need help applying this?</p>
+        <h2
+          style={{
+            fontSize: 22,
+            fontWeight: 600,
+            margin: '4px 0 12px',
+            letterSpacing: '-0.01em',
+          }}
+        >
+          Bring one of these guides to your business.
+        </h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: 16, lineHeight: 1.6, margin: '0 0 20px' }}>
+          One hour with us. We map the three AI moves that would actually save you time or money,
+          send you the writeup, and you keep it whether we work together or not.
+        </p>
+        <div className="hero-actions">
+          <Link href="/services/ai-strategy-call" className="button primary">
+            Book a $500 Strategy Call →
+          </Link>
+          <span style={{ color: 'var(--text-secondary)', fontSize: 14, alignSelf: 'center' }}>
+            Or start with the free Mini AI Strategy — 5 questions, instant read.
+          </span>
         </div>
-      )}
-    </div>
+      </section>
+    </>
   )
 }

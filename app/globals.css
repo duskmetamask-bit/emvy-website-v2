@@ -1403,6 +1403,141 @@ main {
   border-bottom: none;
 }
 
+/* ----- Agenda cards (AI Strategy Call — Workflow Mapping section) ----- */
+.agenda-card {
+  position: relative;
+  overflow: hidden;
+  gap: 1rem;
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.agenda-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), transparent 70%);
+  opacity: 0.7;
+}
+
+.agenda-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 12px 40px -16px rgba(0, 0, 0, 0.6);
+}
+
+.agenda-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  margin-bottom: 0.25rem;
+}
+
+.agenda-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(86, 217, 255, 0.12);
+  color: #56d9ff;
+  flex-shrink: 0;
+}
+
+.agenda-card__icon.accent-violet {
+  background: rgba(124, 140, 255, 0.14);
+  color: #7c8cff;
+}
+
+.agenda-card__icon.accent-emerald {
+  background: rgba(43, 227, 163, 0.14);
+  color: #2be3a3;
+}
+
+.agenda-card__icon.accent-amber {
+  background: rgba(242, 201, 76, 0.14);
+  color: #f2c94c;
+}
+
+.agenda-card__icon.accent-rose {
+  background: rgba(255, 111, 145, 0.14);
+  color: #ff6f91;
+}
+
+.agenda-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-family: var(--font-mono);
+  line-height: 1;
+}
+
+.agenda-card__number {
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.agenda-card__duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.agenda-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  line-height: 1.2;
+  margin: 0.25rem 0 0.75rem 0;
+  width: 100%;
+}
+
+.agenda-card__points {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.agenda-card__points li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.65rem;
+  align-items: start;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.agenda-card__point-num {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding-top: 0.1rem;
+}
+
+.agenda-card.accent-cyan { --accent: #56d9ff; }
+.agenda-card.accent-violet { --accent: #7c8cff; }
+.agenda-card.accent-emerald { --accent: #2be3a3; }
+.agenda-card.accent-amber { --accent: #f2c94c; }
+.agenda-card.accent-rose { --accent: #ff6f91; }
+
 .process-card span {
   color: var(--accent);
   font-family: var(--font-mono);

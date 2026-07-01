@@ -15,13 +15,9 @@ const ROUTES: ReadonlyArray<RouteEntry> = [
 
   { path: '/about', priority: 0.8, changeFrequency: 'monthly' },
   { path: '/use-cases', priority: 0.8, changeFrequency: 'monthly' },
-  { path: '/industries', priority: 0.7, changeFrequency: 'monthly' },
-  { path: '/pricing', priority: 0.8, changeFrequency: 'monthly' },
   { path: '/process', priority: 0.8, changeFrequency: 'monthly' },
   { path: '/why-ai', priority: 0.8, changeFrequency: 'monthly' },
-  { path: '/why-ai/security', priority: 0.7, changeFrequency: 'monthly' },
 
-  { path: '/services', priority: 0.8, changeFrequency: 'monthly' },
   { path: '/services/ai-builds', priority: 0.7, changeFrequency: 'monthly' },
   { path: '/services/discovery-call', priority: 0.7, changeFrequency: 'monthly' },
   { path: '/services/ai-strategy-call', priority: 0.7, changeFrequency: 'monthly' },
@@ -29,7 +25,6 @@ const ROUTES: ReadonlyArray<RouteEntry> = [
 
   { path: '/assessment', priority: 0.9, changeFrequency: 'monthly' },
   { path: '/contact', priority: 0.9, changeFrequency: 'monthly' },
-  { path: '/lp/trades', priority: 0.9, changeFrequency: 'monthly' },
 
   { path: '/blog', priority: 0.9, changeFrequency: 'daily' },
   { path: '/newsletter', priority: 0.8, changeFrequency: 'monthly' },

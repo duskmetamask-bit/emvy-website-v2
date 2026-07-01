@@ -32,7 +32,7 @@ export default function AboutPage() {
         image="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1800&q=90&auto=format&fit=crop"
       >
         <Link href="/assessment" className="button light">
-          Start the quiz
+          Start the assessment
         </Link>
         <Link href="/contact" className="button secondary">
           Get in touch

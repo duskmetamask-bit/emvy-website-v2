@@ -127,7 +127,6 @@ export default function Header() {
 
       {mobileOpen ? (
         <div className="mobile-menu">
-          <Link href="/services" onClick={() => setMobileOpen(false)}>Services</Link>
           <Link href="/use-cases" onClick={() => setMobileOpen(false)}>Use Cases</Link>
           <Link href="/why-ai" onClick={() => setMobileOpen(false)}>Why AI</Link>
           <Link href="/newsletter" onClick={() => setMobileOpen(false)}>Newsletter</Link>

@@ -54,11 +54,11 @@ export default function ContactPage() {
       <PageHero
         eyebrow="Contact"
         title="Start a direct conversation with EMVY."
-        description="Use this form if you want to discuss a workflow, an AI opportunity, or an existing operations bottleneck. If you prefer a structured first step, start with the quiz."
+        description="Use this form if you want to discuss a workflow, an AI opportunity, or an existing operations bottleneck. If you prefer a structured first step, try the free Mini AI Strategy Assessment."
         image="https://images.unsplash.com/photo-1516321165247-4aa89a48be28?w=1800&q=90&auto=format&fit=crop"
       >
         <Link href="/assessment" className="button light">
-          Start the quiz
+          Start the assessment
         </Link>
         <Link href="/services/discovery-call" className="button secondary">
           Book Free Discovery Call

@@ -79,27 +79,21 @@ const expertiseAreas = [
   },
 ]
 
-const caseStudies = [
+const capabilities = [
   {
-    title: 'Lead response system',
-    metric: 'Faster follow-up',
-    body: 'Unified intake, routing, and follow-up so qualified leads stop going cold between touchpoints.',
-    image:
-      'https://images.unsplash.com/photo-1556740749-887f6717d7e4?w=1200&q=90&auto=format&fit=crop',
+    label: 'Run on autopilot',
+    title: 'Process & automate',
+    body: 'AI-powered workflows, data pipelines, and operational automation that handle the repetitive work — from simple triggers to multi-step sequences.',
   },
   {
-    title: 'Internal workflow automation',
-    metric: 'Less manual work',
-    body: 'Reduced repetitive admin across handover, reporting, approvals, and status chasing.',
-    image:
-      'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=90&auto=format&fit=crop',
+    label: 'Always-on service',
+    title: 'Communicate & respond',
+    body: 'Voice AI, chatbots, smart inboxes, and automated follow-up that keep your business responsive without hiring more people.',
   },
   {
-    title: 'AI-assisted service delivery',
-    metric: 'More capacity',
-    body: 'A practical assist layer that helps a service team move faster without losing visibility or control.',
-    image:
-      'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=1200&q=90&auto=format&fit=crop',
+    label: 'Know what matters',
+    title: 'Analyse & decide',
+    body: 'Dashboards, reporting, and data analysis that turn your business data into decisions — without spreadsheets or manual exports.',
   },
 ]
 
@@ -140,10 +134,9 @@ export default function Home() {
 
           <div className="hero-copy">
             <p className="section-kicker hero-kicker">AI strategy for Australian small businesses</p>
-            <h1>We identify where your business can leverage AI, then build the systems to make it work.</h1>
+            <h1>We find where AI pays off in your business, then build the system to make it happen.</h1>
             <p>
-              We help small businesses in Australia remove bottlenecks and admin tasks by
-              leveraging AI.
+              Practical AI strategy and builds for businesses that want to work smarter.
             </p>
 
             <div className="hero-actions">
@@ -222,31 +215,22 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section" id="solutions">
+      <section className="section" id="capabilities">
         <div className="section-header">
-          <p className="section-kicker">Solutions</p>
-          <h2 className="section-title">Examples of the kinds of outcomes the right system should create.</h2>
+          <p className="section-kicker">What AI can do</p>
+          <h2 className="section-title">Three capability areas — every AI build fits into one of them.</h2>
+          <p className="section-text">
+            Whether it is a single voice agent or a full operating layer, every system we build
+            automates, communicates, or analyses. Usually all three.
+          </p>
         </div>
 
-        <div className="case-grid">
-          {caseStudies.map((study) => (
-            <article key={study.title} className="case-card">
-              <div className="case-image">
-                <img
-                  src={study.image}
-                  alt={study.title}
-                  width={1200}
-                  height={675}
-                  sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-              <div className="case-body">
-                <p>{study.metric}</p>
-                <h3>{study.title}</h3>
-                <span>{study.body}</span>
-              </div>
+        <div className="capabilities-grid">
+          {capabilities.map((cap) => (
+            <article key={cap.title} className="capability-card">
+              <p className="section-kicker">{cap.label}</p>
+              <h3>{cap.title}</h3>
+              <p>{cap.body}</p>
             </article>
           ))}
         </div>
@@ -257,8 +241,8 @@ export default function Home() {
           <p className="section-kicker">Next Step</p>
           <h2 className="section-title">Choose the starting point that suits you best.</h2>
           <p className="section-text">
-            Book a free discovery call if you want to talk through the opportunity, or take the
-            quiz if you want a simple first step.
+            Book a free discovery call if you want to talk through the opportunity, or try the
+            Mini AI Strategy Assessment for a simple first step.
           </p>
         </div>
 
@@ -277,7 +261,7 @@ export default function Home() {
             <p className="service-flow-number">02</p>
             <h3>Start the Mini AI Strategy Assessment</h3>
             <p>
-              A free 2-minute self-assessment that surfaces exactly where your business is losing
+              A free 5-minute self-assessment that surfaces exactly where your business is losing
               time and money — and emails you a personalised strategy report.
             </p>
             <TrackedLink
@@ -286,7 +270,7 @@ export default function Home() {
               eventName="quiz_start"
               eventLabel="homepage final cta"
             >
-              Start the quiz
+              Start the assessment
             </TrackedLink>
           </article>
         </div>
