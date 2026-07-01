@@ -8,7 +8,6 @@
  * @module
  */
 
-import type * as _admin_cleanup from "../_admin_cleanup.js";
 import type * as actions from "../actions.js";
 import type * as assessment_submissions from "../assessment/submissions.js";
 import type * as audit_chatbot_leads from "../audit_chatbot_leads.js";
@@ -16,7 +15,6 @@ import type * as audit_chatbot_notify from "../audit_chatbot_notify.js";
 import type * as audit_chatbot_notify_action from "../audit_chatbot_notify_action.js";
 import type * as blog from "../blog.js";
 import type * as board_actions from "../board/actions.js";
-import type * as board_activity from "../board/activity.js";
 import type * as board_assessment from "../board/assessment.js";
 import type * as board_audit from "../board/audit.js";
 import type * as board_audit_chatbot from "../board/audit_chatbot.js";
@@ -28,6 +26,7 @@ import type * as board_dashboard from "../board/dashboard.js";
 import type * as board_drafts from "../board/drafts.js";
 import type * as board_email_inbox from "../board/email_inbox.js";
 import type * as board_followups from "../board/followups.js";
+import type * as board_insights from "../board/insights.js";
 import type * as board_intelligence from "../board/intelligence.js";
 import type * as board_leads from "../board/leads.js";
 import type * as board_maya from "../board/maya.js";
@@ -61,6 +60,7 @@ import type * as hermes_leads from "../hermes/leads.js";
 import type * as hermes_marketing from "../hermes/marketing.js";
 import type * as hermes_ops from "../hermes/ops.js";
 import type * as hermes_outreach from "../hermes/outreach.js";
+import type * as hermes_outreach2 from "../hermes/outreach2.js";
 import type * as hermes_pricing from "../hermes/pricing.js";
 import type * as hermes_runner from "../hermes/runner.js";
 import type * as hermesAuth from "../hermesAuth.js";
@@ -79,7 +79,6 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  _admin_cleanup: typeof _admin_cleanup;
   actions: typeof actions;
   "assessment/submissions": typeof assessment_submissions;
   audit_chatbot_leads: typeof audit_chatbot_leads;
@@ -87,7 +86,6 @@ declare const fullApi: ApiFromModules<{
   audit_chatbot_notify_action: typeof audit_chatbot_notify_action;
   blog: typeof blog;
   "board/actions": typeof board_actions;
-  "board/activity": typeof board_activity;
   "board/assessment": typeof board_assessment;
   "board/audit": typeof board_audit;
   "board/audit_chatbot": typeof board_audit_chatbot;
@@ -99,6 +97,7 @@ declare const fullApi: ApiFromModules<{
   "board/drafts": typeof board_drafts;
   "board/email_inbox": typeof board_email_inbox;
   "board/followups": typeof board_followups;
+  "board/insights": typeof board_insights;
   "board/intelligence": typeof board_intelligence;
   "board/leads": typeof board_leads;
   "board/maya": typeof board_maya;
@@ -132,6 +131,7 @@ declare const fullApi: ApiFromModules<{
   "hermes/marketing": typeof hermes_marketing;
   "hermes/ops": typeof hermes_ops;
   "hermes/outreach": typeof hermes_outreach;
+  "hermes/outreach2": typeof hermes_outreach2;
   "hermes/pricing": typeof hermes_pricing;
   "hermes/runner": typeof hermes_runner;
   hermesAuth: typeof hermesAuth;

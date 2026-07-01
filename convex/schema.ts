@@ -143,6 +143,12 @@ export default defineSchema({
     stage: v.optional(v.string()),
     discoveredAt: v.optional(v.number()),
     enrichedAt: v.optional(v.number()),
+    // Outreach state machine fields (aligned to live Convex 2026-07-01)
+    unsubscribedAt: v.optional(v.number()),
+    doNotContactAt: v.optional(v.number()),
+    outreachState: v.optional(v.string()),
+    nextActionAt: v.optional(v.number()),
+    outreachHistory: v.optional(v.array(v.object({ step: v.string(), sentAt: v.number() }))),
   })
     .index('by_stage', ['stage'])
     .index('by_score', ['score'])
@@ -150,7 +156,8 @@ export default defineSchema({
     .index('by_source', ['source'])
     .index('by_outcome', ['outcome'])
     .index('by_discoveredAt', ['discoveredAt'])
-    .index('by_email', ['email']),
+    .index('by_email', ['email'])
+    .index('by_outreachState', ['outreachState']),
 
   email_drafts: defineTable({
     leadId: v.optional(v.id('leads')),
@@ -317,6 +324,7 @@ export default defineSchema({
     updatedAt: v.number(),
     completedAt: v.optional(v.number()),
     dueAt: v.optional(v.number()),
+    nextActionAt: v.optional(v.number()),
     blockedBy: v.optional(v.array(v.id('actions'))),
     evidence: v.optional(v.string()),
   })
@@ -346,6 +354,10 @@ export default defineSchema({
     draftId: v.optional(v.id('email_drafts')),
     sendId: v.optional(v.id('email_sends')),
     touch: v.optional(v.number()), // 1 = first outreach, 2 = follow-up #1, 3 = follow-up #2
+    templateId: v.optional(v.string()),
+    forceBypassGates: v.optional(v.boolean()),
+    subject: v.optional(v.string()),
+    body: v.optional(v.string()),
     createdAt: v.number(),
   })
     .index('by_status', ['status'])
