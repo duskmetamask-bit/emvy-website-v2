@@ -4111,3 +4111,148 @@ main {
   background: var(--bg);
   color: var(--text);
 }
+
+/* Services page custom hero (2026-07-01 visual polish) */
+.services-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: clamp(440px, 62vh, 640px);
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background:
+    radial-gradient(900px 500px at 85% 50%, rgba(86, 217, 255, 0.06), transparent 60%),
+    linear-gradient(180deg, #031427 0%, #000f21 100%);
+}
+
+.services-hero__media {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: none;
+  opacity: 0.95;
+}
+
+.services-hero__media img {
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.services-hero__copy {
+  position: relative;
+  z-index: 2;
+  width: min(1180px, calc(100% - 2.4rem));
+  margin: 0 auto;
+  padding: clamp(5rem, 10vw, 8rem) 0;
+  max-width: 38rem;
+  display: grid;
+  gap: 1rem;
+  animation: rise-up 900ms var(--ease) both;
+}
+
+.services-hero__copy h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4.2rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  max-width: 14ch;
+  position: relative;
+  padding-left: 1.4rem;
+}
+
+.services-hero__accent {
+  position: absolute;
+  left: 0;
+  top: 0.6rem;
+  bottom: 0.6rem;
+  width: 3px;
+  background: #56d9ff;
+  border-radius: 2px;
+  box-shadow: 0 0 12px rgba(86, 217, 255, 0.55);
+}
+
+.services-hero__copy p {
+  margin: 0;
+  max-width: 50ch;
+  color: rgba(240, 244, 250, 0.82);
+  font-size: 1.04rem;
+  line-height: 1.55;
+}
+
+.services-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 0.6rem;
+}
+
+.services-icon-row {
+  margin: 2.4rem 0 2.8rem;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(86, 217, 255, 0.14);
+  background: #031427;
+  position: relative;
+}
+
+.services-icon-row::before,
+.services-icon-row::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 64px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.services-icon-row::before {
+  left: 0;
+  background: linear-gradient(90deg, #031427, transparent);
+}
+
+.services-icon-row::after {
+  right: 0;
+  background: linear-gradient(270deg, #031427, transparent);
+}
+
+.services-icon-row img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.services-pathway {
+  margin: 1.6rem 0 2.4rem;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.services-pathway img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+@media (max-width: 880px) {
+  .services-hero__media {
+    width: 100%;
+    opacity: 0.35;
+  }
+
+  .services-hero__copy {
+    max-width: none;
+  }
+
+  .services-icon-row {
+    margin: 1.6rem 0 2rem;
+  }
+}

@@ -1,0 +1,75 @@
+<svg width="1200" height="140" viewBox="0 0 1200 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="140" fill="#031427"/>
+
+  <!-- Icon Row Container (Centered) -->
+  <g transform="translate(600, 70)">
+    <!-- 
+      Spacing calculation: 
+      Total width ~800px for the row? 
+      5 icons, spaced evenly. Let's use 160px center-to-center spacing.
+      Offsets: -320, -160, 0, 160, 320
+    -->
+
+    <!-- 1. Compass / Navigator (Assessment) -->
+    <g transform="translate(-320, 0)">
+      <!-- Divider -->
+      <line x1="-20" y1="-45" x2="20" y2="-45" stroke="#56d9ff" stroke-width="1" stroke-opacity="0.3"/>
+      <!-- Icon -->
+      <g transform="translate(-28, -28)">
+        <circle cx="28" cy="28" r="22" stroke="#56d9ff" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M28 12L32 24L44 28L32 32L28 44L24 32L12 28L24 24L28 12Z" stroke="#56d9ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </g>
+
+    <!-- 2. Phone Receiver (Discovery Call) -->
+    <g transform="translate(-160, 0)">
+      <!-- Divider -->
+      <line x1="-20" y1="-45" x2="20" y2="-45" stroke="#56d9ff" stroke-width="1" stroke-opacity="0.3"/>
+      <!-- Icon -->
+      <g transform="translate(-28, -28)">
+        <path d="M15 12C13.3431 12 12 13.3431 12 15V18C12 30.1503 21.8497 40 34 40H37C38.6569 40 40 38.6569 40 37V34C40 32.3431 38.6569 31 37 31H32L29 34C24 31 21 28 18 23L21 20V15C21 13.3431 19.6569 12 18 12H15Z" stroke="#56d9ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </g>
+
+    <!-- 3. Open Book (Strategy) -->
+    <g transform="translate(0, 0)">
+      <!-- Divider -->
+      <line x1="-20" y1="-45" x2="20" y2="-45" stroke="#56d9ff" stroke-width="1" stroke-opacity="0.3"/>
+      <!-- Icon -->
+      <g transform="translate(-28, -28)">
+        <path d="M28 44V12C28 12 20 12 12 16V40C20 36 28 36 28 36M28 44V12C28 12 36 12 44 16V40C36 36 28 36 28 36" stroke="#56d9ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="36" cy="24" r="1.5" fill="#56d9ff"/>
+      </g>
+    </g>
+
+    <!-- 4. Wrench & Gear (Build) -->
+    <g transform="translate(160, 0)">
+      <!-- Divider -->
+      <line x1="-20" y1="-45" x2="20" y2="-45" stroke="#56d9ff" stroke-width="1" stroke-opacity="0.3"/>
+      <!-- Icon -->
+      <g transform="translate(-28, -28)">
+        <!-- Simplified Gear -->
+        <circle cx="32" cy="24" r="10" stroke="#56d9ff" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M32 10V14M32 34V38M46 24H42M22 24H18" stroke="#56d9ff" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Wrench -->
+        <path d="M12 44L22 34M12 44C10 42 10 38 12 36C14 34 18 34 20 36" stroke="#56d9ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </g>
+
+    <!-- 5. Shield with Checkmark (Maintenance) -->
+    <g transform="translate(320, 0)">
+      <!-- Divider -->
+      <line x1="-20" y1="-45" x2="20" y2="-45" stroke="#56d9ff" stroke-width="1" stroke-opacity="0.3"/>
+      <!-- Icon -->
+      <g transform="translate(-28, -28)">
+        <path d="M28 44C28 44 44 40 44 28V12L28 8L12 12V28C12 40 28 44 28 44Z" stroke="#56d9ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M22 26L26 30L34 22" stroke="#56d9ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </g>
+
+    <!-- Bottom Baseline Rule -->
+    <!-- 80% of row width: 0.8 * (320*2 + 56) ≈ 560px? No, 80% of 1200 is 960px. -->
+    <line x1="-480" y1="50" x2="480" y2="50" stroke="#56d9ff" stroke-width="1" stroke-opacity="0.2"/>
+  </g>
+</svg>
