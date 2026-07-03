@@ -298,6 +298,19 @@ export const markStepSent = mutation({
 })
 
 // ---------- Public mutation: markStepFailed ----------
+//
+// Slice 5b-prep (2026-07-03) — exponential backoff retry.
+// Transient Resend 5xx errors used to permanently fail the row at
+// attempts=1. Now: if attempts < MAX_ATTEMPTS (3), flip status back
+// to 'queued' with scheduledFor = nextAttemptAt = now + 5min * 2^attempts
+// (5 min, 10 min, 20 min). The drainer/operatorSend's claim() respects
+// `nextAttemptAt` via the `not_due` check.
+//
+// At MAX_ATTEMPTS the row goes to status='failed' for operator triage
+// (visible in the board's dead-letter section of Slice 5c).
+const MAX_RETRY_ATTEMPTS = 3
+const RETRY_BASE_MS = 5 * 60 * 1000 // 5 minutes
+
 export const markStepFailed = mutation({
   args: {
     token: v.string(),
@@ -309,13 +322,54 @@ export const markStepFailed = mutation({
     requireHermesAgent(args.token, args.agent)
     const row = await ctx.db.get(args.queueId)
     if (!row) throw new Error('markStepFailed: queue row not found')
+    const now = Date.now()
+    const newAttempts = (row.attempts ?? 0) + 1
+    if (newAttempts < MAX_RETRY_ATTEMPTS) {
+      // Re-queue with exponential backoff.
+      const backoffMs = RETRY_BASE_MS * Math.pow(2, newAttempts - 1)
+      const nextAttemptAt = now + backoffMs
+      await ctx.db.patch(args.queueId, {
+        status: 'queued',
+        lastError: args.error,
+        lastAttemptAt: now,
+        attempts: newAttempts,
+        scheduledFor: nextAttemptAt,
+        nextAttemptAt,
+      })
+      // Audit — retried_with_backoff shows up in the activity timeline.
+      if (row.leadId) {
+        await ctx.db.insert('activity_log', {
+          leadId: row.leadId,
+          action: 'send_retried_with_backoff',
+          actor: 'drainer',
+          details:
+            `queueId=${args.queueId} attempts=${newAttempts} ` +
+            `backoffMs=${backoffMs} nextAttemptAt=${nextAttemptAt} ` +
+            `error=${args.error.slice(0, 200)}`,
+          timestamp: now,
+        })
+      }
+      return { ok: true, retried: true, attempts: newAttempts, nextAttemptAt }
+    }
+    // At/over MAX_RETRY_ATTEMPTS — permanent failure for operator triage.
     await ctx.db.patch(args.queueId, {
       status: 'failed',
       lastError: args.error,
-      lastAttemptAt: Date.now(),
-      attempts: (row.attempts ?? 0) + 1,
+      lastAttemptAt: now,
+      attempts: newAttempts,
     })
-    return { ok: true }
+    if (row.leadId) {
+      await ctx.db.insert('activity_log', {
+        leadId: row.leadId,
+        action: 'send_permanently_failed',
+        actor: 'drainer',
+        details:
+          `queueId=${args.queueId} attempts=${newAttempts} ` +
+          `error=${args.error.slice(0, 200)}`,
+        timestamp: now,
+      })
+    }
+    return { ok: true, retried: false, attempts: newAttempts, dead: true }
   },
 })
 

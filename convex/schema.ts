@@ -357,6 +357,7 @@ export default defineSchema({
     source: v.optional(v.string()), // csv_seed | yp_scrape | manual | followup
     status: v.string(), // queued | sending | sent | failed | suppressed | replied
     scheduledFor: v.optional(v.number()),
+    nextAttemptAt: v.optional(v.number()), // Slice 5b-prep — when a retried row becomes due again (mirrors scheduledFor for clarity)
     attempts: v.optional(v.number()),
     lastError: v.optional(v.string()),
     lastAttemptAt: v.optional(v.number()),
