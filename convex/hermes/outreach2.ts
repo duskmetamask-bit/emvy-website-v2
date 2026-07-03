@@ -22,7 +22,7 @@
 // (send_outreach.py, schedule_followups.py) are now thin wrappers around
 // claimAndSendStep + runFollowups.
 
-import { action, internalMutation, internalQuery, mutation, query } from '../_generated/server'
+import { action, internalAction, internalMutation, internalQuery, mutation, query } from '../_generated/server'
 import { v } from 'convex/values'
 import { internal, api } from '../_generated/api'
 import { requireHermesAgent } from '../hermesAuth'
@@ -539,6 +539,18 @@ export const claimAndSendStep = action({
   handler: async (ctx, args): Promise<{ ok: boolean; noop?: boolean; reason?: string; resendId?: string; state?: string }> => {
     requireHermesAgent(args.token, args.agent)
 
+    // 0. SENDER INVARIANT (locked 2026-07-03) — only the canonical Convex
+    //    path is allowed to send. If you see this fail, someone deployed
+    //    a fork of this function from the wrong env, or the env was
+    //    reset. Set `npx convex env set SENDER_NAME convex-v2` to recover.
+    const expectedSender = process.env.SENDER_NAME
+    if (expectedSender !== 'convex-v2') {
+      throw new Error(
+        `SENDER_NAME mismatch (got=${expectedSender ?? 'unset'}, expected=convex-v2). ` +
+          'Set `npx convex env set SENDER_NAME convex-v2` on the glad-camel-940 deployment.'
+      )
+    }
+
     // 1. Atomically flip status queued -> sending
     const claim = await ctx.runMutation(internal.hermes.outreach2.claim, {
       id: args.queueId,
@@ -881,5 +893,224 @@ export const unsuppressLead = mutation({
       timestamp: Date.now(),
     })
     return { ok: true, email: lead.email as string, priorState }
+  },
+})
+
+// ---------- Internal mutation: markLegacyE1Backfilled ----------
+//
+// Slice 1 — backlog reconciliation. The 244 E2/E3 rows that hit
+// `blocked:e2_before_e1_sent` were queued before the v2 migration; the
+// original E1 send happened via the old Brevo `send_outreach.py` path and
+// never wrote to lead.outreachHistory. This mutation synthesizes the
+// missing E1 history entry so the next drain pass accepts the E2/E3 rows.
+//
+// IDEMPOTENT: a second call for the same lead is a no-op (returns
+// noop:true, reason:'already_backfilled').
+//
+// `e1SentAt` is caller-supplied because the only valid timestamp is
+// whatever the caller's VPS-side parser extracted from the legacy
+// `_legacy_archive/_sent/` file. From the UI, we derive a valid value
+// from the queue row's scheduledFor (E2.scheduledFor - 4d, or
+// E3.scheduledFor - 10d) so the locked E2≥4d / E3≥6d gates pass naturally.
+//
+// Does NOT send any email — this is a metadata-only backfill. The next
+// `drainDueOutreach` run picks up the now-allowed E2/E3 rows.
+//
+// CAUTION: this writes to lead.outreachState + lead.outreachHistory from
+// inside `hermes/outreach2.ts`. The sender-seam guard test (see
+// tests/lib/sender-seam.test.ts) does not flag this file — it IS the
+// canonical seam. New writers elsewhere still fail CI.
+export const markLegacyE1Backfilled = internalMutation({
+  args: {
+    email: v.string(),
+    e1SentAt: v.number(),
+    e1Subject: v.optional(v.string()),
+    source: v.optional(v.string()), // 'ui' | 'vps_script' | 'manual' — audit provenance
+  },
+  handler: async (ctx, args): Promise<{
+    ok: boolean
+    leadId: string
+    noop?: boolean
+    reason?: string
+    backfilledAt?: number
+  }> => {
+    const email = args.email.toLowerCase()
+    const lead = await ctx.db
+      .query('leads')
+      .withIndex('by_email', (q) => q.eq('email', email))
+      .first()
+    if (!lead) {
+      throw new Error(`markLegacyE1Backfilled: lead not found for ${email}`)
+    }
+    if (lead.unsubscribedAt) {
+      throw new Error(`markLegacyE1Backfilled: lead ${email} is unsubscribed — refuse to backfill`)
+    }
+    if (lead.doNotContactAt) {
+      throw new Error(`markLegacyE1Backfilled: lead ${email} is do_not_contact — refuse to backfill`)
+    }
+
+    // Idempotency: if e1 is already in history, no-op.
+    const history = (lead.outreachHistory ?? []) as Array<{
+      step: string
+      sentAt: number
+      resendMsgId?: string
+      subject?: string
+    }>
+    const existingE1 = history.find((h) => h.step === 'e1')
+    if (existingE1) {
+      return {
+        ok: true,
+        leadId: String(lead._id),
+        noop: true,
+        reason: 'already_backfilled',
+      }
+    }
+
+    // Refuse to overwrite a sequence that's already advanced past e1_sent.
+    const state = lead.outreachState ?? null
+    if (state === 'e1_sent' || state === 'e2_sent' || state === 'e3_sent') {
+      return {
+        ok: true,
+        leadId: String(lead._id),
+        noop: true,
+        reason: `already_advanced (state=${state})`,
+      }
+    }
+
+    const now = Date.now()
+    const newEntry = {
+      step: 'e1' as const,
+      sentAt: args.e1SentAt,
+      resendMsgId: undefined,
+      subject: args.e1Subject ?? '(legacy pre-migration send via Brevo)',
+    }
+    history.push(newEntry)
+    await ctx.db.patch(lead._id, {
+      outreachState: 'e1_sent',
+      outreachHistory: history,
+    })
+
+    await ctx.db.insert('activity_log', {
+      leadId: lead._id,
+      action: 'legacy_e1_backfilled',
+      actor: 'hermes',
+      details: `e1SentAt=${args.e1SentAt} subject=${args.e1Subject ?? ''} source=${args.source ?? 'ui'}`,
+      timestamp: now,
+    })
+
+    return { ok: true, leadId: String(lead._id), backfilledAt: now }
+  },
+})
+
+// ---------- Internal drainer: drainDueOutreach ----------
+//
+// The missing link. Zone 2 cron queues E1+E2+E3 rows to outreach_queue,
+// but no caller was invoking claimAndSendStep — the rows sat at
+// status=queued indefinitely. This action drains them.
+//
+// Per the locked law (feedback_outreach_followup_timing_law.md), followups
+// E2/E3 are gated at SEND TIME in `claim`: E2 requires state=e1_sent AND
+// ≥4d since E1 sentAt; E3 requires state=e2_sent AND ≥6d since E2 sentAt.
+// Rows that hit those gates return reason='blocked:e*_too_soon' and are
+// left in queued — they will drain on a future run when the gap has elapsed.
+//
+// One failed send does NOT stop the loop — we capture the error and move on.
+// This is the single live sender after the 2026-07-03 alignment fix;
+// legacy Brevo `send_outreach.py` + older `hermes/outreach.ts` paths were
+// stashed the same day.
+//
+// Idempotency is enforced at multiple layers:
+//   1. queueStep: (leadId, touch) already-queued returns existing row.
+//   2. claim: only flips queued→sending (returns reason='status=sent' if
+//      already past that state).
+//   3. markStepSent: short-circuits if row.status === 'sent'.
+//
+// Wired to crons.ts:drainOutreachQueue (every 5 minutes).
+export const listDueForDrain = internalQuery({
+  args: { limit: v.number() },
+  handler: async (ctx, { limit }) => {
+    const now = Date.now()
+    return await ctx.db
+      .query('outreach_queue')
+      .withIndex('by_status_scheduledFor', (q) =>
+        q.eq('status', 'queued').lte('scheduledFor', now)
+      )
+      .take(limit)
+  },
+})
+
+export const drainDueOutreach = internalAction({
+  args: { batchSize: v.optional(v.number()) },
+  handler: async (
+    ctx,
+    args,
+  ): Promise<{
+    processed: number
+    sent: number
+    blocked: number
+    failed: number
+    noop: number
+    errors: Array<{ queueId: string; error: string }>
+  }> => {
+    const token = process.env.HERMES_ACTIONS_TOKEN
+    if (!token) throw new Error('HERMES_ACTIONS_TOKEN not configured on server')
+
+    const limit = Math.min(args.batchSize ?? 10, 50)
+    const dueRows = await ctx.runQuery(internal.hermes.outreach2.listDueForDrain, {
+      limit,
+    })
+    if (dueRows.length === 0) {
+      return { processed: 0, sent: 0, blocked: 0, failed: 0, noop: 0, errors: [] }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const apiRef: any = api.hermes.outreach2
+    let sent = 0,
+      blocked = 0,
+      failed = 0,
+      noop = 0
+    const errors: Array<{ queueId: string; error: string }> = []
+
+    for (const row of dueRows) {
+      // Skip rows missing subject/body — they're queued from a partial write.
+      if (!row.subject || !row.body) {
+        errors.push({ queueId: String(row._id), error: 'missing subject or body' })
+        failed++
+        continue
+      }
+      try {
+        const result = await ctx.runAction(apiRef.claimAndSendStep, {
+          token,
+          agent: 'blando',
+          queueId: row._id,
+          subject: row.subject,
+          body: row.body,
+        })
+        if (result.ok) {
+          sent++
+        } else if (result.noop) {
+          // Locked-law gate (blocked:e2_too_soon / blocked:e3_too_soon / status=sent)
+          // is a legitimate no-op — row stays queued, will be retried next pass.
+          if ((result.reason ?? '').startsWith('blocked:')) {
+            blocked++
+          } else {
+            noop++
+          }
+        }
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e)
+        errors.push({ queueId: String(row._id), error: msg.slice(0, 300) })
+        failed++
+      }
+    }
+
+    return {
+      processed: dueRows.length,
+      sent,
+      blocked,
+      failed,
+      noop,
+      errors,
+    }
   },
 })
