@@ -93,6 +93,7 @@ export default defineSchema({
     manualTasks: v.array(v.string()),
     aiTools: v.optional(v.string()),
     goal: v.optional(v.string()),
+    automationAreas: v.optional(v.array(v.string())), // legacy field from audit chatbot v1
 
     // Operator review workflow.
     // 'new' = just submitted, report not yet backfilled.
@@ -148,7 +149,7 @@ export default defineSchema({
     doNotContactAt: v.optional(v.number()),
     outreachState: v.optional(v.string()),
     nextActionAt: v.optional(v.number()),
-    outreachHistory: v.optional(v.array(v.object({ step: v.string(), sentAt: v.number() }))),
+    outreachHistory: v.optional(v.array(v.object({ step: v.string(), sentAt: v.number(), resendMsgId: v.optional(v.string()), subject: v.optional(v.string()) }))),
   })
     .index('by_stage', ['stage'])
     .index('by_score', ['score'])
@@ -356,6 +357,7 @@ export default defineSchema({
     touch: v.optional(v.number()), // 1 = first outreach, 2 = follow-up #1, 3 = follow-up #2
     templateId: v.optional(v.string()),
     forceBypassGates: v.optional(v.boolean()),
+    variables: v.optional(v.any()), // template vars snapshot (object or JSON string)
     subject: v.optional(v.string()),
     body: v.optional(v.string()),
     createdAt: v.number(),
@@ -770,4 +772,29 @@ export default defineSchema({
     .index('by_status', ['status'])
     .index('by_publishedAt', ['publishedAt'])
     .index('by_vertical', ['vertical']),
+
+  // Spark Response — VAPI voice agent call log for the electrician AI
+  // receptionist. Written by the VAPI webhook handler at
+  // api/spark-response/webhook.ts when a call completes. Read by the
+  // owner's dashboard at /spark-response/dashboard.
+  spark_response_calls: defineTable({
+    callSid: v.string(), // VAPI call session ID
+    callerName: v.optional(v.string()),
+    callerPhone: v.optional(v.string()),
+    jobType: v.optional(v.string()),
+    address: v.optional(v.string()),
+    outcome: v.string(), // 'booked' | 'callback_requested' | 'message_taken' | 'no_answer'
+    ownerPhone: v.string(),
+    ownerTelegramChatId: v.optional(v.string()),
+    durationSeconds: v.optional(v.number()),
+    notes: v.optional(v.string()),
+    calBookingUrl: v.optional(v.string()),
+    smsSentToCaller: v.optional(v.boolean()),
+    telegramNotified: v.optional(v.boolean()),
+    createdAt: v.number(),
+  })
+    .index('by_callSid', ['callSid'])
+    .index('by_ownerPhone', ['ownerPhone'])
+    .index('by_createdAt', ['createdAt'])
+    .index('by_outcome', ['outcome']),
 })
