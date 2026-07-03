@@ -205,6 +205,18 @@ export default defineSchema({
     .index('by_sentAt', ['sentAt'])
     .index('by_resendId', ['resendId']),
 
+  // Slice 5c — Resend ↔ Convex sync audit. One row per sync run.
+  sync_audit: defineTable({
+    kind: v.string(), // 'resend_sync' | future: 'bounce_sync' | 'reply_sync'
+    actor: v.string(), // 'operator' | 'cron' | agent name
+    scanned: v.number(),
+    matched: v.number(),
+    resendOnly: v.number(),
+    convexOnly: v.number(),
+    lookbackDays: v.number(),
+    timestamp: v.number(),
+  }).index('by_timestamp', ['timestamp']),
+
   pdf_lead_magnets: defineTable({
     leadId: v.optional(v.id('leads')),
     title: v.string(),

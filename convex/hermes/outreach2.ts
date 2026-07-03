@@ -1551,3 +1551,433 @@ export const runRecoverStuckSending = internalAction({
     return { ...result, scanned: stuck.length }
   },
 })
+
+// ---------- Slice 5c — Contacted register + Resend reconciliation ----------
+//
+// DATA LAYER FOR THE BOARD /outreach REDESIGN (Decision 11).
+//
+// Public queries the board consumes:
+// - getContactedRegister: every lead contacted, full email history,
+//   sorted by last contact desc. Search + paginate.
+// - getResendConvexDiff: last sync timestamp + duplicate-sequence
+//   conflicts (double-up detection).
+// - getPipelineStats: queue depth by status + recent sends.
+//
+// Internal queries + actions that power the above:
+// - listRecentEmailSends, findDuplicateSequences, getOutreachPipelineStats.
+// - syncResendSends (action): pulls Resend API emails in a lookback
+//   window, cross-references with Convex by resendId, reports orphans
+//   in both directions, writes a sync_audit row.
+// - appendSyncAudit: writes the audit row.
+// - getLastSync: most recent sync_audit row.
+//
+// INVARIANTS:
+// - syncResendSends is READ-ONLY on Resend (GET /emails only). The
+//   Slice 2 sender seam is preserved.
+// - Orphaned/duplicate detection is computed at query time; we don't
+//   backfill missing email_sends rows or delete orphans. Operator sees
+//   the diff and decides.
+
+export const getContactedRegister = query({
+  args: {
+    limit: v.optional(v.number()),
+    search: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const limit = args.limit ?? 50
+    const allSends = await ctx.db.query('email_sends').order('desc').take(limit * 4)
+
+    const byLead = new Map<string, typeof allSends>()
+    for (const s of allSends) {
+      if (!s.leadId) continue
+      const list = byLead.get(s.leadId as string) ?? []
+      list.push(s)
+      byLead.set(s.leadId as string, list)
+    }
+
+    const rows: Array<{
+      leadId: string
+      leadName: string
+      email: string | undefined
+      firstContactAt: number
+      lastContactAt: number
+      totalSends: number
+      e1Count: number
+      e2Count: number
+      e3Count: number
+      campaignCount: number
+      sends: Array<{
+        _id: string
+        subject: string
+        sentAt: number
+        sequence: string
+        touch: number | undefined
+        resendId: string | undefined
+        status: string
+      }>
+    }> = []
+
+    for (const [leadId, leadSends] of byLead) {
+      const lead = await ctx.db.get(leadId as any)
+      if (!lead) continue
+      const company = (lead as any).company ?? ''
+      const contact = (lead as any).contact ?? ''
+      const leadName = company || contact || ((lead as any).email ?? 'Unknown')
+
+      if (args.search) {
+        const q = args.search.toLowerCase()
+        const email = ((lead as any).email ?? '').toLowerCase()
+        if (
+          !leadName.toLowerCase().includes(q) &&
+          !email.includes(q) &&
+          !company.toLowerCase().includes(q)
+        ) {
+          continue
+        }
+      }
+
+      const sortedLeadSends = leadSends.sort((a, b) => (b.sentAt ?? 0) - (a.sentAt ?? 0))
+      const e1Count = leadSends.filter((s) => s.sequence === 'e1').length
+      const e2Count = leadSends.filter((s) => s.sequence === 'e2').length
+      const e3Count = leadSends.filter((s) => s.sequence === 'e3').length
+      const campaignCount = leadSends.filter((s) => s.sequence === 'campaign').length
+
+      rows.push({
+        leadId,
+        leadName,
+        email: (lead as any).email,
+        firstContactAt: sortedLeadSends[sortedLeadSends.length - 1].sentAt ?? 0,
+        lastContactAt: sortedLeadSends[0].sentAt ?? 0,
+        totalSends: leadSends.length,
+        e1Count,
+        e2Count,
+        e3Count,
+        campaignCount,
+        sends: sortedLeadSends.slice(0, 10).map((s) => ({
+          _id: s._id,
+          subject: s.subject,
+          sentAt: s.sentAt ?? 0,
+          sequence: s.sequence ?? 'unknown',
+          touch: s.touch,
+          resendId: s.resendId,
+          status: s.status,
+        })),
+      })
+    }
+
+    rows.sort((a, b) => b.lastContactAt - a.lastContactAt)
+    return {
+      rows: rows.slice(0, limit),
+      total: rows.length,
+      hasMore: rows.length > limit,
+    }
+  },
+})
+
+// Internal query — duplicate-sequence conflicts: same (lead, sequence)
+// has >1 send within the window. The double-up detector.
+export const findDuplicateSequences = internalQuery({
+  args: {
+    windowDays: v.optional(v.number()),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const windowMs = (args.windowDays ?? 7) * 24 * 60 * 60 * 1000
+    const cutoff = Date.now() - windowMs
+    const limit = args.limit ?? 50
+    const sends = await ctx.db.query('email_sends').order('desc').take(500)
+    const recent = sends.filter((s) => (s.sentAt ?? 0) > cutoff)
+    const groups = new Map<string, typeof recent>()
+    for (const s of recent) {
+      if (!s.leadId || !s.sequence) continue
+      const key = `${s.leadId}_${s.sequence}`
+      const list = groups.get(key) ?? []
+      list.push(s)
+      groups.set(key, list)
+    }
+    const conflicts: Array<{
+      leadId: string
+      sequence: string
+      count: number
+      leadName: string
+      email: string | undefined
+      sends: Array<{ _id: string; subject: string; sentAt: number; resendId: string | undefined }>
+    }> = []
+    for (const [key, sendsForKey] of groups) {
+      if (sendsForKey.length < 2) continue
+      const [leadId, sequence] = key.split('_')
+      const lead = await ctx.db.get(leadId as any)
+      const leadName = lead
+        ? ((lead as any).company ?? (lead as any).contact ?? (lead as any).email ?? 'Unknown')
+        : '(deleted lead)'
+      conflicts.push({
+        leadId,
+        sequence,
+        count: sendsForKey.length,
+        leadName,
+        email: lead ? ((lead as any).email ?? undefined) : undefined,
+        sends: sendsForKey
+          .sort((a, b) => (b.sentAt ?? 0) - (a.sentAt ?? 0))
+          .map((s) => ({
+            _id: s._id,
+            subject: s.subject,
+            sentAt: s.sentAt ?? 0,
+            resendId: s.resendId,
+          })),
+      })
+    }
+    conflicts.sort((a, b) => b.sends[0].sentAt - a.sends[0].sentAt)
+    return conflicts.slice(0, limit)
+  },
+})
+
+// Internal query — pipeline stats: queue by status, stuck-row count,
+// retried-in-last-24h count.
+export const getOutreachPipelineStats = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    const queueRows = await ctx.db.query('outreach_queue').collect()
+    const byStatus: Record<string, number> = {}
+    let stuckSending = 0
+    let retriedInLast24h = 0
+    const STUCK_THRESHOLD_MS = 5 * 60 * 1000
+    const now = Date.now()
+    for (const r of queueRows) {
+      const s = r.status ?? 'unknown'
+      byStatus[s] = (byStatus[s] ?? 0) + 1
+      if (s === 'sending' && (r.lastAttemptAt ?? 0) < now - STUCK_THRESHOLD_MS) {
+        stuckSending++
+      }
+      if (
+        s === 'queued' &&
+        (r.attempts ?? 0) > 0 &&
+        (r.lastAttemptAt ?? 0) > now - 24 * 60 * 60 * 1000
+      ) {
+        retriedInLast24h++
+      }
+    }
+    const sends = await ctx.db.query('email_sends').order('desc').take(200)
+    const last7Days = sends.filter((s) => (s.sentAt ?? 0) > now - 7 * 24 * 60 * 60 * 1000)
+    return {
+      queue: { total: queueRows.length, byStatus, stuckSending, retriedInLast24h },
+      recentSends: {
+        last7Days: last7Days.length,
+        lastSendAt: sends[0]?.sentAt ?? null,
+      },
+    }
+  },
+})
+
+// Resend API integration — fetches all sends from Resend in the
+// lookback window and cross-references with Convex email_sends by
+// resendId. Reports orphans in both directions. READ-ONLY on Resend.
+type ResendEmail = {
+  id: string
+  to: string[]
+  from: string
+  subject: string
+  created_at: string
+  status?: string
+}
+
+export const syncResendSends = internalAction({
+  args: {
+    lookbackDays: v.optional(v.number()),
+    actor: v.optional(v.string()),
+  },
+  handler: async (
+    ctx,
+    args,
+  ): Promise<{
+    scanned: { resend: number; convex: number }
+    matched: number
+    resendOnlyOrphans: Array<{ id: string; to: string; subject: string; created_at: string }>
+    convexOnlyOrphans: Array<{
+      _id: string
+      resendId: string
+      leadId?: string
+      subject: string
+      sentAt: number
+    }>
+    syncedAt: number
+    lookbackDays: number
+    error?: string
+  }> => {
+    const apiKey = process.env.RESEND_API_KEY
+    const lookbackDays = args.lookbackDays ?? 30
+    const syncedAt = Date.now()
+    if (!apiKey) {
+      return {
+        scanned: { resend: 0, convex: 0 },
+        matched: 0,
+        resendOnlyOrphans: [],
+        convexOnlyOrphans: [],
+        syncedAt,
+        lookbackDays,
+        error: 'RESEND_API_KEY not configured',
+      }
+    }
+
+    const cutoff = syncedAt - lookbackDays * 24 * 60 * 60 * 1000
+
+    const resendEmails: ResendEmail[] = []
+    let after: string | undefined
+    let pageCount = 0
+    do {
+      const url = new URL('https://api.resend.com/emails')
+      url.searchParams.set('limit', '100')
+      if (after) url.searchParams.set('after', after)
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${apiKey}` },
+      })
+      if (!res.ok) {
+        return {
+          scanned: { resend: resendEmails.length, convex: 0 },
+          matched: 0,
+          resendOnlyOrphans: [],
+          convexOnlyOrphans: [],
+          syncedAt,
+          lookbackDays,
+          error: `Resend API ${res.status}: ${(await res.text().catch(() => 'unknown')).slice(0, 200)}`,
+        }
+      }
+      const json = (await res.json()) as { data: ResendEmail[]; has_more?: boolean }
+      resendEmails.push(...json.data)
+      pageCount++
+      if (json.has_more && json.data.length > 0) {
+        after = json.data[json.data.length - 1].id
+      } else {
+        after = undefined
+      }
+      if (pageCount > 50) break
+    } while (after)
+
+    const recent = resendEmails.filter(
+      (e) => new Date(e.created_at).getTime() > cutoff,
+    )
+
+    const convexSends = await ctx.runQuery(internal.hermes.outreach2.listRecentEmailSends, {
+      sinceMs: cutoff,
+    })
+
+    const convexByResendId = new Map<string, typeof convexSends[number]>()
+    for (const s of convexSends) convexByResendId.set(s.resendId, s)
+    const resendById = new Map<string, ResendEmail>()
+    for (const e of recent) resendById.set(e.id, e)
+
+    const resendOnlyOrphans: Array<{ id: string; to: string; subject: string; created_at: string }> = recent
+      .filter((e) => !convexByResendId.has(e.id))
+      .slice(0, 50)
+      .map((e) => ({
+        id: e.id,
+        to: e.to?.[0] ?? 'unknown',
+        subject: e.subject,
+        created_at: e.created_at,
+      }))
+    const convexOnlyOrphans: Array<{
+      _id: string
+      resendId: string
+      leadId?: string
+      subject: string
+      sentAt: number
+    }> = convexSends
+      .filter((s: any) => !resendById.has(s.resendId))
+      .slice(0, 50)
+      .map((s: any) => ({
+        _id: s._id,
+        resendId: s.resendId,
+        leadId: s.leadId,
+        subject: s.subject,
+        sentAt: s.sentAt,
+      }))
+    const matched = recent.filter((e) => convexByResendId.has(e.id)).length
+
+    await ctx.runMutation(internal.hermes.outreach2.appendSyncAudit, {
+      actor: args.actor ?? 'operator',
+      scanned: recent.length,
+      matched,
+      resendOnly: resendOnlyOrphans.length,
+      convexOnly: convexOnlyOrphans.length,
+      lookbackDays,
+    })
+
+    return {
+      scanned: { resend: recent.length, convex: convexSends.length },
+      matched,
+      resendOnlyOrphans,
+      convexOnlyOrphans,
+      syncedAt,
+      lookbackDays,
+    }
+  },
+})
+
+// Internal query — recent email_sends since a timestamp.
+export const listRecentEmailSends = internalQuery({
+  args: { sinceMs: v.number(), limit: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    const limit = args.limit ?? 5000
+    const sends = await ctx.db.query('email_sends').order('desc').take(limit)
+    return sends.filter((s) => (s.sentAt ?? 0) > args.sinceMs)
+  },
+})
+
+// Internal mutation — append a sync audit row.
+export const appendSyncAudit = internalMutation({
+  args: {
+    actor: v.string(),
+    scanned: v.number(),
+    matched: v.number(),
+    resendOnly: v.number(),
+    convexOnly: v.number(),
+    lookbackDays: v.number(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert('sync_audit', {
+      kind: 'resend_sync',
+      actor: args.actor,
+      scanned: args.scanned,
+      matched: args.matched,
+      resendOnly: args.resendOnly,
+      convexOnly: args.convexOnly,
+      lookbackDays: args.lookbackDays,
+      timestamp: Date.now(),
+    })
+  },
+})
+
+// Internal query — last sync audit row.
+export const getLastSync = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    const rows = await ctx.db.query('sync_audit').order('desc').take(1)
+    return rows[0] ?? null
+  },
+})
+
+// Public query — last sync + duplicate-sequence conflicts. Board-facing.
+export const getResendConvexDiff = query({
+  args: {},
+  handler: async (ctx): Promise<{
+    lastSync: any
+    duplicateConflicts: any[]
+  }> => {
+    const lastSync = await ctx.db.query('sync_audit').order('desc').take(1)
+    const conflicts: any[] = await ctx.runQuery(internal.hermes.outreach2.findDuplicateSequences, {
+      windowDays: 7,
+      limit: 50,
+    } as any)
+    return {
+      lastSync: lastSync[0] ?? null,
+      duplicateConflicts: conflicts,
+    }
+  },
+})
+
+// Public query — pipeline stats for the board's stats header.
+export const getPipelineStats = query({
+  args: {},
+  handler: async (ctx): Promise<any> => {
+    return await ctx.runQuery(internal.hermes.outreach2.getOutreachPipelineStats, {} as any)
+  },
+})
