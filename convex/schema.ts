@@ -59,6 +59,7 @@ export default defineSchema({
       )
     ),
     quickWin: v.optional(v.string()),
+    automationAreas: v.optional(v.array(v.string())),
     first90Days: v.optional(
       v.array(
         v.object({
@@ -148,7 +149,16 @@ export default defineSchema({
     doNotContactAt: v.optional(v.number()),
     outreachState: v.optional(v.string()),
     nextActionAt: v.optional(v.number()),
-    outreachHistory: v.optional(v.array(v.object({ step: v.string(), sentAt: v.number() }))),
+    outreachHistory: v.optional(
+      v.array(
+        v.object({
+          step: v.string(),
+          sentAt: v.number(),
+          resendMsgId: v.optional(v.string()),
+          subject: v.optional(v.string()),
+        })
+      )
+    ),
   })
     .index('by_stage', ['stage'])
     .index('by_score', ['score'])
@@ -355,6 +365,7 @@ export default defineSchema({
     sendId: v.optional(v.id('email_sends')),
     touch: v.optional(v.number()), // 1 = first outreach, 2 = follow-up #1, 3 = follow-up #2
     templateId: v.optional(v.string()),
+    variables: v.optional(v.record(v.string(), v.string())),
     forceBypassGates: v.optional(v.boolean()),
     subject: v.optional(v.string()),
     body: v.optional(v.string()),
@@ -662,6 +673,33 @@ export default defineSchema({
     .index('by_stage', ['stage'])
     .index('by_createdAt', ['createdAt']),
 
+  // Local build-management registry for the board's /builds page.
+  // This is the static project list the operator uses to track active
+  // build surfaces (repo/path, live target, owner, next action, etc.).
+  // The data is separate from build_register so the daily build rows stay
+  // untouched while the board still has a canonical project directory.
+  build_projects: defineTable({
+    project: v.string(), // unique project label, e.g. 'emvy-board'
+    lane: v.union(
+      v.literal('client'),
+      v.literal('local'),
+      v.literal('vps'),
+      v.literal('management'),
+    ),
+    repoPath: v.string(),
+    liveTarget: v.string(),
+    liveUrl: v.optional(v.string()),
+    owner: v.string(),
+    status: v.string(),
+    nextAction: v.string(),
+    lastVerified: v.string(), // YYYY-MM-DD
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_project', ['project'])
+    .index('by_lane', ['lane'])
+    .index('by_createdAt', ['createdAt']),
+
   // === Competitor Pricing Matrix (Intelligence agent output, surfaced on /pricing) ===
   // Written by the seed script from the 2026-06-16 VPS pricing_matrix artifact.
   // The intelligence agent can PATCH rows via hermes/pricing:upsertCompetitor;
@@ -770,4 +808,18 @@ export default defineSchema({
     .index('by_status', ['status'])
     .index('by_publishedAt', ['publishedAt'])
     .index('by_vertical', ['vertical']),
+
+  // Runtime settings — single-row key/value store for operator flags
+  // that need to survive across deploys and be readable by both Convex
+  // actions and the board UI. Initial seed row: `outreach_paused = '0'`
+  // (false). Slice 1a writes/reads it to gate `drainDueOutreach`.
+  //
+  // value is v.string() (not v.boolean()) because Convex doesn't accept
+  // union boolean literals in upserts well; we parse to boolean on read.
+  // updatedAt is the last write timestamp (ms epoch).
+  settings: defineTable({
+    key: v.string(),
+    value: v.string(),
+    updatedAt: v.number(),
+  }).index('by_key', ['key']),
 })

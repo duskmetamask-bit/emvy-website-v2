@@ -8,10 +8,11 @@
 // Per ADR-007, this file is the single source of truth for the query; the
 // website repo mirrors it under convex/board/outreach.ts and deploys.
 
-import { query } from '../_generated/server';
+import { mutation, query } from '../_generated/server';
 import { v } from 'convex/values';
 import type { Id } from '../_generated/dataModel';
 import { inferZone, inferSequenceStage, type Zone, type SequenceStage } from '../../lib/outreach-zones';
+import { internal } from '../_generated/api';
 
 const QUEUE_TAKE = 500;
 const LEADS_TAKE = 500;
@@ -157,3 +158,47 @@ export const list = query({
     return filtered.slice(0, limit);
   },
 });
+
+// ---------- Slice 1a: pause/resume kill switch ----------
+//
+// The board UI at /outreach calls `getOutreachPaused` to render the
+// toggle state, and `setOutreachPaused` to flip it. The mutation
+// delegates to the canonical seam `internal.hermes.outreach2.setOutreachPaused`
+// so the `settings` table only has ONE writer (the hermes file). The
+// drainer reads the same setting on every run.
+//
+// IMPORTANT: the board mirror in `emvy-board/convex/board/outreach.ts`
+// inlines this logic because the board repo doesn't ship
+// `convex/hermes/outreach2.ts`. Both paths write to the same
+// `settings` row in glad-camel-940, so the seam invariant holds
+// regardless of which repo's UI fires first.
+
+export const getOutreachPaused = query({
+  args: {},
+  handler: async (ctx): Promise<{ paused: boolean; updatedAt: number | null }> => {
+    const row = await ctx.db
+      .query('settings')
+      .withIndex('by_key', (q) => q.eq('key', 'outreach_paused'))
+      .first()
+    if (!row) return { paused: false, updatedAt: null }
+    return { paused: row.value === '1', updatedAt: row.updatedAt }
+  },
+})
+
+export const setOutreachPaused = mutation({
+  args: {
+    paused: v.boolean(),
+    actor: v.optional(v.string()),
+  },
+  handler: async (ctx, args): Promise<{
+    ok: true
+    paused: boolean
+    previous: boolean
+    updatedAt: number
+  }> => {
+    return await ctx.runMutation(internal.hermes.outreach2.setOutreachPaused, {
+      paused: args.paused,
+      actor: args.actor ?? 'operator',
+    })
+  },
+})

@@ -1002,6 +1002,90 @@ export const markLegacyE1Backfilled = internalMutation({
   },
 })
 
+// ---------- Settings helpers (Slice 1a — pause/resume) ----------
+//
+// Single source of truth for runtime flags that gate the outreach
+// pipeline (e.g. `outreach_paused`). Reads default to `false` so the
+// drainer never crashes on first boot when the row hasn't been written
+// yet. Writes are upsert on `key` (by_key index).
+
+async function readSetting(ctx: { db: any }, key: string): Promise<string | null> {
+  const row = await ctx.db
+    .query('settings')
+    .withIndex('by_key', (q: any) => q.eq('key', key))
+    .first()
+  return row?.value ?? null
+}
+
+async function writeSetting(
+  ctx: { db: any },
+  key: string,
+  value: string,
+): Promise<{ key: string; value: string; updatedAt: number }> {
+  const now = Date.now()
+  const existing = await ctx.db
+    .query('settings')
+    .withIndex('by_key', (q: any) => q.eq('key', key))
+    .first()
+  if (existing) {
+    await ctx.db.patch(existing._id, { value, updatedAt: now })
+    return { key, value, updatedAt: now }
+  }
+  await ctx.db.insert('settings', { key, value, updatedAt: now })
+  return { key, value, updatedAt: now }
+}
+
+// ---------- Public query: getOutreachPaused ----------
+//
+// Read-only. Returns `{paused:boolean, updatedAt:number|null}`. Default
+// `paused:false` when the row is missing (first boot, no flag ever set).
+// Used by `drainDueOutreach` to short-circuit and by the board UI to
+// render the toggle state.
+export const getOutreachPaused = query({
+  args: {},
+  handler: async (ctx): Promise<{ paused: boolean; updatedAt: number | null }> => {
+    const row = await ctx.db
+      .query('settings')
+      .withIndex('by_key', (q) => q.eq('key', 'outreach_paused'))
+      .first()
+    if (!row) return { paused: false, updatedAt: null }
+    return { paused: row.value === '1', updatedAt: row.updatedAt }
+  },
+})
+
+// ---------- Internal mutation: setOutreachPaused ----------
+//
+// Operator kill switch (Slice 1a). Flips the `outreach_paused` setting
+// and writes an `activity_log` entry with the prior + new value for
+// audit. Idempotent — calling with the same `paused` value just refreshes
+// the `updatedAt` timestamp.
+//
+// This is the SINGLE writer to the `outreach_paused` setting. The board
+// UI calls the public seam mutation `convex/board/outreach:setOutreachPaused`
+// which in turn calls this internal mutation. The board mirror inlines
+// the same logic because it doesn't ship convex/hermes/*.
+//
+// Audit: the `settings.outreach_paused.updatedAt` field IS the audit
+// trail (one row, monotonic). activity_log requires a `leadId` so it's
+// not appropriate for a global flag — a future slice can add a
+// `system_audit_log` table if global-event audit rows are needed.
+export const setOutreachPaused = internalMutation({
+  args: {
+    paused: v.boolean(),
+    actor: v.optional(v.string()), // 'operator' | 'hermes' — write provenance
+  },
+  handler: async (
+    ctx,
+    args,
+  ): Promise<{ ok: true; paused: boolean; previous: boolean; updatedAt: number }> => {
+    const prior = await readSetting(ctx, 'outreach_paused')
+    const previous = prior === '1'
+    const next = args.paused
+    const { updatedAt } = await writeSetting(ctx, 'outreach_paused', next ? '1' : '0')
+    return { ok: true, paused: next, previous, updatedAt }
+  },
+})
+
 // ---------- Internal drainer: drainDueOutreach ----------
 //
 // The missing link. Zone 2 cron queues E1+E2+E3 rows to outreach_queue,
@@ -1051,9 +1135,29 @@ export const drainDueOutreach = internalAction({
     failed: number
     noop: number
     errors: Array<{ queueId: string; error: string }>
+    paused?: boolean
   }> => {
     const token = process.env.HERMES_ACTIONS_TOKEN
     if (!token) throw new Error('HERMES_ACTIONS_TOKEN not configured on server')
+
+    // Slice 1a — operator pause/resume kill switch. If the
+    // `outreach_paused` setting is flipped, the drainer short-circuits
+    // without touching Resend. The cron continues to fire on its 5-min
+    // cadence; paused runs are no-ops that surface the `paused:true`
+    // flag in the response so the activity log + future Slice 5
+    // observability dashboard can show "X runs skipped because paused".
+    const pauseFlag = await ctx.runQuery(internal.hermes.outreach2.getOutreachPaused, {})
+    if (pauseFlag.paused) {
+      return {
+        processed: 0,
+        sent: 0,
+        blocked: 0,
+        failed: 0,
+        noop: 0,
+        errors: [],
+        paused: true,
+      }
+    }
 
     const limit = Math.min(args.batchSize ?? 10, 50)
     const dueRows = await ctx.runQuery(internal.hermes.outreach2.listDueForDrain, {
