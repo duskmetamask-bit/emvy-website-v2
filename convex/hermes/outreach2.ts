@@ -1354,8 +1354,25 @@ export const operatorSend = internalAction({
     const row = await ctx.runQuery(internal.hermes.outreach2.getQueueRow, {
       id: args.queueId,
     })
-    if (!row) return { ok: false, reason: 'not_found' }
+    if (!row) {
+      await ctx.runMutation(internal.hermes.outreach2.recordSendRun, {
+        queueId: args.queueId,
+        actor: args.actor ?? 'operator',
+        outcome: 'noop',
+        reason: 'not_found',
+        forceBypassGates: args.forceBypassGates,
+      })
+      return { ok: false, reason: 'not_found' }
+    }
     if (!row.subject || !row.body) {
+      await ctx.runMutation(internal.hermes.outreach2.recordSendRun, {
+        queueId: args.queueId,
+        leadId: row.leadId ?? undefined,
+        actor: args.actor ?? 'operator',
+        outcome: 'noop',
+        reason: 'missing subject or body',
+        forceBypassGates: args.forceBypassGates,
+      })
       return { ok: false, reason: 'missing subject or body' }
     }
 
@@ -1373,6 +1390,16 @@ export const operatorSend = internalAction({
       id: args.queueId,
     })
     if (!claim.ok) {
+      // Slice 5 — record observability for the blocked path.
+      await ctx.runMutation(internal.hermes.outreach2.recordSendRun, {
+        queueId: args.queueId,
+        leadId: row.leadId ?? undefined,
+        actor: args.actor ?? 'operator',
+        outcome: claim.reason?.startsWith('blocked:') ? 'blocked' : 'noop',
+        reason: claim.reason,
+        step: claim.step ?? undefined,
+        forceBypassGates: args.forceBypassGates,
+      })
       return { ok: false, noop: true, reason: claim.reason }
     }
 
@@ -1408,6 +1435,16 @@ export const operatorSend = internalAction({
         id: args.queueId,
         error: `Resend ${res.status}: ${errText.slice(0, 200)}`,
       })
+      // Slice 5 — record observability for the failed path.
+      await ctx.runMutation(internal.hermes.outreach2.recordSendRun, {
+        queueId: args.queueId,
+        leadId: row.leadId ?? undefined,
+        actor: args.actor ?? 'operator',
+        outcome: 'failed',
+        reason: `Resend ${res.status}: ${errText.slice(0, 200)}`,
+        step: claim.step,
+        forceBypassGates: args.forceBypassGates,
+      })
       throw new Error(`Resend send failed: ${res.status} ${errText}`)
     }
     const json = (await res.json()) as { id?: string }
@@ -1425,6 +1462,17 @@ export const operatorSend = internalAction({
       step: claim.step as any,
     })
 
+    // Slice 5 — record observability for the sent path.
+    await ctx.runMutation(internal.hermes.outreach2.recordSendRun, {
+      queueId: args.queueId,
+      leadId: row.leadId ?? undefined,
+      actor: args.actor ?? 'operator',
+      outcome: 'sent',
+      resendId,
+      step: claim.step,
+      forceBypassGates: args.forceBypassGates,
+    })
+
     return { ok: true, resendId, state: result.state as any }
   },
 })
@@ -1434,6 +1482,36 @@ export const getQueueRow = internalQuery({
   args: { id: v.id('outreach_queue') },
   handler: async (ctx, { id }) => {
     return await ctx.db.get(id)
+  },
+})
+
+// ---------- Slice 5: send observability ----------
+//
+// One row per operatorSend invocation. Written from operatorSend on
+// every code path (sent / blocked / failed / noop) so the board's
+// /outreach page can render the last 20 runs without grepping
+// activity_log. Append-only — never updated, never deleted by the app.
+export const recordSendRun = internalMutation({
+  args: {
+    queueId: v.id('outreach_queue'),
+    leadId: v.optional(v.id('leads')),
+    actor: v.string(),
+    outcome: v.union(
+      v.literal('sent'),
+      v.literal('blocked'),
+      v.literal('failed'),
+      v.literal('noop'),
+    ),
+    reason: v.optional(v.string()),
+    resendId: v.optional(v.string()),
+    step: v.optional(v.string()),
+    forceBypassGates: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert('send_runs', {
+      ...args,
+      timestamp: Date.now(),
+    })
   },
 })
 

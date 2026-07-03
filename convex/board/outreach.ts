@@ -321,3 +321,58 @@ export const sendOne = action({
     })
   },
 })
+
+// ---------- Slice 5: send observability surface ----------
+//
+// Per-send run history. One row per operatorSend invocation (sent /
+// blocked / failed / noop). Renders on the board's /outreach page
+// as the "Recent send runs" section. The hermes/outreach2 layer
+// owns the writer (operatorSend → recordSendRun); this query is the
+// public read surface.
+export const getRecentSendRuns = query({
+  args: { limit: v.optional(v.number()) },
+  handler: async (ctx, args): Promise<Array<{
+    _id: string
+    queueId: string
+    leadId: string | null
+    actor: string
+    outcome: 'sent' | 'blocked' | 'failed' | 'noop'
+    reason: string | null
+    resendId: string | null
+    step: string | null
+    forceBypassGates: boolean | null
+    timestamp: number
+  }>> => {
+    const limit = args.limit ?? 20
+    return await ctx.db
+      .query('send_runs')
+      .withIndex('by_timestamp')
+      .order('desc')
+      .take(limit)
+  },
+})
+
+// Counts of each outcome in the last N hours — for the pipeline stats
+// section of /outreach. Computed server-side to avoid a fan-out fetch.
+export const getSendRunStats = query({
+  args: { sinceMs: v.optional(v.number()) },
+  handler: async (ctx, args): Promise<{
+    sent: number
+    blocked: number
+    failed: number
+    noop: number
+    windowMs: number
+  }> => {
+    const window = args.sinceMs ?? 24 * 60 * 60 * 1000 // 24h default
+    const cutoff = Date.now() - window
+    const rows = await ctx.db
+      .query('send_runs')
+      .withIndex('by_timestamp', (q) => q.gte('timestamp', cutoff))
+      .collect()
+    const counts = { sent: 0, blocked: 0, failed: 0, noop: 0 }
+    for (const r of rows) {
+      counts[r.outcome] += 1
+    }
+    return { ...counts, windowMs: window }
+  },
+})

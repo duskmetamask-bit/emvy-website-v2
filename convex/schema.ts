@@ -402,6 +402,31 @@ export default defineSchema({
     .index('by_status_sendAt', ['status', 'sendAt'])
     .index('by_lead', ['leadId']),
 
+  // Per-send observability — one row per operatorSend invocation.
+  // Renamed from the plan's `drainRuns` after the manual-send surface
+  // (commit 49e9c46) made the auto-drainer cron-commented. Each
+  // operator click = one row. The board's /outreach page renders
+  // the last 20 via convex/board/sendRuns.ts:getRecentSendRuns.
+  send_runs: defineTable({
+    queueId: v.id('outreach_queue'),
+    leadId: v.optional(v.id('leads')),
+    actor: v.string(), // 'operator' | 'drainer' | 'hermes'
+    outcome: v.union(
+      v.literal('sent'),
+      v.literal('blocked'),
+      v.literal('failed'),
+      v.literal('noop'),
+    ),
+    reason: v.optional(v.string()), // blocked:e*_too_soon | Resend 500 | etc
+    resendId: v.optional(v.string()),
+    step: v.optional(v.string()), // 'e1' | 'e2' | 'e3' | 'campaign'
+    forceBypassGates: v.optional(v.boolean()),
+    timestamp: v.number(),
+  })
+    .index('by_timestamp', ['timestamp'])
+    .index('by_lead', ['leadId'])
+    .index('by_outcome', ['outcome']),
+
   hermes_daily_digest: defineTable({
     date: v.string(), // YYYY-MM-DD
     planned: v.number(),
