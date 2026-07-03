@@ -5,7 +5,7 @@ import TrackedLink from '../../components/TrackedLink'
 import CalBookingGate from '../../components/CalBookingGate'
 
 export const metadata: Metadata = {
-  title: 'Spark Response — AI Receptionist for Electricians | EMVY',
+  title: 'Spark Response — AI Receptionist for Electricians',
   description:
     'Never miss another job enquiry. An AI phone receptionist that answers every call 24/7, captures leads, and books callbacks — even when you are on the tools.',
 }
