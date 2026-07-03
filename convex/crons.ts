@@ -34,6 +34,18 @@ const crons = cronJobs()
 //   { batchSize: 10 },
 // )
 
+// 2026-07-03 PM (Slice 5a-prep) — recover-stuck-sending cron ADDED.
+// Finds rows stuck in status='sending' for >5 minutes and flips them
+// back to 'queued' so the next operator-send can retry. Idempotency
+// guaranteed by claim() gate (state machine refuses double-sends).
+// 5-min cadence, offset 1 minute from where the drainer WOULD run if
+// it were enabled — keeps the two from racing on the same rows.
+crons.interval(
+  'recover-stuck-sending',
+  { minutes: 5 },
+  internal.hermes.outreach2.runRecoverStuckSending,
+)
+
 // crons.daily(
 //   'hermes-daily-outreach',
 //   { hourUTC: 23, minuteUTC: 0 },

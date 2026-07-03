@@ -1398,3 +1398,102 @@ export const setForceBypassGates = internalMutation({
     await ctx.db.patch(id, { forceBypassGates: value })
   },
 })
+
+// ---------- Stuck-row sweeper (Slice 5a-prep — 2026-07-03) ----------
+//
+// PROBLEM: if `operatorSend` (or `claimAndSendStep`) flips a row
+// `queued -> sending` and then `markStepSent` fails (network blip,
+// Convex internal error, operator's browser tab dies mid-send), the row
+// stays in `sending` forever. The next `operatorSend` call's `claim`
+// refuses because `status !== 'queued'`, so the row is dead.
+//
+// SOLUTION: a 5-min cron that finds rows in `status='sending'` whose
+// `lastAttemptAt < now - STUCK_THRESHOLD_MS` and flips them back to
+// `status='queued'` so the next operator-send can retry.
+//
+// IDEMPOTENCY: if Resend actually delivered the email before the crash,
+// the next claim will see the lead's `outreachHistory` already has the
+// step recorded (markStepSent ran partially, OR markStepSent succeeded
+// but the response was lost) — the state machine gate refuses with
+// `blocked:e*_before_e*_sent` (because `state=eN_sent` already) or
+// `blocked:e*_too_soon`. The send does NOT double-fire.
+
+const STUCK_THRESHOLD_MS = 5 * 60 * 1000 // 5 minutes
+
+// Internal query — find rows stuck in 'sending' for too long.
+// Indexed by `by_status` so this is a fast single-direction scan.
+export const listStuckSendingRows = internalQuery({
+  args: { thresholdMs: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    const threshold = args.thresholdMs ?? STUCK_THRESHOLD_MS
+    const cutoff = Date.now() - threshold
+    const rows = await ctx.db
+      .query('outreach_queue')
+      .withIndex('by_status', (q) => q.eq('status', 'sending'))
+      .collect()
+    return rows.filter((r) => (r.lastAttemptAt ?? 0) < cutoff)
+  },
+})
+
+// Internal mutation — flip stuck rows back to 'queued' for retry.
+// Idempotent: re-running on already-queued rows is a no-op.
+export const recoverStuckSendingRows = internalMutation({
+  args: {
+    thresholdMs: v.optional(v.number()),
+    actor: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const threshold = args.thresholdMs ?? STUCK_THRESHOLD_MS
+    const cutoff = Date.now() - threshold
+    const rows = await ctx.db
+      .query('outreach_queue')
+      .withIndex('by_status', (q) => q.eq('status', 'sending'))
+      .collect()
+    const stuck = rows.filter((r) => (r.lastAttemptAt ?? 0) < cutoff)
+    const recovered: Array<{ id: string; lastAttemptAt: number; ageMs: number }> = []
+    const now = Date.now()
+    for (const row of stuck) {
+      await ctx.db.patch(row._id, {
+        status: 'queued',
+        lastAttemptAt: now,
+      })
+      // Audit row — same shape as `legacy_e1_backfilled` so the board's
+      // activity timeline renders it without a special case.
+      if (row.leadId) {
+        await ctx.db.insert('activity_log', {
+          leadId: row.leadId,
+          action: 'stuck_sending_recovered',
+          actor: args.actor ?? 'sweeper-cron',
+          details:
+            `queueId=${row._id} touch=${row.touch ?? '?'} ` +
+            `ageMs=${now - (row.lastAttemptAt ?? 0)}`,
+          timestamp: now,
+        })
+      }
+      recovered.push({
+        id: row._id,
+        lastAttemptAt: row.lastAttemptAt ?? 0,
+        ageMs: now - (row.lastAttemptAt ?? 0),
+      })
+    }
+    return { recovered: recovered.length, rows: recovered }
+  },
+})
+
+// Internal action — wrapper that the cron calls. Returns a summary
+// for the operator-facing observability dashboard (Slice 5).
+export const runRecoverStuckSending = internalAction({
+  args: {},
+  handler: async (ctx): Promise<{
+    recovered: number
+    scanned: number
+    rows: Array<{ id: string; lastAttemptAt: number; ageMs: number }>
+  }> => {
+    const stuck = await ctx.runQuery(internal.hermes.outreach2.listStuckSendingRows, {})
+    if (stuck.length === 0) {
+      return { recovered: 0, scanned: 0, rows: [] }
+    }
+    const result = await ctx.runMutation(internal.hermes.outreach2.recoverStuckSendingRows, {})
+    return { ...result, scanned: stuck.length }
+  },
+})
