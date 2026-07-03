@@ -1,4 +1,10 @@
-// Cron entry points + the public cron_runs append mutation.
+// Public cron_runs append mutation — the only remaining entry here after
+// Slice 2a (2026-07-03) deleted `convex/hermes/runner.ts` (the legacy v1
+// runner). The `runDailyCron` / `runFollowupsCron` wrappers around
+// `api.hermes.runner.*` are gone — cron registration in `convex/crons.ts`
+// has been off them since 2026-06-26 and the auto-drain is now paused
+// (see `convex/hermes/outreach2.ts:operatorSend` for the operator-driven
+// surface that replaced it).
 //
 // Auth model (per-agent tokens, deployed 2026-06-15 PM):
 // - `appendRun` is called by the VPS `log_cron_health.py` script which
@@ -8,43 +14,11 @@
 //   agent profiles. The mutation validates that args.agent === 'mewy'
 //   and that mewy has a configured token. Even if a bound agent tried
 //   to call it with agent='mewy', the token check would fail (they
-//   don't have mewey's token).
-// - `runDailyCron` and `runFollowupsCron` remain internal actions;
-//   they read the env directly (no per-agent token needed because
-//   they're server-side only and Convex blocks external calls).
+//   don't have mewy's token).
 
-import { internalAction, mutation } from '../_generated/server'
-import { api } from '../_generated/api'
+import { mutation } from '../_generated/server'
 import { v } from 'convex/values'
 import { requireHermesAgent } from '../hermesAuth'
-
-function getToken(): string {
-  const t = process.env.HERMES_ACTIONS_TOKEN
-  if (!t) {
-    throw new Error('HERMES_ACTIONS_TOKEN not configured on server')
-  }
-  return t
-}
-
-export const runDailyCron = internalAction({
-  args: {},
-  handler: async (ctx): Promise<{ planned: number; sent: number; failed: number; suppressed: number; errors: string[] }> => {
-    return await ctx.runAction(api.hermes.runner.runDaily, {
-      token: getToken(),
-      agent: 'blando',
-    })
-  },
-})
-
-export const runFollowupsCron = internalAction({
-  args: {},
-  handler: async (ctx): Promise<{ sent: number; failed: number; errors: string[] }> => {
-    return await ctx.runAction(api.hermes.runner.runFollowups, {
-      token: getToken(),
-      agent: 'blando',
-    })
-  },
-})
 
 // Public mutation called by the VPS `~/.hermes/bin/log_cron_health.py`.
 // Upserts one row in `cron_runs` per (agentId, cronName) pair. The

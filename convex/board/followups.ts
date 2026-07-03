@@ -10,9 +10,10 @@
 // - outreach_followups.touch = 2 → scheduled ~3 days after initial send
 // - outreach_followups.touch = 3 → scheduled ~7 days after initial send
 // - status = 'scheduled' | 'sent' | 'cancelled' | 'failed'
-// Templates themselves live in the website's convex/hermes/runner.ts —
-// this file only surfaces the schedule and the live state, plus a static
-// copy of the templates for operator visibility.
+// Templates live in the website's `convex/hermes/outreach2.ts` (was
+// `convex/hermes/runner.ts` pre-2026-07-03 Slice 2a). This file only
+// surfaces the schedule and the live state, plus a static copy of the
+// templates for operator visibility.
 
 import { query } from '../_generated/server';
 import { v } from 'convex/values';

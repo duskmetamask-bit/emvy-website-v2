@@ -46,18 +46,12 @@ const CANONICAL_SEAM = 'convex/hermes/outreach2.ts'
 // today (they pre-date Slice 2), but each is owed a follow-up slice
 // to either delete the dead writer or migrate it through outreach2.ts.
 // Empty the list as items are remediated.
-const ALLOWLIST: ReadonlyArray<{ file: string; reason: string; slice: string }> = [
-  {
-    file: 'convex/hermes/runner.ts',
-    reason:
-      'Legacy v1 runner (runDaily/runFollowups/enqueue). Cron no longer calls it ' +
-      '(crons.ts has runDailyCron/runFollowupsCron commented out) but app routes ' +
-      'app/api/hermes/{seedTradies,runDaily}/route.ts still do. Calls ' +
-      'api.hermes.outreach.autoSend which is deleted (hermes/outreach.ts removed) — ' +
-      'so it would throw at runtime. Pure dead-but-wired code.',
-    slice: 'Slice 2a — delete runner.ts + its 3 callers',
-  },
-]
+//
+// As of 2026-07-03 Slice 2a: ALLOWLIST is EMPTY. `convex/hermes/runner.ts`
+// + its 3 callers (`app/api/hermes/{seedTradies,runDaily}/route.ts` +
+// `convex/hermes/cronEntry.ts:runDailyCron/runFollowupsCron`) were deleted.
+// The seam is now genuinely single-writer.
+const ALLOWLIST: ReadonlyArray<{ file: string; reason: string; slice: string }> = []
 
 // Patterns that indicate a fresh sender / queue-writer sneaking into
 // the outreach pipeline. We exclude the canonical seam file.
