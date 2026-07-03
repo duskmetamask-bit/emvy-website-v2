@@ -738,6 +738,38 @@ export default defineSchema({
     .index('by_lane', ['lane'])
     .index('by_createdAt', ['createdAt']),
 
+  // Cartz build request queue — operator-submitted requests that wait for
+  // Cartz proposal / operator approval before execution. This is the shared
+  // source of truth for the build-intake workflow and is surfaced on /builds.
+  build_requests: defineTable({
+    project: v.optional(v.string()),
+    requestText: v.string(),
+    status: v.union(
+      v.literal('requested'),
+      v.literal('needs_approval'),
+      v.literal('approved'),
+      v.literal('rejected'),
+      v.literal('in_progress'),
+      v.literal('blocked'),
+      v.literal('complete'),
+    ),
+    proposal: v.optional(v.string()),
+    nextAction: v.optional(v.string()),
+    blocker: v.optional(v.string()),
+    requestedBy: v.string(),
+    claimedBy: v.optional(v.string()),
+    claimedAt: v.optional(v.number()),
+    approvedBy: v.optional(v.string()),
+    approvedAt: v.optional(v.number()),
+    rejectedReason: v.optional(v.string()),
+    completedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_status', ['status'])
+    .index('by_createdAt', ['createdAt'])
+    .index('by_status_and_createdAt', ['status', 'createdAt']),
+
   // === Competitor Pricing Matrix (Intelligence agent output, surfaced on /pricing) ===
   // Written by the seed script from the 2026-06-16 VPS pricing_matrix artifact.
   // The intelligence agent can PATCH rows via hermes/pricing:upsertCompetitor;

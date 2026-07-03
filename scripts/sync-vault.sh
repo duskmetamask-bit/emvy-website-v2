@@ -14,7 +14,7 @@
 
 set -euo pipefail
 
-VAULT="/Users/DuskWunz/Documents/Claude Vault"
+VAULT="/Users/DuskWunz/Documents/Claude/Claude Vault"
 INBOX="$VAULT/Inbox.md"
 DATE=$(date +%Y-%m-%d)
 TIME=$(date +%H:%M)
