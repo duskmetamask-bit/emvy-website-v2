@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     }
     const convex = getConvex()
     const token = process.env.HERMES_ACTIONS_TOKEN!
-    const result = await convex.action(api.hermes.outreach.sendEditedFromBoard, {
+    const result = await convex.action(api.hermes.outreach2.sendEditedFromBoard, {
       token,
       agent: 'mewy',
       draftId,

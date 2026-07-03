@@ -81,7 +81,7 @@ export default async function BlogPage() {
   return (
     <>
       <section className="section" style={{ maxWidth: 720, margin: '0 auto', padding: '64px 24px 32px' }}>
-        <JsonLd data={itemList} />
+        <JsonLd data={itemList as unknown as Parameters<typeof JsonLd>[0]['data']} />
 
         <p className="section-kicker">AI for small business</p>
         <h1

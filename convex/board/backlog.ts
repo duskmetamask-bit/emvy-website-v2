@@ -162,7 +162,7 @@ export const backfillLegacy = mutation({
     e1Subject: v.optional(v.string()),
     source: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ ok: boolean; noop?: boolean; reason?: string }> => {
     return await ctx.runMutation(internal.hermes.outreach2.markLegacyE1Backfilled, {
       email: args.email,
       e1SentAt: args.e1SentAt,

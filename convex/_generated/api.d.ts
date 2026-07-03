@@ -65,7 +65,6 @@ import type * as hermes_marketing from "../hermes/marketing.js";
 import type * as hermes_ops from "../hermes/ops.js";
 import type * as hermes_outreach2 from "../hermes/outreach2.js";
 import type * as hermes_pricing from "../hermes/pricing.js";
-import type * as hermes_runner from "../hermes/runner.js";
 import type * as hermesAuth from "../hermesAuth.js";
 import type * as leads_leads from "../leads/leads.js";
 import type * as stats_stats from "../stats/stats.js";
@@ -138,7 +137,6 @@ declare const fullApi: ApiFromModules<{
   "hermes/ops": typeof hermes_ops;
   "hermes/outreach2": typeof hermes_outreach2;
   "hermes/pricing": typeof hermes_pricing;
-  "hermes/runner": typeof hermes_runner;
   hermesAuth: typeof hermesAuth;
   "leads/leads": typeof leads_leads;
   "stats/stats": typeof stats_stats;

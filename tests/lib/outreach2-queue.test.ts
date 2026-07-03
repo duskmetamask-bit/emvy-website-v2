@@ -13,7 +13,7 @@ import schema from '../../convex/schema'
 import { api } from '../../convex/_generated/api'
 
 const BLANDO_TOKEN = 'test-blando-token'
-const BLANDO_AGENT = 'blando'
+const BLANDO_AGENT = 'blando' as const
 
 beforeAll(() => {
   process.env.HERMES_TOKEN_BLANDO = BLANDO_TOKEN
@@ -26,7 +26,7 @@ const NOW = Date.now()
 
 const E1_ARGS = {
   token: BLANDO_TOKEN,
-  agent: BLANDO_AGENT as const,
+  agent: BLANDO_AGENT,
   email: 'test@example.com',
   businessName: 'Acme',
   step: 'e1' as const,

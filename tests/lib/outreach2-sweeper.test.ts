@@ -71,7 +71,7 @@ describe('recoverStuckSendingRows() — Slice 5a sweeper', () => {
     expect(result.rows[0].ageMs).toBeGreaterThan(5 * MINUTE)
 
     // Row should now be 'queued'
-    const row = await t.run(async (ctx) => ctx.db.get(id as any))
+    const row = await t.run(async (ctx) => ctx.db.get(id as any) as any)
     expect(row?.status).toBe('queued')
   })
 
@@ -87,7 +87,7 @@ describe('recoverStuckSendingRows() — Slice 5a sweeper', () => {
     const result = await t.mutation(internal.hermes.outreach2.recoverStuckSendingRows, {})
 
     expect(result.recovered).toBe(0)
-    const row = await t.run(async (ctx) => ctx.db.get(id as any))
+    const row = await t.run(async (ctx) => ctx.db.get(id as any) as any)
     expect(row?.status).toBe('sending')
   })
 
@@ -137,7 +137,7 @@ describe('recoverStuckSendingRows() — Slice 5a sweeper', () => {
     })
     expect(result.recovered).toBe(1)
 
-    const row = await t.run(async (ctx) => ctx.db.get(id as any))
+    const row = await t.run(async (ctx) => ctx.db.get(id as any) as any)
     expect(row?.status).toBe('queued')
   })
 

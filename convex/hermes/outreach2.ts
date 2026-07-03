@@ -1200,7 +1200,7 @@ export const drainDueOutreach = internalAction({
     // cadence; paused runs are no-ops that surface the `paused:true`
     // flag in the response so the activity log + future Slice 5
     // observability dashboard can show "X runs skipped because paused".
-    const pauseFlag = await ctx.runQuery(internal.hermes.outreach2.getOutreachPaused, {})
+    const pauseFlag = await ctx.runQuery(api.hermes.outreach2.getOutreachPaused, {})
     if (pauseFlag.paused) {
       return {
         processed: 0,
@@ -1482,6 +1482,89 @@ export const getQueueRow = internalQuery({
   args: { id: v.id('outreach_queue') },
   handler: async (ctx, { id }) => {
     return await ctx.db.get(id)
+  },
+})
+
+// Internal query — read a single lead by id. Used by sendEditedFromBoard
+// to surface a clearer error than queueStep's find-or-create refusal.
+export const getLeadById = internalQuery({
+  args: { id: v.id('leads') },
+  handler: async (ctx, { id }) => {
+    return await ctx.db.get(id)
+  },
+})
+
+// ---------- Public action: sendEditedFromBoard ----------
+//
+// Operator-send bridge for the board's /drafts UI. The board calls
+// /api/hermes/sendEdited which forwards here. Wraps the operator flow:
+//   1. validate token + agent
+//   2. queue an E1 step via the public queueStep (forceBypassGates for
+//      operator-triggered sends — same semantic as the old draft flow)
+//   3. immediately drain via operatorSend (queue → claim → Resend)
+//
+// Preserves the Slice 2 sender seam: this function does NOT call Resend
+// directly. The actual Resend call lives in claimAndSendStep (invoked
+// transitively by operatorSend). All audit writes (email_sends,
+// activity_log, send_runs, draft flip, lead stage bump) go through the
+// canonical mutation surface.
+//
+// TODO(Mewy+operator): the original sendEditedFromBoard wrote a custom
+// activity_log + flipped the draft to sent + bumped lead stage inline.
+// operatorSend handles email_sends + activity_log + send_runs. The
+// draft-flip + stage-bump is still done by the board's caller after
+// this returns. See board/(board)/drafts/[id]/page.tsx for the caller.
+export const sendEditedFromBoard = action({
+  args: {
+    token: v.string(),
+    agent: v.literal('mewy'),
+    draftId: v.id('email_drafts'),
+    leadId: v.id('leads'),
+    to: v.string(),
+    subject: v.string(),
+    body: v.string(),
+  },
+  handler: async (ctx, args): Promise<{
+    ok: boolean
+    noop?: boolean
+    reason?: string
+    resendId?: string
+    state?: string
+    queueId?: string
+  }> => {
+    requireHermesAgent(args.token, args.agent)
+
+    // 1. Look up the lead via runQuery (actions can't use ctx.db).
+    // queueStep will find-or-create by email anyway, but an early check
+    // surfaces a clearer error than the queueStep refusal.
+    const lead = await ctx.runQuery(internal.hermes.outreach2.getLeadById, {
+      id: args.leadId,
+    })
+    if (!lead) throw new Error(`Lead not found: ${args.leadId}`)
+
+    // 2. Queue E1 with operator override (forceBypassGates skips the
+    // claim-gate wait, so the send fires on the same drain cycle).
+    const queueResult = await ctx.runMutation(api.hermes.outreach2.queueStep, {
+      token: args.token,
+      agent: 'blando', // operator-triggered sends run as blando for the
+                       // queue ownership seam (queueStep is the
+                       // canonical write seam for outreach_queue rows).
+      email: args.to,
+      businessName: lead.company ?? 'Unknown',
+      step: 'e1',
+      subject: args.subject,
+      body: args.body,
+      scheduledFor: Date.now(),
+      forceBypassGates: true,
+    })
+
+    // 3. Immediately drain via the canonical operatorSend seam. This
+    // runs claim → Resend → markStepSent → recordSendRun atomically.
+    return await ctx.runAction(internal.hermes.outreach2.operatorSend, {
+      queueId: queueResult.queueId,
+      forceBypassGates: true,
+      actor: 'operator',
+    })
   },
 })
 
@@ -1938,8 +2021,10 @@ export const syncResendSends = internalAction({
       sinceMs: cutoff,
     })
 
-    const convexByResendId = new Map<string, typeof convexSends[number]>()
-    for (const s of convexSends) convexByResendId.set(s.resendId, s)
+    const convexByResendId = new Map<string, NonNullable<(typeof convexSends)[number]>>()
+    for (const s of convexSends) {
+      if (s.resendId) convexByResendId.set(s.resendId, s as NonNullable<typeof s>)
+    }
     const resendById = new Map<string, ResendEmail>()
     for (const e of recent) resendById.set(e.id, e)
 

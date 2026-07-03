@@ -206,7 +206,7 @@ export const listQueue = query({
           scheduledFor: r.scheduledFor ?? 0,
           createdAt: r.createdAt ?? 0,
           sentAt: r.sentAt ?? null,
-          resendId: r.resendId ?? null,
+          resendId: r.sendId ?? null,
           attempts: r.attempts ?? 0,
           leadState: lead?.outreachState ?? null,
           leadHistory: lead?.outreachHistory ?? [],
@@ -314,7 +314,7 @@ export const sendOne = action({
     resendId?: string
     state?: string
   }> => {
-    return await ctx.runAction(api.hermes.outreach2.operatorSend, {
+    return await ctx.runAction(internal.hermes.outreach2.operatorSend, {
       queueId: args.queueId,
       forceBypassGates: args.forceBypassGates,
       actor: 'operator',
@@ -344,11 +344,23 @@ export const getRecentSendRuns = query({
     timestamp: number
   }>> => {
     const limit = args.limit ?? 20
-    return await ctx.db
+    const rows = await ctx.db
       .query('send_runs')
       .withIndex('by_timestamp')
       .order('desc')
       .take(limit)
+    return rows.map((r) => ({
+      _id: r._id,
+      queueId: r.queueId,
+      leadId: r.leadId ?? null,
+      actor: r.actor,
+      outcome: r.outcome,
+      reason: r.reason ?? null,
+      resendId: r.resendId ?? null,
+      step: r.step ?? null,
+      forceBypassGates: r.forceBypassGates ?? null,
+      timestamp: r.timestamp,
+    }))
   },
 })
 

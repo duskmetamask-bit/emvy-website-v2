@@ -79,7 +79,7 @@ describe('markStepFailed() — Slice 5b exponential backoff', () => {
     expect(result.nextAttemptAt).toBeGreaterThanOrEqual(before + 5 * MINUTE)
     expect(result.nextAttemptAt).toBeLessThanOrEqual(after + 5 * MINUTE)
 
-    const row = await t.run(async (ctx) => ctx.db.get(id as any))
+    const row = await t.run(async (ctx) => ctx.db.get(id as any) as any)
     expect(row?.status).toBe('queued')
     expect(row?.attempts).toBe(1)
     expect(row?.lastError).toBe('Resend 500: oops')
@@ -123,7 +123,7 @@ describe('markStepFailed() — Slice 5b exponential backoff', () => {
     expect(result.dead).toBe(true)
     expect(result.attempts).toBe(4)
 
-    const row = await t.run(async (ctx) => ctx.db.get(id as any))
+    const row = await t.run(async (ctx) => ctx.db.get(id as any) as any)
     expect(row?.status).toBe('failed')
     expect(row?.attempts).toBe(4)
   })

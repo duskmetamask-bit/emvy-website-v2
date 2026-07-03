@@ -114,7 +114,7 @@ describe('sequence integration — Slice 4b E1 → E2 → E3', () => {
     expect(r3.state).toBe('e3_sent')
 
     // Assert: lead state is e3_sent
-    const lead = await t.run(async (ctx) => ctx.db.get(leadId as any))
+    const lead = await t.run(async (ctx) => ctx.db.get(leadId as any) as any)
     expect(lead?.outreachState).toBe('e3_sent')
     expect(lead?.outreachHistory).toHaveLength(3)
     expect(lead?.outreachHistory?.[0]?.step).toBe('e1')
@@ -133,7 +133,7 @@ describe('sequence integration — Slice 4b E1 → E2 → E3', () => {
 
     // Assert: fetch was called 3 times, each with X-Outreach-Step in payload
     expect(fetchMock).toHaveBeenCalledTimes(3)
-    const calls = fetchMock.mock.calls as Array<[string, RequestInit]>
+    const calls = fetchMock.mock.calls as unknown as Array<[string, RequestInit]>
     expect(calls[0][0]).toBe('https://api.resend.com/emails')
     // X-Outreach-Step is in the JSON body's `headers` field, not the
     // RequestInit headers (Resend API takes custom headers in the body).
@@ -186,7 +186,7 @@ describe('sequence integration — Slice 4b E1 → E2 → E3', () => {
     expect(r2.reason).toMatch(/^blocked:e2_too_soon/)
 
     // E2 row stays queued (not sent, not deleted).
-    const e2Row = await t.run(async (ctx) => ctx.db.get(e2.queueId as any))
+    const e2Row = await t.run(async (ctx) => ctx.db.get(e2.queueId as any) as any)
     expect(e2Row?.status).toBe('queued')
 
     // Only 1 fetch call (E1) happened.
@@ -216,7 +216,7 @@ describe('sequence integration — Slice 4b E1 → E2 → E3', () => {
     ).rejects.toThrow(/Resend send failed/)
 
     // Row should be back to queued (or failed if MAX_ATTEMPTS hit) with attempts=1.
-    const row = await t.run(async (ctx) => ctx.db.get(e1.queueId as any))
+    const row = await t.run(async (ctx) => ctx.db.get(e1.queueId as any) as any)
     expect(['queued', 'failed']).toContain(row?.status)
     expect(row?.attempts).toBe(1)
   })
