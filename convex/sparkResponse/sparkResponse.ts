@@ -62,10 +62,10 @@ export const listByOwner = query({
   },
   handler: async (ctx, args) => {
     const limit = args.limit ?? 50
-    return ctx.db
+    const rows = await ctx.db
       .query('spark_response_calls')
       .withIndex('by_ownerPhone', (q) => q.eq('ownerPhone', args.ownerPhone))
-      .orderDescending('createdAt')
       .take(limit)
+    return rows.sort((a, b) => b.createdAt - a.createdAt)
   },
 })
