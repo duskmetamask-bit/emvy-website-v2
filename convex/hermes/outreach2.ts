@@ -1218,3 +1218,183 @@ export const drainDueOutreach = internalAction({
     }
   },
 })
+
+// ---------- Manual-send surface (board operator UI) ----------
+//
+// 2026-07-03 PM — switched outreach pipeline to manual-only mode.
+// Auto-drain cron disabled (see convex/crons.ts). Operator approves
+// each send individually from /outreach/queue. These two functions
+// are the public surface the board calls when the operator clicks
+// "Send" or "Edit".
+
+// Public mutation — operator edits subject/body on a queued row.
+// Only rows with status='queued' are editable; sent/failed rows are
+// immutable. The SENDER_NAME guard still applies at send time.
+export const editQueueRow = mutation({
+  args: {
+    token: v.string(),
+    agent: v.literal('blando'),
+    queueId: v.id('outreach_queue'),
+    subject: v.optional(v.string()),
+    body: v.optional(v.string()),
+  },
+  handler: async (ctx, args): Promise<{ ok: boolean; reason?: string }> => {
+    requireHermesAgent(args.token, args.agent)
+    const row = await ctx.db.get(args.queueId)
+    if (!row) return { ok: false, reason: 'not_found' }
+    if (row.status !== 'queued' && row.status !== 'drafted') {
+      return { ok: false, reason: `status=${row.status} (not editable)` }
+    }
+    const patch: Record<string, unknown> = {}
+    if (args.subject !== undefined) {
+      if (!args.subject.trim()) return { ok: false, reason: 'empty_subject' }
+      patch.subject = args.subject
+    }
+    if (args.body !== undefined) {
+      if (!args.body.trim()) return { ok: false, reason: 'empty_body' }
+      patch.body = args.body
+    }
+    if (Object.keys(patch).length === 0) return { ok: false, reason: 'no_changes' }
+    await ctx.db.patch(args.queueId, patch)
+    return { ok: true }
+  },
+})
+
+// Internal action — operator-driven send for a single queue row.
+// Mirrors `claimAndSendStep` but is callable from the board's
+// public `sendOne` mutation without requiring the hermes agent token.
+// The board layer authenticates the operator via Convex auth (HMAC
+// middleware) + the board's own login. The seam invariant holds
+// because this action goes through the same `claim` + `markStepSent`
+// mutations and the same Resend fetch as the auto-drainer.
+//
+// Uses `forceBypassGates=false` so the locked-law state-machine gate
+// (E2 ≥4d after E1, E3 ≥6d after E2) still applies. Operator can
+// override with `forceBypassGates=true` if they really want to send a
+// premature followup; audit is via the `forceBypassGates:true` field
+// already on outreach_queue.
+export const operatorSend = internalAction({
+  args: {
+    queueId: v.id('outreach_queue'),
+    forceBypassGates: v.optional(v.boolean()),
+    actor: v.optional(v.string()), // 'operator' — audit provenance
+  },
+  handler: async (ctx, args): Promise<{
+    ok: boolean
+    noop?: boolean
+    reason?: string
+    resendId?: string
+    state?: string
+  }> => {
+    // SENDER_NAME runtime invariant (Slice 2, locked 2026-07-03).
+    const expectedSender = process.env.SENDER_NAME
+    if (expectedSender !== 'convex-v2') {
+      throw new Error(
+        `SENDER_NAME mismatch (got=${expectedSender ?? 'unset'}, expected=convex-v2). ` +
+          'Set `npx convex env set SENDER_NAME convex-v2` on the glad-camel-940 deployment.',
+      )
+    }
+
+    // Read the row first so we have subject/body + can apply optional
+    // forceBypassGates. Also serves as the existence check.
+    const row = await ctx.runQuery(internal.hermes.outreach2.getQueueRow, {
+      id: args.queueId,
+    })
+    if (!row) return { ok: false, reason: 'not_found' }
+    if (!row.subject || !row.body) {
+      return { ok: false, reason: 'missing subject or body' }
+    }
+
+    // Apply forceBypassGates if requested by the operator (audit field).
+    if (args.forceBypassGates) {
+      await ctx.runMutation(internal.hermes.outreach2.setForceBypassGates, {
+        id: args.queueId,
+        value: true,
+      })
+    }
+
+    // 1. Atomically flip status queued -> sending (state machine gate
+    //    runs here — locked law feedback_outreach_followup_timing_law.md).
+    const claim = await ctx.runMutation(internal.hermes.outreach2.claim, {
+      id: args.queueId,
+    })
+    if (!claim.ok) {
+      return { ok: false, noop: true, reason: claim.reason }
+    }
+
+    // 2. Send via Resend.
+    const apiKey = process.env.RESEND_API_KEY
+    if (!apiKey) throw new Error('RESEND_API_KEY not configured on server')
+    const fromEmail = process.env.OUTREACH_FROM_EMAIL ?? 'jake@emvyai.com'
+
+    const payload: Record<string, unknown> = {
+      from: `Jake Marchin-Vincent <${fromEmail}>`,
+      to: claim.email,
+      reply_to: 'jake@emvyai.com',
+      subject: row.subject,
+      text: row.body,
+      html: row.body.replace(/\n/g, '<br/>'),
+      headers: {
+        'X-Outreach-Step': claim.step,
+        'X-Queue-Id': String(args.queueId),
+        'X-Actor': args.actor ?? 'operator',
+      },
+    }
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+    if (!res.ok) {
+      const errText = await res.text().catch(() => 'unknown')
+      await ctx.runMutation(internal.hermes.outreach2.markFailed, {
+        id: args.queueId,
+        error: `Resend ${res.status}: ${errText.slice(0, 200)}`,
+      })
+      throw new Error(`Resend send failed: ${res.status} ${errText}`)
+    }
+    const json = (await res.json()) as { id?: string }
+    const resendId = json.id ?? 'unknown'
+
+    // 3. Mark sent (flips state machine, writes email_sends + activity_log).
+    const token = process.env.HERMES_ACTIONS_TOKEN ?? ''
+    const result = await ctx.runMutation(api.hermes.outreach2.markStepSent, {
+      token,
+      agent: 'blando',
+      queueId: args.queueId,
+      resendId,
+      subject: row.subject,
+      body: row.body,
+      step: claim.step as any,
+    })
+
+    return { ok: true, resendId, state: result.state as any }
+  },
+})
+
+// Internal query — read a single outreach_queue row. Used by operatorSend.
+export const getQueueRow = internalQuery({
+  args: { id: v.id('outreach_queue') },
+  handler: async (ctx, { id }) => {
+    return await ctx.db.get(id)
+  },
+})
+
+// Internal mutation — toggle forceBypassGates on a queued row.
+// Used by operatorSend when the operator explicitly approves a premature
+// followup. Audit field: activity_log gets a row tagged `force_bypass`.
+export const setForceBypassGates = internalMutation({
+  args: {
+    id: v.id('outreach_queue'),
+    value: v.boolean(),
+  },
+  handler: async (ctx, { id, value }) => {
+    const row = await ctx.db.get(id)
+    if (!row) return
+    if (row.status !== 'queued' && row.status !== 'drafted') return
+    await ctx.db.patch(id, { forceBypassGates: value })
+  },
+})
