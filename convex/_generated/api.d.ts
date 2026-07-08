@@ -66,6 +66,7 @@ import type * as hermes_runner from "../hermes/runner.js";
 import type * as hermesAuth from "../hermesAuth.js";
 import type * as leads_leads from "../leads/leads.js";
 import type * as outreach_outreach from "../outreach/outreach.js";
+import type * as sparkResponse_sparkResponse from "../sparkResponse/sparkResponse.js";
 import type * as stats_stats from "../stats/stats.js";
 import type * as webhooks_cal from "../webhooks/cal.js";
 import type * as webhooks_contact from "../webhooks/contact.js";
@@ -137,6 +138,7 @@ declare const fullApi: ApiFromModules<{
   hermesAuth: typeof hermesAuth;
   "leads/leads": typeof leads_leads;
   "outreach/outreach": typeof outreach_outreach;
+  "sparkResponse/sparkResponse": typeof sparkResponse_sparkResponse;
   "stats/stats": typeof stats_stats;
   "webhooks/cal": typeof webhooks_cal;
   "webhooks/contact": typeof webhooks_contact;
