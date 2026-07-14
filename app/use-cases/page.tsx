@@ -4,44 +4,44 @@ import PageHero from '../../components/PageHero'
 
 export const metadata: Metadata = {
   title: 'Use Cases',
-  description: 'Selected outcomes and implementation stories for EMVY clients.',
+  description: 'Examples of practical AI systems for growing businesses.',
 }
 
 const studies = [
   {
     title: 'Lead response system',
-    metric: 'Faster follow-up',
-    body: 'Unified intake, routing, and follow-up so qualified leads stop going cold between touchpoints.',
+    metric: 'Lead handling',
+    body: 'Connect intake, routing, booking, and follow-up around the way your team works.',
     image: 'https://images.unsplash.com/photo-1556740749-887f6717d7e4?w=1200&q=90&auto=format&fit=crop',
   },
   {
     title: 'Internal workflow automation',
-    metric: 'Less manual work',
-    body: 'Reduced repetitive admin across handover, reporting, approvals, and status chasing.',
+    metric: 'Workflow automation',
+    body: 'Support handovers, reporting, approvals, and routine work with better-connected steps.',
     image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=90&auto=format&fit=crop',
   },
   {
-    title: 'AI-assisted service delivery',
-    metric: 'More capacity',
-    body: 'A practical assist layer that helps a service team move faster without losing visibility or control.',
+    title: 'Custom AI systems',
+    metric: 'A focused operating layer',
+    body: 'Build a practical system around a specific service, team, or operational workflow.',
     image: 'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=1200&q=90&auto=format&fit=crop',
   },
   {
-    title: 'Lead generation & outreach',
-    metric: 'Automated engagement',
-    body: 'Streamlined lead generation and outreach processes to connect with more prospects efficiently.',
+    title: 'AI receptionists',
+    metric: 'A clearer front door',
+    body: 'Help handle calls, messages, bookings, and common enquiries in a way that fits the business.',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=90&auto=format&fit=crop',
   },
   {
-    title: 'Repetitive process automation',
-    metric: 'Reduced friction',
-    body: 'Identify and automate repetitive tasks that create bottlenecks and drain team productivity.',
+    title: 'Integrations',
+    metric: 'Connected information',
+    body: 'Bring the right tools and information together around everyday work.',
     image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=90&auto=format&fit=crop',
   },
   {
-    title: 'Custom workflow replacement',
-    metric: 'Cost efficiency',
-    body: 'Replace expensive off-the-shelf software with tailored workflows built around your actual needs.',
+    title: 'Ongoing improvement',
+    metric: 'Useful over time',
+    body: 'Review and refine a live system as the business changes.',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=90&auto=format&fit=crop',
   },
 ]
@@ -51,24 +51,20 @@ export default function UseCasesPage() {
     <>
       <PageHero
         eyebrow="Use Cases"
-        title="Examples of the outcomes a well-scoped AI system should create."
-        description="These examples show the kinds of operational gains EMVY is designed to create: quicker responses, cleaner delivery, and more time back for the team."
+        title="Examples of practical AI systems for everyday work."
+        description="These are capability examples, not fixed products. The right system depends on the business and its workflow."
         image="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1800&q=90&auto=format&fit=crop"
       >
-        <Link href="/services" className="button light">
-          View services
-        </Link>
-        <Link href="/assessment" className="button secondary">
-          Start the Mini AI Strategy Assessment
-        </Link>
+        <a href="https://cal.com/jake-emvy/discovery-call" className="button light" target="_blank" rel="noopener noreferrer">Book a consult</a>
+        <Link href="/services" className="button secondary">View services</Link>
       </PageHero>
 
       <section className="section">
         <div className="section-header">
           <p className="section-kicker">Use Cases</p>
-          <h2 className="section-title">Outcomes first, technology second.</h2>
+          <h2 className="section-title">Capability examples, shaped around the work.</h2>
           <p className="section-text">
-            Each example focuses on the business result, not just the tooling behind it.
+            Each system is tailored to the people, tools, and workflow already in place.
           </p>
         </div>
 
@@ -91,14 +87,12 @@ export default function UseCasesPage() {
       <section className="section cta-band">
         <div>
           <p className="section-kicker">Get Started</p>
-          <h2 className="section-title">Ready to explore how AI can help your business?</h2>
+          <h2 className="section-title">Talk through the work you want to improve.</h2>
           <p className="section-text">
-            Get in touch to discuss your workflow and see how we can help.
+            Start with a short consult, then decide what makes sense.
           </p>
         </div>
-        <Link href="/contact" className="button primary">
-          Contact Us
-        </Link>
+        <a href="https://cal.com/jake-emvy/discovery-call" className="button primary" target="_blank" rel="noopener noreferrer">Book a consult</a>
       </section>
     </>
   )

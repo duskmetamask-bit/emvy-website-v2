@@ -1,87 +1,18 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
-import { ChevronDown, Menu, X } from 'lucide-react'
-import TrackedLink from './TrackedLink'
-
-type NavItem = {
-  label: string
-  href: string
-}
-
-const services: NavItem[] = [
-  { label: 'Discovery Call', href: '/services/discovery-call' },
-  { label: 'AI Strategy Call', href: '/services/ai-strategy-call' },
-  { label: 'AI Builds', href: '/services/ai-builds' },
-  { label: 'Systems Maintenance', href: '/services/systems-maintenance' },
-]
+import { useState } from 'react'
+import { Menu, X } from 'lucide-react'
 
 export default function Header() {
-  const [openMenu, setOpenMenu] = useState<string | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const closeTimer = useRef<number | null>(null)
-
-  const clearCloseTimer = () => {
-    if (closeTimer.current) {
-      window.clearTimeout(closeTimer.current)
-      closeTimer.current = null
-    }
-  }
-
-  const scheduleClose = () => {
-    clearCloseTimer()
-    closeTimer.current = window.setTimeout(() => {
-      setOpenMenu(null)
-    }, 280)
-  }
-
-  useEffect(() => {
-    return () => clearCloseTimer()
-  }, [])
 
   const desktopNav = (
     <>
-      <div
-        className={`nav-item ${openMenu === 'services' ? 'is-open' : ''}`}
-        onMouseEnter={() => {
-          clearCloseTimer()
-          setOpenMenu('services')
-        }}
-        onMouseLeave={scheduleClose}
-      >
-        <button
-          className="nav-trigger"
-          type="button"
-          onClick={() => setOpenMenu(openMenu === 'services' ? null : 'services')}
-          aria-expanded={openMenu === 'services'}
-        >
-          Services <ChevronDown size={16} />
-        </button>
-        <div className="dropdown-menu">
-          {services.map((item) => (
-            <Link key={item.href} href={item.href} onClick={() => setOpenMenu(null)}>
-              <strong>{item.label}</strong>
-            </Link>
-          ))}
-        </div>
-      </div>
+      <Link className="nav-link" href="/services">Services</Link>
 
       <Link className="nav-link" href="/use-cases">
         Use Cases
-      </Link>
-
-      <Link className="nav-link" href="/why-ai">
-        Why AI
-      </Link>
-      <Link className="nav-link" href="/blog">
-        Blog
-      </Link>
-      <Link className="nav-link" href="/newsletter">
-        Newsletter
-      </Link>
-      <Link className="nav-link" href="/assessment">
-        Mini AI Strategy
       </Link>
 
       <Link className="nav-link" href="/about">
@@ -95,31 +26,23 @@ export default function Header() {
 
   return (
     <header className="site-header">
-      <Link className="brand" href="/" onClick={() => setOpenMenu(null)} aria-label="EMVY — AI Consultancy home">
+      <Link className="brand" href="/" aria-label="EMVY — AI systems home">
         <img src="/brand/logo-transparent.png" alt="EMVY" className="brand-img" />
       </Link>
 
-      <nav className="nav" onMouseLeave={scheduleClose}>
+      <nav className="nav">
         <div className="desktop-only">{desktopNav}</div>
       </nav>
 
       <div className="header-actions">
-        <TrackedLink
-          href="/services/discovery-call"
+        <a
+          href="https://cal.com/jake-emvy/discovery-call"
           className="button primary small"
-          eventName="discovery_call_click"
-          eventLabel="header"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          Book Free Discovery Call
-        </TrackedLink>
-        <TrackedLink
-          href="/services/ai-strategy-call"
-          className="button secondary small"
-          eventName="ai_strategy_call_click"
-          eventLabel="header"
-        >
-          AI Strategy Call
-        </TrackedLink>
+          Book a consult
+        </a>
         <button className="menu-button" type="button" onClick={() => setMobileOpen((value) => !value)} aria-label="Open menu">
           {mobileOpen ? <X size={18} /> : <Menu size={18} />}
         </button>
@@ -129,13 +52,9 @@ export default function Header() {
         <div className="mobile-menu">
           <Link href="/services" onClick={() => setMobileOpen(false)}>Services</Link>
           <Link href="/use-cases" onClick={() => setMobileOpen(false)}>Use Cases</Link>
-          <Link href="/why-ai" onClick={() => setMobileOpen(false)}>Why AI</Link>
-          <Link href="/newsletter" onClick={() => setMobileOpen(false)}>Newsletter</Link>
-          <Link href="/assessment" onClick={() => setMobileOpen(false)}>Mini AI Strategy</Link>
           <Link href="/about" onClick={() => setMobileOpen(false)}>About</Link>
           <Link href="/contact" onClick={() => setMobileOpen(false)}>Contact</Link>
-          <Link href="/services/discovery-call" onClick={() => setMobileOpen(false)}>Book Free Discovery Call</Link>
-          <Link href="/services/ai-strategy-call" onClick={() => setMobileOpen(false)}>Book AI Strategy Call</Link>
+          <a href="https://cal.com/jake-emvy/discovery-call" target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)}>Book a consult</a>
         </div>
       ) : null}
     </header>

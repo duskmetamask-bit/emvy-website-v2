@@ -4,12 +4,11 @@ export const runtime = "nodejs";
 
 export async function POST() {
   return NextResponse.json(
-    { error: "Checkout is not enabled in this template yet." },
-    { status: 501 }
+    { error: 'This endpoint has been retired.' },
+    { status: 410 }
   );
 }
 
 export async function GET() {
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ error: 'This endpoint has been retired.' }, { status: 410 });
 }
-

@@ -3,19 +3,15 @@ import Link from 'next/link'
 const primaryLinks = [
   { label: 'Services', href: '/services' },
   { label: 'Use Cases', href: '/use-cases' },
-  { label: 'Why AI', href: '/why-ai' },
-  { label: 'Blog', href: '/blog' },
-  { label: 'Newsletter', href: '/newsletter' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ]
 
 const conversionLinks = [
-  { label: 'Mini AI Strategy', href: '/assessment' },
-  { label: 'Free Discovery Call', href: '/services/discovery-call' },
-  { label: 'AI Strategy Call', href: '/services/ai-strategy-call' },
-  { label: 'AI Builds', href: '/services/ai-builds' },
-  { label: 'Systems Maintenance', href: '/services/systems-maintenance' },
+  { label: 'Book a consult', href: 'https://cal.com/jake-emvy/discovery-call' },
+  { label: 'AI Workflow Assessment', href: '/services#assessment' },
+  { label: 'AI Builds', href: '/services#builds' },
+  { label: 'Ongoing Improvement', href: '/services#improvement' },
 ]
 
 export default function Footer() {
@@ -29,7 +25,7 @@ export default function Footer() {
         </div>
 
         <div className="footer-start-here">
-          <h3>Start Here</h3>
+          <h3>Services</h3>
           <div className="site-footer__links">
             {conversionLinks.map((link) => (
               <Link key={link.href} href={link.href}>

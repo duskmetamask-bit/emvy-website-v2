@@ -26,21 +26,21 @@ export const brand = {
   locale: 'en_AU',
 
   /** Hero tagline — the long form, the sentence a stranger reads first. */
-  tagline: 'We identify where your business can leverage AI, then build the systems to make it work.',
+  tagline: 'Practical AI systems for growing businesses.',
   /** Short tagline — the all-caps / display form, used in the OG image and headers. */
-  taglineShort: 'FIND IT.  LEVERAGE IT.  BUILD IT.',
+  taglineShort: 'PRACTICAL AI SYSTEMS.',
   /** Display positioning — what we are, in one line. */
   positioning: 'AI systems for growing businesses.',
   /** Voice summary — three words that summarise how the brand sounds. */
   voice: 'Calm expertise. Plain-spoken. Built to work.',
 
   /** Title templates for Next.js metadata. */
-  titleDefault: 'EMVY — AI Consultancy for Australian SMBs',
+  titleDefault: 'EMVY — AI Systems for Growing Businesses',
   titleTemplate: '%s | EMVY',
 
   /** Default description for metadata. */
-  description: 'AI consultancy for Australian SMBs. AI strategy, process automation, custom AI solutions and data analytics for businesses ready to work smarter.',
-  descriptionShort: 'AI strategy, audits, and automation systems for businesses ready to work smarter.',
+  description: 'Practical AI systems for Australian businesses: workflow improvement, automation, integrations, and custom systems.',
+  descriptionShort: 'Practical AI systems for growing Australian businesses.',
 
   /** OpenGraph site name. */
   siteName: 'EMVY',
