@@ -33,11 +33,11 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://emvyai.com"),
   title: {
-    default: "EMVY — AI Strategy for Trades and Professional Services",
+    default: "EMVY — AI Systems for Growing Businesses",
     template: "%s | EMVY"
   },
-  description: "AI strategy and systems for Australian trades and professional services. AI strategy, process automation, custom AI solutions and data analytics for businesses ready to work smarter.",
-  keywords: ["AI consultancy", "AI agents", "workflow automation", "Australian business AI", "AI strategy", "AI operations", "EMVY"],
+  description: "EMVY helps Australian businesses assess workflows, build practical AI systems, and improve operations.",
+  keywords: ["AI consultancy", "AI agents", "workflow automation", "Australian business AI", "AI workflow assessment", "EMVY"],
   icons: {
     icon: [
       { url: "/brand/exports/favicon-16.png", sizes: "16x16", type: "image/png" },
@@ -50,20 +50,20 @@ export const metadata: Metadata = {
     ]
   },
   openGraph: {
-    title: "EMVY — AI Strategy for Trades and Professional Services",
-    description: "AI strategy and automation systems for trades and professional services ready to work smarter.",
+    title: "EMVY — AI Systems for Growing Businesses",
+    description: "EMVY helps Australian businesses assess workflows, build practical AI systems, and improve operations.",
     url: "https://emvyai.com",
     siteName: "EMVY",
     type: "website",
     locale: "en_AU",
     images: [
-      { url: "/brand/exports/og-image.png", width: 1200, height: 630, alt: "EMVY — AI systems for trades and professional services" }
+      { url: "/brand/exports/og-image.png", width: 1200, height: 630, alt: "EMVY — AI systems for growing businesses" }
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "EMVY — AI Strategy for Trades and Professional Services",
-    description: "AI strategy and automation systems for trades and professional services ready to work smarter.",
+    title: "EMVY — AI Systems for Growing Businesses",
+    description: "AI systems for growing Australian businesses.",
     images: ["/brand/exports/og-image.png"],
   },
   manifest: "/manifest.webmanifest",

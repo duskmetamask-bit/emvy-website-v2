@@ -54,15 +54,10 @@ export default function ContactPage() {
       <PageHero
         eyebrow="Contact"
         title="Start a direct conversation with EMVY."
-        description="Use this form if you want to discuss a workflow, an AI opportunity, or an existing operations bottleneck. If you prefer a structured first step, start with the quiz."
+        description="Use this form to discuss a workflow, system, or operational issue."
         image="https://images.unsplash.com/photo-1516321165247-4aa89a48be28?w=1800&q=90&auto=format&fit=crop"
       >
-        <Link href="/assessment" className="button light">
-          Start the quiz
-        </Link>
-        <Link href="/services/discovery-call" className="button secondary">
-          Book Free Discovery Call
-        </Link>
+        <a href="https://cal.com/jake-emvy/discovery-call" className="button light" target="_blank" rel="noopener noreferrer">Book a consult</a>
       </PageHero>
 
       <section className="section">
@@ -75,9 +70,9 @@ export default function ContactPage() {
               outcome you want to create. EMVY can then point you toward the right next step.
             </p>
             <div className="contact-list">
-              <Link href="/services/discovery-call">Free Discovery Call</Link>
-              <Link href="/services/ai-strategy-call">$500 AI Strategy Call</Link>
-              <Link href="/why-ai">Why AI</Link>
+              <a href="https://cal.com/jake-emvy/discovery-call" target="_blank" rel="noopener noreferrer">Book a consult</a>
+              <Link href="/services#assessment">AI Workflow Assessment</Link>
+              <Link href="/services">View services</Link>
             </div>
           </div>
 

@@ -15,14 +15,14 @@ export type ServiceData = {
 
 export const SERVICES = {
   'discovery-call': {
-    name: 'Free Discovery Call',
-    description: 'Book a free 15-minute discovery call with EMVY.',
+    name: 'Book a consult',
+    description: 'A short consult about a workflow, system, or operational issue.',
     url: `${SITE_URL}/services/discovery-call`,
     serviceType: 'Consulting call',
   },
   'ai-strategy-call': {
-    name: 'AI Strategy Call',
-    description: 'A paid 60-minute AI strategy session — scope, sequencing, and approach for an AI build.',
+    name: 'AI Workflow Assessment',
+    description: 'A deeper look at workflows, existing tools, and useful opportunities before deciding what to build.',
     url: `${SITE_URL}/services/ai-strategy-call`,
     serviceType: 'Consulting call',
   },

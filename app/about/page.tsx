@@ -4,21 +4,21 @@ import PageHero from '../../components/PageHero'
 
 export const metadata: Metadata = {
   title: 'About',
-  description: 'Learn how EMVY approaches AI delivery for modern teams.',
+  description: 'Learn how EMVY approaches practical AI systems for growing Australian businesses.',
 }
 
 const aboutCards = [
   {
     title: 'Why EMVY exists',
-    body: 'A lot of AI firms talk about possibility. EMVY exists to turn that possibility into a working operating layer with real ownership and real outcomes.',
+    body: 'EMVY exists to turn useful opportunities into systems that make everyday work easier to run.',
   },
   {
     title: 'How we work',
-    body: 'We start with the actual process, not the shiny tool. Then we build the smallest system that pays for itself and can be maintained properly.',
+    body: 'We start with the workflow, then build the smallest practical system that can be understood and improved over time.',
   },
   {
     title: 'What you can expect',
-    body: 'Clear communication, commercially grounded advice, and delivery that moves the business forward instead of adding noise.',
+    body: 'Clear communication, practical advice, and a system your team can keep using after it is live.',
   },
 ]
 
@@ -27,13 +27,11 @@ export default function AboutPage() {
     <>
       <PageHero
         eyebrow="About"
-        title="Built for teams that want AI to feel practical, commercially useful, and well run."
-        description="EMVY helps growing businesses turn AI into structured systems that support delivery, sales, and operations without creating extra complexity."
+        title="AI systems should make the work clearer, not more complicated."
+        description="EMVY helps Australian businesses assess workflows, build practical systems, and improve operations over time."
         image="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1800&q=90&auto=format&fit=crop"
       >
-        <Link href="/assessment" className="button light">
-          Start the quiz
-        </Link>
+        <a href="https://cal.com/jake-emvy/discovery-call" className="button light" target="_blank" rel="noopener noreferrer">Book a consult</a>
         <Link href="/contact" className="button secondary">
           Get in touch
         </Link>
@@ -43,15 +41,15 @@ export default function AboutPage() {
         <div className="about-split">
           <div className="about-story">
             <p className="section-kicker">A little more context</p>
-            <h2 className="section-title">The aim is simple: make AI feel useful, credible, and worth paying for.</h2>
+            <h2 className="section-title">The aim is simple: make the work easier to understand and run.</h2>
             <p className="section-text">
               EMVY is shaped around a practical belief: if a system cannot improve a real workflow,
-              reduce friction, protect quality, or support better decisions, it is not the right
+              support the team, protect quality, or support better decisions, it is not the right
               thing to build yet.
             </p>
             <p className="section-text">
-              That is why the client journey starts with a short quiz or discovery call, moves into
-              assessment when needed, and only then suggests the right implementation path.
+              That is why the client journey starts with a short assessment or consult, moves into
+              an AI Workflow Assessment when needed, and only then into the right build.
             </p>
           </div>
 
@@ -97,7 +95,7 @@ export default function AboutPage() {
           </article>
           <article className="proof-card">
             <h3>Practical advice</h3>
-            <p>Every recommendation should connect back to a workflow, a measurable result, or a commercial gain.</p>
+            <p>Every recommendation should connect back to a workflow, the people doing the work, and a practical next step.</p>
           </article>
           <article className="proof-card">
             <h3>Clean handover</h3>

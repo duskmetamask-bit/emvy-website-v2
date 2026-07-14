@@ -6,41 +6,14 @@ import { service } from '@/lib/schema/jsonld'
 import { SERVICES } from '@/lib/schema/service-data'
 
 export const metadata: Metadata = {
-  title: 'Free Discovery Call',
-  description: 'Book a free 15-minute discovery call with EMVY.',
+  title: 'Book a consult',
+  description: 'Book a short EMVY consult about a workflow, system, or operational issue.',
 }
 
-const phases = [
-  {
-    number: '01',
-    title: 'Introductions',
-    duration: '~3 min',
-    points: [
-      'Quick round of who you are and who we are',
-      'What EMVY actually does (and what we don’t)',
-      'Why a short call beats a long proposal',
-    ],
-  },
-  {
-    number: '02',
-    title: 'Your business',
-    duration: '~7 min',
-    points: [
-      'What your business does day-to-day',
-      'The workflow or bottleneck you’d most like to improve',
-      'Any pain points eating into your week',
-    ],
-  },
-  {
-    number: '03',
-    title: 'Next step',
-    duration: '~5 min',
-    points: [
-      'We share the direction we think fits best',
-      'No pressure — the decision to proceed is yours',
-      'A follow-up email with next steps and pricing',
-    ],
-  },
+const topics = [
+  ['Your business', 'A little context about the business and how the work is currently handled.'],
+  ['What you want to improve', 'The call, lead, admin, information, or handoff issue you would like to discuss.'],
+  ['A sensible next step', 'Whether a consult is enough, an assessment would help, or a tailored build is worth exploring.'],
 ]
 
 export default function DiscoveryCallPage() {
@@ -48,9 +21,9 @@ export default function DiscoveryCallPage() {
     <>
       <JsonLd data={service(SERVICES['discovery-call'])} />
       <PageHero
-        eyebrow="Free Discovery Call"
-        title="A free 15-minute call to explore where AI could help your business."
-        description="This is a short introduction call to understand your business, what you want to improve, and what the best next step looks like. Pick a time below."
+        eyebrow="Book a consult"
+        title="A short conversation about the work you want to improve."
+        description="Talk through the workflow, system, or operational issue on your mind. We will help identify a sensible next step."
         image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1800&q=90&auto=format&fit=crop"
       >
         <a
@@ -59,7 +32,7 @@ export default function DiscoveryCallPage() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Book a discovery call
+          Book a consult
         </a>
         <Link href="/services" className="button secondary">
           See service flow
@@ -69,27 +42,15 @@ export default function DiscoveryCallPage() {
       <section className="section">
         <div className="section-header">
           <p className="section-kicker">What To Expect</p>
-          <h2 className="section-title">Short, focused, and easy to act on.</h2>
+          <h2 className="section-title">A straightforward conversation about the business and the work.</h2>
           <p className="section-text">
-            The call is designed to quickly understand your business and whether we are the right
-            fit for the opportunity you are exploring.
+            We will listen to the context, understand what you want to improve, and help identify a sensible next step.
           </p>
         </div>
 
         <div className="lead-grid discovery-outcomes">
-          {phases.map((phase) => (
-            <article key={phase.number} className="proof-card discovery-card">
-              <div className="discovery-phase">
-                <span className="discovery-phase__number">{phase.number}</span>
-                <span className="discovery-phase__duration">{phase.duration}</span>
-              </div>
-              <h3>{phase.title}</h3>
-              <ul className="discovery-list">
-                {phase.points.map((point) => (
-                  <li key={point}>{point}</li>
-                ))}
-              </ul>
-            </article>
+          {topics.map(([title, body], index) => (
+            <article key={title} className="proof-card discovery-card"><div className="discovery-phase"><span className="discovery-phase__number">0{index + 1}</span></div><h3>{title}</h3><p>{body}</p></article>
           ))}
         </div>
       </section>
@@ -97,7 +58,7 @@ export default function DiscoveryCallPage() {
       <section className="section cta-band">
         <div>
           <p className="section-kicker">Ready To Book</p>
-          <h2 className="section-title">Lock in your free 15-minute discovery call.</h2>
+          <h2 className="section-title">Choose a time that works for you.</h2>
           <p className="section-text">
             Pick a 15-minute slot that works for you.
           </p>
@@ -108,7 +69,7 @@ export default function DiscoveryCallPage() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Book a discovery call
+          Book a consult
         </a>
       </section>
     </>
