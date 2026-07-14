@@ -1,0 +1,40 @@
+<svg width="800" height="640" viewBox="0 0 800 640" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <filter id="focalGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g transform="translate(150, 320)">
+    <path d="M 0,0 L 120,-30 L 240,0 L 360,30 L 480,0" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.3" />
+
+    <g transform="translate(0, 0)">
+      <circle r="30" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.1" />
+      <circle r="12" fill="none" stroke="#56d9ff" stroke-width="1" />
+    </g>
+
+    <g transform="translate(120, -30)">
+      <circle r="26" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.08" />
+      <circle r="10" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.8" />
+    </g>
+
+    <g transform="translate(240, 0)">
+      <circle r="34" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.15" />
+      <circle r="14" fill="#56d9ff" filter="url(#focalGlow)" />
+    </g>
+
+    <g transform="translate(360, 30)">
+      <circle r="24" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.06" />
+      <circle r="9" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.6" />
+    </g>
+
+    <g transform="translate(480, 0)">
+      <circle r="20" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.04" />
+      <circle r="7" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.4" />
+    </g>
+  </g>
+</svg>

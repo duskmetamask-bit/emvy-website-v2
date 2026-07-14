@@ -5,6 +5,7 @@ import { colorDark } from "@/lib/design-tokens"
 import "./globals.css"
 import SiteChrome from "@/components/SiteChrome"
 import JsonLd from "@/components/JsonLd"
+import PlausibleAnalytics from '@/components/PlausibleAnalytics'
 import { organization, webSite, localBusiness } from "@/lib/schema/jsonld"
 
 // Self-hosted via next/font. Variable CSS vars feed the design tokens in
@@ -33,11 +34,11 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://emvyai.com"),
   title: {
-    default: "EMVY — AI Strategy for Trades and Professional Services",
+    default: "EMVY — AI Built for Your Business",
     template: "%s | EMVY"
   },
-  description: "AI strategy and systems for Australian trades and professional services. AI strategy, process automation, custom AI solutions and data analytics for businesses ready to work smarter.",
-  keywords: ["AI consultancy", "AI agents", "workflow automation", "Australian business AI", "AI strategy", "AI operations", "EMVY"],
+  description: "AI built for your business. Systems that make work easier for Australian small businesses.",
+  keywords: ["AI consultancy", "AI systems", "Australian small business", "EMVY"],
   icons: {
     icon: [
       { url: "/brand/exports/favicon-16.png", sizes: "16x16", type: "image/png" },
@@ -50,20 +51,20 @@ export const metadata: Metadata = {
     ]
   },
   openGraph: {
-    title: "EMVY — AI Strategy for Trades and Professional Services",
-    description: "AI strategy and automation systems for trades and professional services ready to work smarter.",
+    title: "EMVY — AI Built for Your Business",
+    description: "Systems that make work easier for Australian small businesses.",
     url: "https://emvyai.com",
     siteName: "EMVY",
     type: "website",
     locale: "en_AU",
     images: [
-      { url: "/brand/exports/og-image.png", width: 1200, height: 630, alt: "EMVY — AI systems for trades and professional services" }
+      { url: "/brand/exports/og-image.png", width: 1200, height: 630, alt: "EMVY — AI workflow systems" }
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "EMVY — AI Strategy for Trades and Professional Services",
-    description: "AI strategy and automation systems for trades and professional services ready to work smarter.",
+    title: "EMVY — AI Built for Your Business",
+    description: "Systems that make work easier for Australian small businesses.",
     images: ["/brand/exports/og-image.png"],
   },
   manifest: "/manifest.webmanifest",
@@ -90,6 +91,7 @@ export default function RootLayout({
       className={`${manrope.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
       <body>
+        <PlausibleAnalytics />
         <JsonLd data={[organization(), webSite(), localBusiness()]} />
         <SiteChrome>{children}</SiteChrome>
       </body>

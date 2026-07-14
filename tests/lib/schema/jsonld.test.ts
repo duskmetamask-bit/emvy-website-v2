@@ -21,7 +21,7 @@ describe('organization()', () => {
     const out = organization()
     expect(out.name).toBe('EMVY')
     expect(out.url).toBe('https://emvyai.com')
-    expect(out.logo).toBe('https://emvyai.com/emvy-mark.svg')
+    expect(out.logo).toBe('https://emvyai.com/brand/mv-mark.svg')
   })
 
   it('includes contact + AU address + ABN', () => {
@@ -66,10 +66,10 @@ describe('localBusiness()', () => {
     })
   })
 
-  it('includes the public OG image and price range', () => {
+  it('includes the public OG image without publishing a price range', () => {
     const out = localBusiness()
-    expect(out.image).toBe('https://emvyai.com/og.png')
-    expect(out.priceRange).toBe('$$')
+    expect(out.image).toBe('https://emvyai.com/brand/exports/og-image.png')
+    expect(out.priceRange).toBeUndefined()
   })
 })
 

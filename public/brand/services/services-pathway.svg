@@ -1,0 +1,60 @@
+<svg width="1200" height="320" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Focal Point Glow -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Arrow Head Marker -->
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#56d9ff" />
+    </marker>
+  </defs>
+
+  <!-- Background (Transparent as requested, but using a rect for layout testing if needed) -->
+  <rect width="1200" height="320" fill="none" />
+
+  <!-- Connecting Lines with Arrows -->
+  <g transform="translate(0, 160)">
+    <!-- Line 1 to 2 -->
+    <line x1="330" y1="0" x2="560" y2="0" stroke="#56d9ff" stroke-width="1" marker-end="url(#arrowhead)" />
+    <!-- Line 2 to 3 -->
+    <line x1="640" y1="0" x2="870" y2="0" stroke="#56d9ff" stroke-width="1" marker-end="url(#arrowhead)" />
+  </g>
+
+  <!-- Node 1: Discovery Call -->
+  <g transform="translate(300, 160)">
+    <!-- Label -->
+    <text y="-50" font-family="Manrope, sans-serif" font-size="11" font-weight="700" fill="#869398" letter-spacing="0.1em" text-anchor="middle">DISCOVERY CALL</text>
+    <!-- Circle -->
+    <circle r="30" fill="#031427" stroke="#56d9ff" stroke-width="1" />
+    <!-- Icon: Phone Handset -->
+    <path d="M-8,-4 A4,4 0 0,1 8,-4 L8,4 A4,4 0 0,1 -8,4 Z M-4,-4 L-4,4 M4,-4 L4,4" stroke="#56d9ff" stroke-width="1.5" fill="none" transform="rotate(-45) scale(0.8)" />
+    <!-- Simplified Phone Icon -->
+    <path d="M-6,8 C-8,8 -10,6 -10,4 L-10,-4 C-10,-6 -8,-8 -6,-8 L6,-8 C8,-8 10,-6 10,-4 L10,4 C10,6 8,8 6,8 L-6,8 M-2,4 L2,4" stroke="#56d9ff" stroke-width="1.5" fill="none" transform="scale(0.8)" />
+  </g>
+
+  <!-- Node 2: Strategy Session (Focal Point) -->
+  <g transform="translate(600, 160)">
+    <!-- Label -->
+    <text y="-50" font-family="Manrope, sans-serif" font-size="11" font-weight="700" fill="#869398" letter-spacing="0.1em" text-anchor="middle">STRATEGY SESSION</text>
+    <!-- Circle with Glow -->
+    <circle r="30" fill="#56d9ff" filter="url(#glow)" />
+    <!-- Icon: Document with corner fold -->
+    <path d="M-7,-10 L3,-10 L8,-5 L8,10 L-7,10 Z M3,-10 L3,-5 L8,-5" stroke="#031427" stroke-width="1.5" fill="none" transform="scale(0.9)" />
+  </g>
+
+  <!-- Node 3: Build & Launch -->
+  <g transform="translate(900, 160)">
+    <!-- Label -->
+    <text y="-50" font-family="Manrope, sans-serif" font-size="11" font-weight="700" fill="#869398" letter-spacing="0.1em" text-anchor="middle">BUILD &amp; LAUNCH</text>
+    <!-- Circle -->
+    <circle r="30" fill="#031427" stroke="#56d9ff" stroke-width="1" />
+    <!-- Icon: Rocket / Upward Arrow -->
+    <path d="M0,-10 L-7,3 L0,0 L7,3 Z M0,0 L0,8" stroke="#56d9ff" stroke-width="1.5" fill="none" transform="scale(1.1)" />
+  </g>
+
+  <!-- Bottom Caption -->
+  <text x="600" y="260" font-family="Manrope, sans-serif" font-size="16" font-style="italic" fill="#bcc8ce" text-anchor="middle">"From first conversation to working system, in days — not months."</text>
+</svg>

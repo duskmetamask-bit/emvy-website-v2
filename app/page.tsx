@@ -1,123 +1,31 @@
-import { ArrowRight } from 'lucide-react'
-import TrackedLink from '../components/TrackedLink'
-import CalBookingGate from '../components/CalBookingGate'
-import JsonLd from '@/components/JsonLd'
-import { localBusiness, webSite } from '@/lib/schema/jsonld'
-import { engagementFlow } from '@/lib/emvy-process'
+import Link from 'next/link'
+import TrackedLink from '@/components/TrackedLink'
 
-const services = [
+const helpAreas = [
   {
-    number: '01',
-    title: 'Discovery',
-    subtitle: 'Free 15-minute introduction call',
-    description:
-      'A quick conversation to understand your business, the workflow you want to improve, and the best next step.',
-    href: '/services/discovery-call',
-    image:
-      'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=90&auto=format&fit=crop',
+    title: 'Calls and enquiries',
+    body: 'Answer common questions, take messages and help people get to the right next step.',
   },
   {
-    number: '02',
-    title: 'Strategy',
-    subtitle: 'Find the strongest AI opportunities',
-    description:
-      'We assess the workflow, systems, and operational constraints so you know where AI will genuinely help.',
-    href: '/services/ai-strategy-call',
-    image:
-      'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=90&auto=format&fit=crop',
+    title: 'Follow-up and admin',
+    body: 'Keep routine work moving without relying on someone to remember every task.',
   },
   {
-    number: '03',
-    title: 'Build',
-    subtitle: 'Design and implement the right system',
-    description:
-      'We build AI systems, automations, and workflow improvements that reduce admin and improve efficiency.',
-    href: '/services/ai-builds',
-    image:
-      'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=90&auto=format&fit=crop',
-  },
-  {
-    number: '04',
-    title: 'Maintenance',
-    subtitle: 'Support after launch when needed',
-    description:
-      'If you want ongoing support, we maintain, refine, and improve the system as your business grows.',
-    href: '/services/systems-maintenance',
-    image:
-      'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=1200&q=90&auto=format&fit=crop',
+    title: 'Information and handoffs',
+    body: 'Make it easier for the right person to find what they need and know what happens next.',
   },
 ]
 
-const expertiseAreas = [
-  {
-    title: 'Workflow mapping',
-    body: 'We map how the work actually moves before recommending anything.',
-    points: ['handoffs and bottlenecks', 'admin load and delays', 'owners, approvals, and edge cases'],
-    image:
-      'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=90&auto=format&fit=crop',
-  },
-  {
-    title: 'AI tools and models',
-    body: 'Model choice depends on the job, not on whatever is trending.',
-    points: ['OpenAI, Claude, Gemini', 'prompt and workflow design', 'cost, speed, and reliability fit'],
-    image:
-      'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=90&auto=format&fit=crop',
-  },
-  {
-    title: 'Automation and integrations',
-    body: 'We connect AI into the systems your team already uses.',
-    points: ['CRM, inbox, forms, docs', 'Zapier, Make, n8n', 'routing, alerts, and follow-up flows'],
-    image:
-      'https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&q=90&auto=format&fit=crop',
-  },
-  {
-    title: 'Data and governance',
-    body: 'Oversight stays visible so the system is useful and safe to run.',
-    points: ['review points and approvals', 'access and permissions', 'audit trail and sensible controls'],
-    image:
-      'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=1200&q=90&auto=format&fit=crop',
-  },
+const steps = [
+  { number: '01', title: 'Consult', body: 'Start with a focused conversation.' },
+  { number: '02', title: 'Assess', body: 'Look more closely where clarity is useful.' },
+  { number: '03', title: 'Build', body: 'Create the right system for the work.' },
+  { number: '04', title: 'Improve', body: 'Keep refining it as the business changes.' },
 ]
-
-const capabilities = [
-  {
-    label: 'Run on autopilot',
-    title: 'Process & automate',
-    body: 'AI-powered workflows, data pipelines, and operational automation that handle the repetitive work — from simple triggers to multi-step sequences.',
-  },
-  {
-    label: 'Always-on service',
-    title: 'Communicate & respond',
-    body: 'Voice AI, chatbots, smart inboxes, and automated follow-up that keep your business responsive without hiring more people.',
-  },
-  {
-    label: 'Know what matters',
-    title: 'Analyse & decide',
-    body: 'Dashboards, reporting, and data analysis that turn your business data into decisions — without spreadsheets or manual exports.',
-  },
-]
-
-function HeroCtas() {
-  return (
-    <>
-      <CalBookingGate triggerLabel="Book Free Discovery Call" className="button primary" />
-      <TrackedLink
-        href="/assessment"
-        className="button secondary"
-        eventName="quiz_start"
-        eventLabel="homepage hero"
-      >
-        Start the Mini AI Strategy Assessment
-      </TrackedLink>
-    </>
-  )
-}
 
 export default function Home() {
-
   return (
     <>
-      <JsonLd data={[webSite(), localBusiness()]} />
       <section className="hero-shell">
         <div className="hero-banner">
           <div className="hero-media" aria-hidden="true">
@@ -131,149 +39,62 @@ export default function Home() {
               decoding="async"
             />
           </div>
-
-          <div className="hero-copy">
-            <p className="section-kicker hero-kicker">AI strategy for Australian small businesses</p>
-            <h1>We find where AI pays off in your business, then build the system to make it happen.</h1>
-            <p>
-              Practical AI strategy and builds for businesses that want to work smarter.
-            </p>
-
+          <div className="hero-copy consult-hero-copy">
+            <p className="section-kicker">AI built for your business</p>
+            <h1>Systems that make work easier.</h1>
+            <p>EMVY helps small businesses use AI where it genuinely makes a difference.</p>
             <div className="hero-actions">
-              <HeroCtas />
+              <TrackedLink href="https://cal.com/jake-emvy/discovery-call" className="button primary" eventName="book_consult_click" eventLabel="home_hero">
+                Book a consult
+              </TrackedLink>
             </div>
+            <p className="hero-support">A focused 20-minute conversation about your business.</p>
           </div>
         </div>
       </section>
 
-      <section className="section" id="services">
-        <div className="section-header">
-          <p className="section-kicker">Services</p>
-          <h2 className="section-title">A clear service flow from first conversation to live system.</h2>
-          <p className="section-text">
-            Start at the stage you need now, then move forward only if the next step makes sense.
-          </p>
+      <section className="section belief-section">
+        <div className="belief-copy">
+          <p className="section-kicker">The approach</p>
+          <h2 className="section-title">The right system fits the business.</h2>
+          <p className="section-text">It should work with the people, tools and processes you already rely on—not make the day more complicated.</p>
         </div>
-
-        <div className="service-flow-grid">
-          {services.map((service) => (
-            <a key={service.title} href={service.href} className="service-flow-card">
-              <article className="service-flow-card__inner">
-                <div className="content-card-image">
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    width={1200}
-                    height={675}
-                    sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-                <p className="service-flow-number">{service.number}</p>
-                <h3>{service.title}</h3>
-                <strong>{service.subtitle}</strong>
-                <p>{service.description}</p>
-                <span>
-                  See more <ArrowRight size={14} />
-                </span>
-              </article>
-            </a>
-          ))}
+        <div className="belief-image">
+          <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1400&q=85&auto=format&fit=crop" alt="A team discussing how work gets done" />
         </div>
       </section>
 
-      <section className="section">
+      <section className="section public-section">
         <div className="section-header">
-          <p className="section-kicker">Expertise Areas</p>
-          <h2 className="section-title">The work is scoped around the workflow, tools, and controls that actually matter.</h2>
+          <p className="section-kicker">Where EMVY can help</p>
+          <h2 className="section-title">Make the important parts of the day easier to manage.</h2>
         </div>
-
-        <div className="expertise-grid expertise-grid-wide">
-          {expertiseAreas.map((item) => (
-            <article key={item.title} className="expertise-card detail-card">
-              <div className="content-card-image content-card-image--short">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  width={1200}
-                  height={675}
-                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-              <h3>{item.title}</h3>
-              <p>{item.body}</p>
-              <ul className="detail-list">
-                {item.points.map((point) => (
-                  <li key={point}>{point}</li>
-                ))}
-              </ul>
-            </article>
-          ))}
+        <div className="simple-grid three">
+          {helpAreas.map((area) => <article className="simple-card" key={area.title}><h3>{area.title}</h3><p>{area.body}</p></article>)}
         </div>
+        <Link href="/services" className="inline-link section-link">Explore services</Link>
       </section>
 
-      <section className="section" id="capabilities">
+      <section className="section public-section">
         <div className="section-header">
-          <p className="section-kicker">What AI can do</p>
-          <h2 className="section-title">Three capability areas — every AI build fits into one of them.</h2>
-          <p className="section-text">
-            Whether it is a single voice agent or a full operating layer, every system we build
-            automates, communicates, or analyses. Usually all three.
-          </p>
+          <p className="section-kicker">How the work starts</p>
+          <h2 className="section-title">A simple path from the first conversation.</h2>
         </div>
-
-        <div className="capabilities-grid">
-          {capabilities.map((cap) => (
-            <article key={cap.title} className="capability-card">
-              <p className="section-kicker">{cap.label}</p>
-              <h3>{cap.title}</h3>
-              <p>{cap.body}</p>
-            </article>
-          ))}
-        </div>
+        <Link href="/services" className="step-strip" aria-label="Explore EMVY services">
+          {steps.map((step) => <article key={step.title}><span>{step.number}</span><h3>{step.title}</h3><p>{step.body}</p></article>)}
+        </Link>
       </section>
 
-      <section className="section final-cta-section" id="contact">
-        <div className="section-header">
-          <p className="section-kicker">Next Step</p>
-          <h2 className="section-title">Choose the starting point that suits you best.</h2>
-          <p className="section-text">
-            Book a free discovery call if you want to talk through the opportunity, or try the
-            Mini AI Strategy Assessment for a simple first step.
-          </p>
+      <section className="section final-consult-section">
+        <p className="section-kicker">Start here</p>
+        <h2 className="section-title">Let’s talk about your business.</h2>
+        <p className="section-text">A focused 20-minute consult is a simple place to start.</p>
+        <div className="hero-actions">
+          <TrackedLink href="https://cal.com/jake-emvy/discovery-call" className="button primary" eventName="book_consult_click" eventLabel="home_close">
+            Book a consult
+          </TrackedLink>
         </div>
-
-        <div className="final-cta-grid">
-          <article className="final-cta-card">
-            <p className="service-flow-number">01</p>
-            <h3>Book Free Discovery Call</h3>
-            <p>
-              A short 15-minute introduction to understand your business, what you want AI to help
-              with, and what the best next step looks like.
-            </p>
-            <CalBookingGate triggerLabel="Book Free Discovery Call" className="button primary" />
-          </article>
-
-          <article className="final-cta-card">
-            <p className="service-flow-number">02</p>
-            <h3>Start the Mini AI Strategy Assessment</h3>
-            <p>
-              A free 5-minute self-assessment that surfaces exactly where your business is losing
-              time and money — and emails you a personalised strategy report.
-            </p>
-            <TrackedLink
-              href="/assessment"
-              className="button secondary"
-              eventName="quiz_start"
-              eventLabel="homepage final cta"
-            >
-              Start the assessment
-            </TrackedLink>
-          </article>
-        </div>
+        <Link href="/contact" className="inline-link">Prefer to send an enquiry? Contact EMVY.</Link>
       </section>
     </>
   )

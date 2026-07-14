@@ -14,7 +14,7 @@ import type {
 const SITE_URL = 'https://emvyai.com' as const
 const SITE_NAME = 'EMVY' as const
 const SITE_DESCRIPTION =
-  'AI consultancy for Australian SMBs. AI strategy, process automation, custom AI solutions and data analytics for businesses ready to work smarter.' as const
+  'AI built for your business. Systems that make work easier for Australian small businesses.' as const
 const SITE_LOGO = `${SITE_URL}/brand/mv-mark.svg` as const
 const SITE_IMAGE = `${SITE_URL}/brand/exports/og-image.png` as const
 const SITE_EMAIL = 'hello@emvyai.com' as const
@@ -65,7 +65,6 @@ export function localBusiness(): WithContext<LocalBusinessLeaf> {
       '@type': 'Country',
       name: 'Australia',
     },
-    priceRange: '$$',
   }
 }
 

@@ -189,7 +189,7 @@ export async function renderOgImage({ title, subtitle, eyebrow }: OgRenderOption
               display: 'flex',
             }}
           >
-            Strategy · Audits · Builds
+            Assess · Build · Improve
           </div>
         </div>
       </div>

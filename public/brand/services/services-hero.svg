@@ -1,0 +1,85 @@
+<svg width="1280" height="640" viewBox="0 0 1280 640" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Gradient -->
+  <defs>
+    <linearGradient id="obsidianGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#031427;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#000f21;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Glow Effects -->
+    <filter id="focalGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="accentGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background Layer -->
+  <rect width="1280" height="640" fill="url(#obsidianGradient)" />
+
+  <!-- Right Side: Constellation Flow (Right 60%) -->
+  <g transform="translate(680, 320)">
+    <!-- Connecting Lines -->
+    <path d="M 0,0 L 120,-30 L 240,0 L 360,30 L 480,0" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.3" />
+
+    <!-- Node 1 -->
+    <g transform="translate(0, 0)">
+      <circle r="30" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.1" /> <!-- Orbit -->
+      <circle r="12" fill="none" stroke="#56d9ff" stroke-width="1" />
+    </g>
+
+    <!-- Node 2 -->
+    <g transform="translate(120, -30)">
+      <circle r="26" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.08" /> <!-- Orbit -->
+      <circle r="10" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.8" />
+    </g>
+
+    <!-- Node 3 (Focal Point) -->
+    <g transform="translate(240, 0)">
+      <circle r="34" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.15" /> <!-- Orbit -->
+      <circle r="14" fill="#56d9ff" filter="url(#focalGlow)" />
+    </g>
+
+    <!-- Node 4 -->
+    <g transform="translate(360, 30)">
+      <circle r="24" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.06" /> <!-- Orbit -->
+      <circle r="9" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.6" />
+    </g>
+
+    <!-- Node 5 -->
+    <g transform="translate(480, 0)">
+      <circle r="20" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.04" /> <!-- Orbit -->
+      <circle r="7" fill="none" stroke="#56d9ff" stroke-width="1" opacity="0.4" />
+    </g>
+  </g>
+
+  <!-- Left Side: Content Area (Left 40%) -->
+  <g transform="translate(100, 240)">
+    <!-- Vertical Accent Bar -->
+    <rect x="0" y="5" width="3" height="40" fill="#56d9ff" filter="url(#accentGlow)" />
+
+    <!-- Headline -->
+    <text x="32" y="44" font-family="'Space Grotesk', sans-serif" font-size="56" font-weight="600" fill="white" letter-spacing="-0.02em">
+      <tspan x="32" dy="0">A clear path from AI</tspan>
+      <tspan x="32" dy="64">opportunity to</tspan>
+      <tspan x="32" dy="64">working system</tspan>
+    </text>
+
+    <!-- Subhead -->
+    <text x="32" y="210" font-family="'Manrope', sans-serif" font-size="17" fill="#8899a6" line-height="1.6">
+      <tspan x="32" dy="0">Start with a free assessment, a 15-minute call, or a</tspan>
+      <tspan x="32" dy="28">structured strategy session. Platform-agnostic,</tspan>
+      <tspan x="32" dy="28">honest pricing, real outcomes.</tspan>
+    </text>
+  </g>
+</svg>
