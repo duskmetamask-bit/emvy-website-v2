@@ -159,6 +159,14 @@ export default defineSchema({
         })
       )
     ),
+    // CRM V2 identity spine. Existing records stay intact until the
+    // reconciliation mutation explicitly classifies them.
+    normalizedEmail: v.optional(v.string()),
+    normalizedPhone: v.optional(v.string()),
+    identityStatus: v.optional(v.string()), // resolved | unverified | merge_review
+    automationEligible: v.optional(v.boolean()),
+    serviceStatus: v.optional(v.string()), // prospect | active_client | paused | former_client
+    nextReviewAt: v.optional(v.number()),
   })
     .index('by_stage', ['stage'])
     .index('by_score', ['score'])
@@ -167,7 +175,112 @@ export default defineSchema({
     .index('by_outcome', ['outcome'])
     .index('by_discoveredAt', ['discoveredAt'])
     .index('by_email', ['email'])
+    .index('by_normalizedEmail', ['normalizedEmail'])
+    .index('by_normalizedPhone', ['normalizedPhone'])
     .index('by_outreachState', ['outreachState']),
+
+  // Immutable provider payload ledger. The composite key makes retry-safe
+  // ingestion possible without overwriting source evidence.
+  provider_events: defineTable({
+    provider: v.string(), // calcom | retell | resend | website | manual | import
+    providerEventId: v.string(),
+    eventType: v.string(),
+    occurredAt: v.number(),
+    receivedAt: v.number(),
+    rawPayload: v.string(),
+    leadId: v.optional(v.id('leads')),
+    identityStatus: v.string(), // resolved | unverified | merge_review
+  })
+    .index('by_provider_and_providerEventId', ['provider', 'providerEventId'])
+    .index('by_lead_and_occurredAt', ['leadId', 'occurredAt'])
+    .index('by_occurredAt', ['occurredAt']),
+
+  // Normalized timeline entries are deliberately separate from immutable
+  // provider payloads so operator context can evolve without rewriting them.
+  crm_interactions: defineTable({
+    leadId: v.id('leads'),
+    providerEventId: v.optional(v.id('provider_events')),
+    kind: v.string(), // enquiry | email | booking | call | note | outreach
+    direction: v.string(), // inbound | outbound | internal
+    summary: v.string(),
+    occurredAt: v.number(),
+    mailbox: v.optional(v.string()),
+    actor: v.optional(v.string()),
+    metadata: v.optional(v.string()),
+  })
+    .index('by_lead_and_occurredAt', ['leadId', 'occurredAt'])
+    .index('by_providerEventId', ['providerEventId']),
+
+  crm_tasks: defineTable({
+    leadId: v.optional(v.id('leads')),
+    kind: v.string(), // callback | consult_follow_up | approval | exception | review
+    title: v.string(),
+    status: v.string(), // open | in_progress | done | cancelled
+    priority: v.string(), // urgent | high | normal | low
+    dueAt: v.optional(v.number()),
+    createdAt: v.number(),
+    completedAt: v.optional(v.number()),
+    sourceEventId: v.optional(v.id('provider_events')),
+    details: v.optional(v.string()),
+  })
+    .index('by_status_and_dueAt', ['status', 'dueAt'])
+    .index('by_lead_and_status', ['leadId', 'status'])
+    .index('by_sourceEventId', ['sourceEventId']),
+
+  identity_merge_reviews: defineTable({
+    normalizedEmail: v.optional(v.string()),
+    normalizedPhone: v.optional(v.string()),
+    candidateLeadIds: v.array(v.id('leads')),
+    sourceEventId: v.optional(v.id('provider_events')),
+    status: v.string(), // open | resolved | dismissed
+    createdAt: v.number(),
+    resolvedAt: v.optional(v.number()),
+    resolutionNote: v.optional(v.string()),
+  })
+    .index('by_status_and_createdAt', ['status', 'createdAt'])
+    .index('by_sourceEventId', ['sourceEventId']),
+
+  ai_consults: defineTable({
+    leadId: v.id('leads'),
+    bookingId: v.optional(v.id('cal_bookings')),
+    providerBookingId: v.string(),
+    status: v.string(), // booked | rescheduled | cancelled | started | completed | no_show
+    scheduledFor: v.optional(v.number()),
+    completedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_providerBookingId', ['providerBookingId'])
+    .index('by_lead_and_status', ['leadId', 'status'])
+    .index('by_status_and_scheduledFor', ['status', 'scheduledFor']),
+
+  internal_assessments: defineTable({
+    leadId: v.id('leads'),
+    consultId: v.id('ai_consults'),
+    status: v.string(), // pending | in_progress | completed
+    createdAt: v.number(),
+    notes: v.optional(v.string()),
+  })
+    .index('by_lead', ['leadId'])
+    .index('by_consultId', ['consultId']),
+
+  retell_calls: defineTable({
+    leadId: v.optional(v.id('leads')),
+    providerCallId: v.string(),
+    status: v.string(), // started | ended | analyzed | failed
+    disposition: v.optional(v.string()),
+    recordingReference: v.optional(v.string()),
+    transcript: v.optional(v.string()),
+    analysis: v.optional(v.string()),
+    startedAt: v.optional(v.number()),
+    endedAt: v.optional(v.number()),
+    analyzedAt: v.optional(v.number()),
+    detailedContentExpiresAt: v.optional(v.number()),
+    redactedAt: v.optional(v.number()),
+  })
+    .index('by_providerCallId', ['providerCallId'])
+    .index('by_lead_and_startedAt', ['leadId', 'startedAt'])
+    .index('by_detailedContentExpiresAt', ['detailedContentExpiresAt']),
 
   email_drafts: defineTable({
     leadId: v.optional(v.id('leads')),
