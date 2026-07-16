@@ -1,10 +1,36 @@
-import { internalMutation, query } from './_generated/server'
+import { internalMutation, mutation, query } from './_generated/server'
 import type { MutationCtx } from './_generated/server'
 import { v } from 'convex/values'
 import type { Id } from './_generated/dataModel'
 import { normalizeEmail, normalizePhone, selectIdentityMatch } from './crm/identity'
 
 const DAY_MS = 24 * 60 * 60 * 1000
+const EMVY_WORKSPACE_KEY = 'emvy'
+const DEFAULT_OWNER_KEY = 'dusk'
+
+async function getEmvyWorkspace(ctx: MutationCtx) {
+  const existing = await ctx.db
+    .query('crm_workspaces')
+    .withIndex('by_key', q => q.eq('key', EMVY_WORKSPACE_KEY))
+    .unique()
+  if (existing) return existing
+  const id = await ctx.db.insert('crm_workspaces', {
+    key: EMVY_WORKSPACE_KEY,
+    name: 'EMVY',
+    defaultOwnerKey: DEFAULT_OWNER_KEY,
+    createdAt: Date.now(),
+  })
+  return await ctx.db.get(id)
+}
+
+export const ensureEmvyWorkspace = mutation({
+  args: {},
+  handler: async ctx => {
+    const workspace = await getEmvyWorkspace(ctx)
+    if (!workspace) throw new Error('Unable to create EMVY workspace')
+    return workspace
+  },
+})
 
 async function findIdentity(
   ctx: MutationCtx,
@@ -39,6 +65,8 @@ export const ingestProviderEvent = internalMutation({
     })),
   },
   handler: async (ctx, args) => {
+    const workspace = await getEmvyWorkspace(ctx)
+    if (!workspace) throw new Error('EMVY workspace unavailable')
     const existing = await ctx.db
       .query('provider_events')
       .withIndex('by_provider_and_providerEventId', q => q.eq('provider', args.provider).eq('providerEventId', args.providerEventId))
@@ -63,6 +91,8 @@ export const ingestProviderEvent = internalMutation({
         identityStatus: 'resolved',
         automationEligible: true,
         serviceStatus: 'prospect',
+        workspaceId: workspace._id,
+        ownerKey: DEFAULT_OWNER_KEY,
       })
     }
 
@@ -74,6 +104,7 @@ export const ingestProviderEvent = internalMutation({
       receivedAt: Date.now(),
       rawPayload: args.rawPayload,
       leadId,
+      workspaceId: workspace._id,
       identityStatus: identity.match.status,
     })
 
@@ -91,6 +122,7 @@ export const ingestProviderEvent = internalMutation({
     if (leadId && args.interaction) {
       await ctx.db.insert('crm_interactions', {
         leadId,
+        workspaceId: workspace._id,
         providerEventId: eventId,
         kind: args.interaction.kind,
         direction: args.interaction.direction,
@@ -133,6 +165,8 @@ export const completeAiConsult = internalMutation({
     await ctx.db.insert('internal_assessments', { leadId: consult.leadId, consultId: consult._id, status: 'pending', createdAt: Date.now() })
     await ctx.db.insert('crm_tasks', {
       leadId: consult.leadId,
+      workspaceId: consult.workspaceId,
+      ownerKey: DEFAULT_OWNER_KEY,
       kind: 'consult_follow_up',
       title: 'Prepare and send AI Consult recommendation',
       status: 'open',

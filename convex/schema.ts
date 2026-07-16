@@ -123,6 +123,16 @@ export default defineSchema({
     .index('by_createdAt', ['createdAt'])
     .index('by_status', ['status']),
 
+  // Workspaces isolate future client demos and client work from EMVY's own
+  // prospects. Existing documents intentionally have no workspaceId: read
+  // models treat that absence as EMVY instead of silently rewriting history.
+  crm_workspaces: defineTable({
+    key: v.string(),
+    name: v.string(),
+    defaultOwnerKey: v.string(),
+    createdAt: v.number(),
+  }).index('by_key', ['key']),
+
   leads: defineTable({
     company: v.optional(v.string()),
     contact: v.optional(v.string()),
@@ -167,6 +177,10 @@ export default defineSchema({
     automationEligible: v.optional(v.boolean()),
     serviceStatus: v.optional(v.string()), // prospect | active_client | paused | former_client
     nextReviewAt: v.optional(v.number()),
+    workspaceId: v.optional(v.id('crm_workspaces')),
+    ownerKey: v.optional(v.string()),
+    nextAction: v.optional(v.string()),
+    priority: v.optional(v.string()),
   })
     .index('by_stage', ['stage'])
     .index('by_score', ['score'])
@@ -177,7 +191,8 @@ export default defineSchema({
     .index('by_email', ['email'])
     .index('by_normalizedEmail', ['normalizedEmail'])
     .index('by_normalizedPhone', ['normalizedPhone'])
-    .index('by_outreachState', ['outreachState']),
+    .index('by_outreachState', ['outreachState'])
+    .index('by_workspaceId', ['workspaceId']),
 
   // Immutable provider payload ledger. The composite key makes retry-safe
   // ingestion possible without overwriting source evidence.
@@ -189,16 +204,19 @@ export default defineSchema({
     receivedAt: v.number(),
     rawPayload: v.string(),
     leadId: v.optional(v.id('leads')),
+    workspaceId: v.optional(v.id('crm_workspaces')),
     identityStatus: v.string(), // resolved | unverified | merge_review
   })
     .index('by_provider_and_providerEventId', ['provider', 'providerEventId'])
     .index('by_lead_and_occurredAt', ['leadId', 'occurredAt'])
+    .index('by_workspaceId_and_occurredAt', ['workspaceId', 'occurredAt'])
     .index('by_occurredAt', ['occurredAt']),
 
   // Normalized timeline entries are deliberately separate from immutable
   // provider payloads so operator context can evolve without rewriting them.
   crm_interactions: defineTable({
     leadId: v.id('leads'),
+    workspaceId: v.optional(v.id('crm_workspaces')),
     providerEventId: v.optional(v.id('provider_events')),
     kind: v.string(), // enquiry | email | booking | call | note | outreach
     direction: v.string(), // inbound | outbound | internal
@@ -209,10 +227,13 @@ export default defineSchema({
     metadata: v.optional(v.string()),
   })
     .index('by_lead_and_occurredAt', ['leadId', 'occurredAt'])
+    .index('by_workspaceId_and_occurredAt', ['workspaceId', 'occurredAt'])
     .index('by_providerEventId', ['providerEventId']),
 
   crm_tasks: defineTable({
     leadId: v.optional(v.id('leads')),
+    workspaceId: v.optional(v.id('crm_workspaces')),
+    ownerKey: v.optional(v.string()),
     kind: v.string(), // callback | consult_follow_up | approval | exception | review
     title: v.string(),
     status: v.string(), // open | in_progress | done | cancelled
@@ -224,6 +245,7 @@ export default defineSchema({
     details: v.optional(v.string()),
   })
     .index('by_status_and_dueAt', ['status', 'dueAt'])
+    .index('by_workspaceId_and_status', ['workspaceId', 'status'])
     .index('by_lead_and_status', ['leadId', 'status'])
     .index('by_sourceEventId', ['sourceEventId']),
 
@@ -242,6 +264,7 @@ export default defineSchema({
 
   ai_consults: defineTable({
     leadId: v.id('leads'),
+    workspaceId: v.optional(v.id('crm_workspaces')),
     bookingId: v.optional(v.id('cal_bookings')),
     providerBookingId: v.string(),
     status: v.string(), // booked | rescheduled | cancelled | started | completed | no_show
@@ -251,6 +274,7 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index('by_providerBookingId', ['providerBookingId'])
+    .index('by_workspaceId_and_status', ['workspaceId', 'status'])
     .index('by_lead_and_status', ['leadId', 'status'])
     .index('by_status_and_scheduledFor', ['status', 'scheduledFor']),
 
