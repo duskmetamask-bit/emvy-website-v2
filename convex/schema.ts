@@ -181,6 +181,12 @@ export default defineSchema({
     ownerKey: v.optional(v.string()),
     nextAction: v.optional(v.string()),
     priority: v.optional(v.string()),
+    // CRM V2 operating lifecycle. These are additive so legacy pipeline
+    // values remain visible until reconciliation maps them.
+    lifecycleStage: v.optional(v.string()), // discover → expansion
+    lifecycleState: v.optional(v.string()), // active | nurture | lost | closed
+    lostReason: v.optional(v.string()),
+    warmConnection: v.optional(v.boolean()),
   })
     .index('by_stage', ['stage'])
     .index('by_score', ['score'])
@@ -243,11 +249,59 @@ export default defineSchema({
     completedAt: v.optional(v.number()),
     sourceEventId: v.optional(v.id('provider_events')),
     details: v.optional(v.string()),
+    isCurrent: v.optional(v.boolean()),
   })
     .index('by_status_and_dueAt', ['status', 'dueAt'])
     .index('by_workspaceId_and_status', ['workspaceId', 'status'])
     .index('by_lead_and_status', ['leadId', 'status'])
     .index('by_sourceEventId', ['sourceEventId']),
+
+  crm_engagements: defineTable({
+    leadId: v.id('leads'),
+    workspaceId: v.id('crm_workspaces'),
+    ownerKey: v.string(),
+    kind: v.string(), // consult | assessment | pilot | build | maintenance
+    status: v.string(), // proposed | approved | onboarding | active | paused | closed
+    name: v.string(),
+    approvedScopeReference: v.optional(v.string()),
+    approvedBy: v.optional(v.string()),
+    approvedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_lead_and_status', ['leadId', 'status'])
+    .index('by_workspaceId_and_status', ['workspaceId', 'status']),
+
+  crm_approvals: defineTable({
+    leadId: v.optional(v.id('leads')),
+    engagementId: v.optional(v.id('crm_engagements')),
+    ownerKey: v.string(),
+    subject: v.string(),
+    reviewerRequirement: v.string(),
+    decision: v.string(), // pending | approved | rejected | archived
+    reviewer: v.optional(v.string()),
+    decidedAt: v.optional(v.number()),
+    evidenceReference: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index('by_decision_and_createdAt', ['decision', 'createdAt'])
+    .index('by_engagementId', ['engagementId']),
+
+  proof_cards: defineTable({
+    leadId: v.optional(v.id('leads')),
+    engagementId: v.optional(v.id('crm_engagements')),
+    ownerKey: v.string(),
+    title: v.string(),
+    factualOutcome: v.string(),
+    evidenceReference: v.string(),
+    status: v.string(), // draft | emvy_approved | client_approved | published | archived
+    clientNamingRequired: v.boolean(),
+    createdAt: v.number(),
+    publishedAt: v.optional(v.number()),
+    archivedAt: v.optional(v.number()),
+  })
+    .index('by_status_and_createdAt', ['status', 'createdAt'])
+    .index('by_engagementId', ['engagementId']),
 
   identity_merge_reviews: defineTable({
     normalizedEmail: v.optional(v.string()),

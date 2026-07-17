@@ -3,6 +3,7 @@ import type { MutationCtx } from './_generated/server'
 import { v } from 'convex/values'
 import type { Id } from './_generated/dataModel'
 import { normalizeEmail, normalizePhone, selectIdentityMatch } from './crm/identity'
+import { requireCurrentTask, requireOnboardingAuthority, type LifecycleStage, type LifecycleState } from './crm/lifecycle'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const EMVY_WORKSPACE_KEY = 'emvy'
@@ -186,4 +187,52 @@ export const listOpenMergeReviews = query({
     .withIndex('by_status_and_createdAt', q => q.eq('status', 'open'))
     .order('desc')
     .take(args.limit ?? 50),
+})
+
+export const assertRelationshipInvariant = internalMutation({
+  args: { leadId: v.id('leads') },
+  handler: async (ctx, args) => {
+    const lead = await ctx.db.get(args.leadId)
+    if (!lead) throw new Error('Relationship not found')
+    const currentTasks = await ctx.db
+      .query('crm_tasks')
+      .withIndex('by_lead_and_status', q => q.eq('leadId', lead._id).eq('status', 'open'))
+      .collect()
+    const current = currentTasks.filter(task => task.isCurrent === true)
+    if (current.length > 1) throw new Error('A relationship may have only one designated current task')
+    const task = current[0]
+    requireCurrentTask({
+      ownerKey: lead.ownerKey,
+      currentTaskTitle: task?.title,
+      currentTaskDueAt: task?.dueAt,
+      lifecycleState: lead.lifecycleState as LifecycleState | undefined,
+    })
+    return { ok: true }
+  },
+})
+
+export const createEngagement = internalMutation({
+  args: { leadId: v.id('leads'), kind: v.string(), name: v.string(), ownerKey: v.string() },
+  handler: async (ctx, args) => {
+    const lead = await ctx.db.get(args.leadId)
+    if (!lead?.workspaceId) throw new Error('Relationship must be assigned to a workspace')
+    if (!args.ownerKey.trim()) throw new Error('Engagement requires a named human owner')
+    const now = Date.now()
+    return await ctx.db.insert('crm_engagements', {
+      leadId: lead._id, workspaceId: lead.workspaceId, ownerKey: args.ownerKey.trim(),
+      kind: args.kind, name: args.name.trim(), status: 'proposed', createdAt: now, updatedAt: now,
+    })
+  },
+})
+
+export const beginOnboarding = internalMutation({
+  args: { engagementId: v.id('crm_engagements'), approvedScopeReference: v.string(), approvedBy: v.string(), approvedAt: v.number() },
+  handler: async (ctx, args) => {
+    const { engagementId, approvedScopeReference, approvedBy, approvedAt } = args
+    requireOnboardingAuthority({ stage: 'onboarding' as LifecycleStage, approvedScopeReference, approvedBy, approvedAt })
+    const engagement = await ctx.db.get(engagementId)
+    if (!engagement) throw new Error('Engagement not found')
+    await ctx.db.patch(engagement._id, { status: 'onboarding', approvedScopeReference, approvedBy, approvedAt, updatedAt: Date.now() })
+    return { ok: true }
+  },
 })
