@@ -898,6 +898,7 @@ export default defineSchema({
       v.literal('product_ready_to_sell'),
     ),
     sourcePath: v.string(), // relative path in ~/obsidian-vault/builds/
+    liveUrl: v.optional(v.string()), // retained legacy deployment reference
     agentId: v.literal('builds'),
     createdAt: v.number(),
   })
