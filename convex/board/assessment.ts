@@ -27,3 +27,15 @@ export const get = query({
     return await ctx.db.get(id);
   },
 });
+
+// Compact overview data for the operator dashboard. This remains a read-only
+// projection over canonical assessment submissions.
+export const stats = query({
+  args: {},
+  handler: async (ctx) => {
+    const rows = await ctx.db.query('assessment_submissions').take(1000);
+    const last7d = Date.now() - 7 * 86_400_000;
+    const recent = rows.filter((row) => (row.createdAt ?? 0) >= last7d).length;
+    return { total: rows.length, recent };
+  },
+});
