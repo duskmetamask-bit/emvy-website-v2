@@ -48,6 +48,7 @@ import type * as board_process from "../board/process.js";
 import type * as board_retainers from "../board/retainers.js";
 import type * as board_sent from "../board/sent.js";
 import type * as board_triage from "../board/triage.js";
+import type * as board_voice from "../board/voice.js";
 import type * as board_webhookFeed from "../board/webhookFeed.js";
 import type * as board_webmail from "../board/webmail.js";
 import type * as bootstrapActions from "../bootstrapActions.js";
@@ -127,6 +128,7 @@ declare const fullApi: ApiFromModules<{
   "board/retainers": typeof board_retainers;
   "board/sent": typeof board_sent;
   "board/triage": typeof board_triage;
+  "board/voice": typeof board_voice;
   "board/webhookFeed": typeof board_webhookFeed;
   "board/webmail": typeof board_webmail;
   bootstrapActions: typeof bootstrapActions;
