@@ -156,6 +156,7 @@ export default defineSchema({
     enrichedAt: v.optional(v.number()),
     // Outreach state machine fields (aligned to live Convex 2026-07-01)
     unsubscribedAt: v.optional(v.number()),
+    unsubscribeMethod: v.optional(v.string()),
     doNotContactAt: v.optional(v.number()),
     outreachState: v.optional(v.string()),
     nextActionAt: v.optional(v.number()),
@@ -197,7 +198,9 @@ export default defineSchema({
     .index('by_email', ['email'])
     .index('by_normalizedEmail', ['normalizedEmail'])
     .index('by_normalizedPhone', ['normalizedPhone'])
+    .index('by_unsubscribedAt', ['unsubscribedAt'])
     .index('by_outreachState', ['outreachState'])
+    .index('by_nextActionAt', ['nextActionAt'])
     .index('by_workspaceId', ['workspaceId']),
 
   // Immutable provider payload ledger. The composite key makes retry-safe
@@ -954,6 +957,24 @@ export default defineSchema({
     approvedAt: v.optional(v.number()),
     rejectedReason: v.optional(v.string()),
     completedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_status', ['status'])
+    .index('by_createdAt', ['createdAt'])
+    .index('by_status_and_createdAt', ['status', 'createdAt']),
+
+  // Retained Board idea inbox. Canonical ownership prevents a CRM deployment
+  // from removing the existing operator intake table.
+  build_ideas: defineTable({
+    title: v.string(),
+    summary: v.string(),
+    category: v.string(),
+    source: v.string(),
+    status: v.union(v.literal('idea'), v.literal('promoted')),
+    notes: v.optional(v.string()),
+    promotedRequestId: v.optional(v.id('build_requests')),
+    promotedAt: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
