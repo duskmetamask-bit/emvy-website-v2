@@ -899,6 +899,7 @@ export default defineSchema({
     ),
     sourcePath: v.string(), // relative path in ~/obsidian-vault/builds/
     liveUrl: v.optional(v.string()), // retained legacy deployment reference
+    score: v.optional(v.number()), // retained legacy operator score
     agentId: v.literal('builds'),
     createdAt: v.number(),
   })
