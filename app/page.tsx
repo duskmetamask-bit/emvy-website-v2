@@ -102,7 +102,7 @@ const caseStudies = [
 ]
 
 function HeroCtas() {
-  return <a href="https://cal.com/jake-emvy/discovery-call" className="button primary" target="_blank" rel="noopener noreferrer">Book a consult</a>
+  return <a href="https://cal.com/jake-emvy/discovery-call" className="button primary" target="_blank" rel="noopener noreferrer">Book a 20-minute AI Consult</a>
 }
 
 export default function Home() {
@@ -243,18 +243,18 @@ export default function Home() {
           <p className="section-kicker">Next Step</p>
           <h2 className="section-title">Start with a conversation about the work.</h2>
           <p className="section-text">
-            Book a consult to talk through the workflow, system, or operational issue you want to improve.
+            Book a free 20-minute AI Consult to talk through the workflow, system, or operational issue you want to improve.
           </p>
         </div>
 
         <div className="final-cta-grid">
           <article className="final-cta-card">
             <p className="service-flow-number">01</p>
-            <h3>Book a consult</h3>
+            <h3>Book a 20-minute AI Consult</h3>
             <p>
               A short conversation about the workflow, system, or operational issue you would like to improve.
             </p>
-            <a href="https://cal.com/jake-emvy/discovery-call" className="button primary" target="_blank" rel="noopener noreferrer">Book a consult</a>
+            <a href="https://cal.com/jake-emvy/discovery-call" className="button primary" target="_blank" rel="noopener noreferrer">Book a 20-minute AI Consult</a>
           </article>
 
         </div>

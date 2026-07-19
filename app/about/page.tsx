@@ -31,7 +31,7 @@ export default function AboutPage() {
         description="EMVY helps Australian businesses assess workflows, build practical systems, and improve operations over time."
         image="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1800&q=90&auto=format&fit=crop"
       >
-        <a href="https://cal.com/jake-emvy/discovery-call" className="button light" target="_blank" rel="noopener noreferrer">Book a consult</a>
+        <a href="https://cal.com/jake-emvy/discovery-call" className="button light" target="_blank" rel="noopener noreferrer">Book a 20-minute AI Consult</a>
         <Link href="/contact" className="button secondary">
           Get in touch
         </Link>

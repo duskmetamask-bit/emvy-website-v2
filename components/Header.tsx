@@ -41,7 +41,7 @@ export default function Header() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Book a consult
+          Book an AI Consult
         </a>
         <button className="menu-button" type="button" onClick={() => setMobileOpen((value) => !value)} aria-label="Open menu">
           {mobileOpen ? <X size={18} /> : <Menu size={18} />}
@@ -54,7 +54,7 @@ export default function Header() {
           <Link href="/use-cases" onClick={() => setMobileOpen(false)}>Use Cases</Link>
           <Link href="/about" onClick={() => setMobileOpen(false)}>About</Link>
           <Link href="/contact" onClick={() => setMobileOpen(false)}>Contact</Link>
-          <a href="https://cal.com/jake-emvy/discovery-call" target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)}>Book a consult</a>
+          <a href="https://cal.com/jake-emvy/discovery-call" target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)}>Book a 20-minute AI Consult</a>
         </div>
       ) : null}
     </header>

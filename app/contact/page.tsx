@@ -57,7 +57,7 @@ export default function ContactPage() {
         description="Use this form to discuss a workflow, system, or operational issue."
         image="https://images.unsplash.com/photo-1516321165247-4aa89a48be28?w=1800&q=90&auto=format&fit=crop"
       >
-        <a href="https://cal.com/jake-emvy/discovery-call" className="button light" target="_blank" rel="noopener noreferrer">Book a consult</a>
+        <a href="https://cal.com/jake-emvy/discovery-call" className="button light" target="_blank" rel="noopener noreferrer">Book a 20-minute AI Consult</a>
       </PageHero>
 
       <section className="section">
@@ -70,7 +70,7 @@ export default function ContactPage() {
               outcome you want to create. EMVY can then point you toward the right next step.
             </p>
             <div className="contact-list">
-              <a href="https://cal.com/jake-emvy/discovery-call" target="_blank" rel="noopener noreferrer">Book a consult</a>
+              <a href="https://cal.com/jake-emvy/discovery-call" target="_blank" rel="noopener noreferrer">Book a 20-minute AI Consult</a>
               <Link href="/services#assessment">AI Workflow Assessment</Link>
               <Link href="/services">View services</Link>
             </div>
@@ -136,8 +136,8 @@ export default function ContactPage() {
                     required
                   />
                 </label>
-                {error ? <p className="lp-error">{error}</p> : null}
-                <button type="submit" className="button primary" disabled={loading}>
+                {error ? <p className="lp-error" role="alert">{error}</p> : null}
+                <button type="submit" className="button primary" disabled={loading} aria-busy={loading}>
                   {loading ? 'Sending...' : 'Send enquiry'}
                 </button>
               </>

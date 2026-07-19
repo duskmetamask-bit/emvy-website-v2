@@ -55,7 +55,7 @@ export default function UseCasesPage() {
         description="These are capability examples, not fixed products. The right system depends on the business and its workflow."
         image="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1800&q=90&auto=format&fit=crop"
       >
-        <a href="https://cal.com/jake-emvy/discovery-call" className="button light" target="_blank" rel="noopener noreferrer">Book a consult</a>
+        <a href="https://cal.com/jake-emvy/discovery-call" className="button light" target="_blank" rel="noopener noreferrer">Book a 20-minute AI Consult</a>
         <Link href="/services" className="button secondary">View services</Link>
       </PageHero>
 
@@ -89,10 +89,10 @@ export default function UseCasesPage() {
           <p className="section-kicker">Get Started</p>
           <h2 className="section-title">Talk through the work you want to improve.</h2>
           <p className="section-text">
-            Start with a short consult, then decide what makes sense.
+            Start with a free 20-minute AI Consult, then decide what makes sense.
           </p>
         </div>
-        <a href="https://cal.com/jake-emvy/discovery-call" className="button primary" target="_blank" rel="noopener noreferrer">Book a consult</a>
+        <a href="https://cal.com/jake-emvy/discovery-call" className="button primary" target="_blank" rel="noopener noreferrer">Book a 20-minute AI Consult</a>
       </section>
     </>
   )

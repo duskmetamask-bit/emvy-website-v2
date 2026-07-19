@@ -60,7 +60,7 @@ export default function DiscoveryCallPage() {
           <p className="section-kicker">Ready To Book</p>
           <h2 className="section-title">Choose a time that works for you.</h2>
           <p className="section-text">
-            Pick a 15-minute slot that works for you.
+            Pick a 20-minute slot that works for you.
           </p>
         </div>
         <a

@@ -37,6 +37,11 @@ html {
   scroll-behavior: smooth;
 }
 
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -111,6 +116,11 @@ main {
   transform: translateY(0);
 }
 
+.button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .button.primary {
   color: #041018;
   background: linear-gradient(135deg, var(--accent) 0%, #9af1ff 50%, #d7ddff 100%);
@@ -169,8 +179,9 @@ main {
 }
 
 .brand-img {
-  height: 140px;
+  height: 42px;
   width: auto;
+  max-width: min(150px, 34vw);
   flex-shrink: 0;
   display: block;
 }
@@ -1774,7 +1785,7 @@ main {
 }
 
 .footer-brand__img {
-  height: 150px;
+  height: 48px;
   width: auto;
   display: block;
 }
@@ -1838,19 +1849,19 @@ main {
 }
 
 .site-footer__links--right {
-  margin-left: 5rem;
+  margin-left: 0;
 }
 
 .footer-start-here h3 {
-  margin-left: 12rem;
+  margin-left: 0;
 }
 
 .footer-start-here .site-footer__links {
-  margin-left: 12rem;
+  margin-left: 0;
 }
 
 .footer-explore h3 {
-  margin-left: 5rem;
+  margin-left: 0;
 }
 
 .site-footer__links a,
@@ -4435,4 +4446,31 @@ main {
 .spark-pricing-cta {
   display: flex;
   justify-content: center;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .button:hover,
+  .service-flow-card:hover,
+  .final-cta-card:hover,
+  .case-card:hover,
+  .topic-card:hover,
+  .digest-card:hover,
+  .research-card:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
