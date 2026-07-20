@@ -50,6 +50,8 @@ export const appendEntry = mutation({
       v.literal('product_ready_to_sell')
     ),
     sourcePath: v.string(),
+    score: v.optional(v.number()),
+    liveUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     requireHermesAgent(args.token, args.agent)
@@ -70,6 +72,8 @@ export const appendEntry = mutation({
         stage: data.stage,
         date: data.date,
         sourcePath: data.sourcePath,
+        score: data.score ?? match.score,
+        liveUrl: data.liveUrl ?? match.liveUrl,
       })
       return {
         id: match._id,
@@ -78,14 +82,17 @@ export const appendEntry = mutation({
       }
     }
 
-    const id = await ctx.db.insert('build_register', {
+    const insertData: any = {
       date: data.date,
       project: data.project,
       stage: data.stage,
       sourcePath: data.sourcePath,
       agentId: 'builds',
       createdAt: now,
-    })
+    }
+    if (data.score !== undefined) insertData.score = data.score
+    if (data.liveUrl !== undefined) insertData.liveUrl = data.liveUrl
+    const id = await ctx.db.insert('build_register', insertData)
     return { id, action: 'inserted' as const, createdAt: now }
   },
 })

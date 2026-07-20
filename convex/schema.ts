@@ -657,6 +657,8 @@ export default defineSchema({
       v.literal('product_ready_to_sell'),
     ),
     sourcePath: v.string(), // relative path in ~/obsidian-vault/builds/
+    score: v.optional(v.number()), // 0-10, from build review
+    liveUrl: v.optional(v.string()), // deployed URL, if applicable
     agentId: v.literal('builds'),
     createdAt: v.number(),
   })
